@@ -1,1728 +1,1140 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customer Retention PH</title>
+    <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.3/papaparse.min.js"></script>
+    <style>
+        :root {
+            --bg: #f4f7fb;
+            --card: #ffffff;
+            --text: #172033;
+            --muted: #6b7280;
+            --border: #dce3ed;
+            --primary: #2563eb;
+            --primary-dark: #1d4ed8;
+            --input: #ffffff;
+            --success: #16a34a;
+            --danger: #dc2626;
+            --warning: #d97706;
+            --orange: #f59e0b;
+        }
 
-<title>Customer Retention PH</title>
+        body.dark {
+            --bg: #0f172a;
+            --card: #172033;
+            --text: #f8fafc;
+            --muted: #94a3b8;
+            --border: #334155;
+            --primary: #3b82f6;
+            --primary-dark: #2563eb;
+            --input: #111827;
+        }
 
-<script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.3/papaparse.min.js"></script>
+        * {
+            box-sizing: border-box;
+        }
 
-<style>
-:root {
-    --bg: #f4f7fb;
-    --card: #ffffff;
-    --text: #172033;
-    --muted: #6b7280;
-    --border: #dce3ed;
-    --primary: #2563eb;
-    --primary-dark: #1d4ed8;
-    --input: #ffffff;
-    --success: #16a34a;
-    --danger: #dc2626;
-    --warning: #d97706;
-}
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            transition: 0.2s;
+        }
 
-body.dark {
-    --bg: #0f172a;
-    --card: #172033;
-    --text: #f8fafc;
-    --muted: #94a3b8;
-    --border: #334155;
-    --primary: #3b82f6;
-    --primary-dark: #2563eb;
-    --input: #111827;
-}
+        header {
+            background: var(--card);
+            border-bottom: 1px solid var(--border);
+            padding: 18px 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
 
-* {
-    box-sizing: border-box;
-}
+        .logo {
+            font-size: 22px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
 
-body {
-    margin: 0;
-    font-family: Arial, Helvetica, sans-serif;
-    background: var(--bg);
-    color: var(--text);
-    transition: 0.2s;
-}
+        .logo small {
+            font-weight: 400;
+            font-size: 14px;
+            color: var(--muted);
+        }
 
-header {
-    background: var(--card);
-    border-bottom: 1px solid var(--border);
-    padding: 18px 5%;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    position: sticky;
-    top: 0;
-    z-index: 10;
-}
+        .header-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
 
-.logo {
-    font-size: 22px;
-    font-weight: 700;
-}
+        .header-actions button,
+        .header-actions label {
+            white-space: nowrap;
+        }
 
-.header-actions {
-    display: flex;
-    gap: 10px;
-}
+        .file-upload-btn {
+            background: var(--primary);
+            color: white;
+            padding: 10px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 14px;
+            display: inline-block;
+            border: none;
+        }
 
-button {
-    border: none;
-    border-radius: 8px;
-    padding: 10px 15px;
-    cursor: pointer;
-    font-weight: 600;
-}
+        .file-upload-btn:hover {
+            background: var(--primary-dark);
+        }
 
-.mode-btn {
-    background: var(--primary);
-    color: white;
-}
+        .file-upload-btn input {
+            display: none;
+        }
 
-.container {
-    width: 90%;
-    max-width: 1200px;
-    margin: 30px auto;
-}
+        button {
+            border: none;
+            border-radius: 8px;
+            padding: 10px 15px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 14px;
+            transition: 0.2s;
+        }
 
-.tabs {
-    display: flex;
-    gap: 10px;
-    margin-bottom: 20px;
-}
+        .mode-btn {
+            background: var(--primary);
+            color: white;
+        }
 
-.tab {
-    background: var(--card);
-    color: var(--text);
-    border: 1px solid var(--border);
-}
+        .mode-btn:hover {
+            opacity: 0.85;
+        }
 
-.tab.active {
-    background: var(--primary);
-    color: white;
-    border-color: var(--primary);
-}
+        .container {
+            width: 92%;
+            max-width: 1240px;
+            margin: 25px auto;
+        }
 
-.tab-content {
-    display: none;
-}
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
 
-.tab-content.active {
-    display: block;
-}
+        .tab {
+            background: var(--card);
+            color: var(--text);
+            border: 1px solid var(--border);
+            padding: 10px 20px;
+        }
 
-.card {
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 14px;
-    padding: 22px;
-    margin-bottom: 20px;
-    box-shadow: 0 3px 12px rgba(0,0,0,0.04);
-}
+        .tab.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
 
-h1 {
-    margin-top: 0;
-    font-size: 28px;
-}
+        .tab-content {
+            display: none;
+        }
 
-h2 {
-    font-size: 20px;
-    margin-top: 0;
-}
+        .tab-content.active {
+            display: block;
+        }
 
-h3 {
-    font-size: 16px;
-}
+        .card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 22px;
+            margin-bottom: 20px;
+            box-shadow: 0 3px 12px rgba(0, 0, 0, 0.04);
+        }
 
-.grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 18px;
-}
+        h1 {
+            margin-top: 0;
+            font-size: 26px;
+        }
 
-label {
-    display: block;
-    font-weight: 700;
-    margin-bottom: 7px;
-}
+        h2 {
+            font-size: 20px;
+            margin-top: 0;
+        }
 
-input,
-textarea,
-select {
-    width: 100%;
-    padding: 11px 12px;
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    background: var(--input);
-    color: var(--text);
-    font-size: 14px;
-}
+        h3 {
+            font-size: 16px;
+            margin: 12px 0 8px 0;
+        }
 
-textarea {
-    resize: vertical;
-    min-height: 100px;
-}
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 18px;
+        }
 
-.team-list {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 10px;
-}
+        label {
+            display: block;
+            font-weight: 700;
+            margin-bottom: 7px;
+            font-size: 14px;
+        }
 
-.team {
-    padding: 12px;
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    background: var(--input);
-}
+        input,
+        textarea,
+        select {
+            width: 100%;
+            padding: 11px 12px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            background: var(--input);
+            color: var(--text);
+            font-size: 14px;
+            font-family: inherit;
+            transition: 0.2s;
+        }
 
-.team input {
-    width: auto;
-    margin-right: 7px;
-}
+        input:focus,
+        textarea:focus,
+        select:focus {
+            outline: 2px solid var(--primary);
+            outline-offset: -1px;
+        }
 
-.submit-btn {
-    background: var(--success);
-    color: white;
-}
+        textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
 
-.clear-btn {
-    background: #64748b;
-    color: white;
-}
+        .team-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+            gap: 10px;
+        }
 
-.delete-btn {
-    background: var(--danger);
-    color: white;
-    padding: 6px 10px;
-    font-size: 12px;
-}
+        .team {
+            padding: 12px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            background: var(--input);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+        }
 
-.extra-task {
-    display: flex;
-    gap: 10px;
-    align-items: flex-start;
-}
+        .team input {
+            width: 18px;
+            height: 18px;
+            margin: 0;
+            flex-shrink: 0;
+        }
 
-.extra-task textarea {
-    flex: 1;
-}
+        .team span {
+            font-weight: 600;
+        }
 
-.task {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 10px;
-    margin-top: 8px;
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    background: var(--input);
-}
+        .submit-btn {
+            background: var(--success);
+            color: white;
+        }
 
-.stats {
-    display: grid;
-    grid-template-columns: repeat(5, 1fr);
-    gap: 12px;
-}
+        .clear-btn {
+            background: #64748b;
+            color: white;
+        }
 
-.stat {
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 16px;
-    text-align: center;
-    background: var(--input);
-}
+        .delete-btn {
+            background: var(--danger);
+            color: white;
+            padding: 6px 12px;
+            font-size: 12px;
+        }
 
-.stat-number {
-    font-size: 28px;
-    font-weight: 800;
-    margin-bottom: 5px;
-}
+        .extra-task {
+            display: flex;
+            gap: 10px;
+            align-items: flex-start;
+            flex-wrap: wrap;
+        }
 
-.stat-label {
-    font-size: 13px;
-    color: var(--muted);
-}
+        .extra-task textarea {
+            flex: 1;
+            min-width: 200px;
+        }
 
-.ticket {
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 18px;
-    margin-top: 15px;
-    background: var(--input);
-}
+        .extra-task-actions {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
 
-.ticket-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
+        .task {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 14px;
+            margin-top: 8px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            background: var(--input);
+            gap: 10px;
+            flex-wrap: wrap;
+        }
 
-.ticket-title {
-    font-weight: 800;
-    font-size: 17px;
-}
+        .task span {
+            word-break: break-word;
+        }
 
-.ticket-field {
-    margin-top: 12px;
-}
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 12px;
+        }
 
-.status-select {
-    max-width: 250px;
-}
+        .stat {
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 16px;
+            text-align: center;
+            background: var(--input);
+        }
 
-.loading {
-    padding: 15px;
-    border-radius: 8px;
-    background: #e0ecff;
-    color: #1d4ed8;
-}
+        .stat-number {
+            font-size: 28px;
+            font-weight: 800;
+            margin-bottom: 5px;
+        }
 
-.error {
-    padding: 15px;
-    border-radius: 8px;
-    background: #fee2e2;
-    color: #991b1b;
-}
+        .stat-label {
+            font-size: 13px;
+            color: var(--muted);
+        }
 
-.success {
-    padding: 15px;
-    border-radius: 8px;
-    background: #dcfce7;
-    color: #166534;
-}
+        .ticket {
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 16px;
+            margin-top: 12px;
+            background: var(--input);
+        }
 
-.copy-btn {
-    background: var(--primary);
-    color: white;
-    margin-top: 10px;
-}
+        .ticket-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
 
-.escalate-box {
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 20px;
-    margin-bottom: 20px;
-    background: var(--input);
-}
+        .ticket-title {
+            font-weight: 800;
+            font-size: 17px;
+            color: var(--primary);
+        }
 
-.reference-box {
-    margin-top: 20px;
-    padding: 18px;
-    border: 1px dashed var(--border);
-    border-radius: 10px;
-    white-space: pre-wrap;
-    line-height: 1.6;
-}
+        .ticket-field {
+            margin-top: 8px;
+            font-size: 14px;
+        }
 
-.report-preview {
-    background: var(--input);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 20px;
-    white-space: pre-wrap;
-    line-height: 1.6;
-    font-family: Arial, Helvetica, sans-serif;
-}
+        .ticket-field strong {
+            color: var(--muted);
+            font-weight: 600;
+        }
 
-.report-actions {
-    margin-top: 15px;
-    display: flex;
-    gap: 10px;
-}
+        .status-select {
+            max-width: 200px;
+            padding: 6px 10px;
+        }
 
-@media(max-width: 800px) {
+        .loading {
+            padding: 15px;
+            border-radius: 8px;
+            background: #e0ecff;
+            color: #1d4ed8;
+        }
 
-    .grid,
-    .team-list,
-    .stats {
-        grid-template-columns: 1fr;
-    }
+        .error {
+            padding: 15px;
+            border-radius: 8px;
+            background: #fee2e2;
+            color: #991b1b;
+        }
 
-    .extra-task {
-        flex-direction: column;
-    }
+        .success {
+            padding: 15px;
+            border-radius: 8px;
+            background: #dcfce7;
+            color: #166534;
+        }
 
-    .tabs {
-        flex-wrap: wrap;
-    }
-}
-</style>
+        .copy-btn {
+            background: var(--primary);
+            color: white;
+        }
+
+        .copy-btn:hover {
+            background: var(--primary-dark);
+        }
+
+        .clear-report-btn {
+            background: var(--orange);
+            color: white;
+        }
+
+        .clear-report-btn:hover {
+            background: #d97706;
+        }
+
+        .summary-btn {
+            background: var(--success);
+            color: white;
+        }
+
+        .summary-btn:hover {
+            background: #15803d;
+        }
+
+        .summary-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .summary-box {
+            margin-top: 15px;
+            padding: 16px;
+            border-radius: 10px;
+            background: var(--input);
+            border: 2px solid var(--primary);
+            display: none;
+            font-size: 15px;
+            line-height: 1.6;
+        }
+
+        .summary-box.show {
+            display: block;
+        }
+
+        .summary-box .loading-text {
+            color: var(--muted);
+            font-style: italic;
+        }
+
+        .escalate-box {
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            background: var(--input);
+        }
+
+        .reference-box {
+            margin-top: 20px;
+            padding: 18px;
+            border: 1px dashed var(--border);
+            border-radius: 10px;
+            white-space: pre-wrap;
+            line-height: 1.8;
+            font-size: 14px;
+            background: var(--input);
+        }
+
+        .report-preview {
+            background: var(--input);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 20px;
+            white-space: pre-wrap;
+            line-height: 1.6;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            max-height: 600px;
+            overflow: auto;
+        }
+
+        .report-actions {
+            margin-top: 15px;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .export-btn {
+            background: var(--success);
+            color: white;
+        }
+
+        .file-info {
+            font-size: 13px;
+            color: var(--muted);
+            margin-top: 5px;
+        }
+
+        .employee-breakdown {
+            margin-top: 15px;
+            overflow-x: auto;
+        }
+
+        .employee-breakdown table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+
+        .employee-breakdown th,
+        .employee-breakdown td {
+            padding: 8px 12px;
+            border: 1px solid var(--border);
+            text-align: center;
+        }
+
+        .employee-breakdown th {
+            background: var(--primary);
+            color: white;
+            font-weight: 600;
+        }
+
+        .employee-breakdown td {
+            background: var(--input);
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 2px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .badge-success {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .badge-warning {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .badge-danger {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        @media(max-width: 700px) {
+            .grid,
+            .team-list,
+            .stats {
+                grid-template-columns: 1fr;
+            }
+
+            .extra-task {
+                flex-direction: column;
+            }
+
+            .extra-task textarea {
+                width: 100%;
+            }
+
+            .tabs {
+                flex-wrap: wrap;
+            }
+
+            header {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .header-actions {
+                justify-content: stretch;
+            }
+
+            .header-actions button,
+            .header-actions label {
+                flex: 1;
+                text-align: center;
+            }
+
+            .logo {
+                justify-content: center;
+            }
+
+            .report-actions {
+                flex-direction: column;
+            }
+
+            .report-actions button {
+                width: 100%;
+            }
+        }
+    </style>
 </head>
 
 <body>
 
-<header>
+    <header>
+        <div class="logo">
+            Customer Retention PH
+            <small>Daily Report Tool</small>
+        </div>
+        <div class="header-actions">
+            <label class="file-upload-btn">
+                📂 Upload CSV
+                <input type="file" accept=".csv" onchange="handleFileUpload(event)">
+            </label>
+            <button class="mode-btn" onclick="toggleDarkMode()" id="modeButton">🌙 Dark Mode</button>
+        </div>
+    </header>
 
-    <div class="logo">
-        Customer Retention PH
-    </div>
+    <div class="container">
 
-    <div class="header-actions">
-        <button class="mode-btn" onclick="toggleDarkMode()" id="modeButton">
-            🌙 Dark Mode
-        </button>
-    </div>
-
-</header>
-
-<div class="container">
-
-    <div class="tabs">
-
-        <button class="tab active"
-                onclick="showTab('daily', this)">
-            📋 Daily Report
-        </button>
-
-        <button class="tab"
-                onclick="showTab('escalate', this)">
-            ⚠️ Escalate
-        </button>
-
-    </div>
-
-
-    <!-- ========================= -->
-    <!-- DAILY REPORT -->
-    <!-- ========================= -->
-
-    <div id="daily" class="tab-content active">
-
-        <div class="card">
-
-            <h1>Customer Success Daily Report</h1>
-
-            <div class="grid">
-
-                <div>
-                    <label>REPORT DATE</label>
-
-                    <input
-                        type="date"
-                        id="reportDate"
-                        onchange="loadReport()"
-                    >
-                </div>
-
-            </div>
-
-            <br>
-
-            <label>TEAM MEMBERS PRESENT</label>
-
-            <div class="team-list">
-
-                <label class="team">
-                    <input type="checkbox" value="Vince">
-                    Vince
-                </label>
-
-                <label class="team">
-                    <input type="checkbox" value="Avie">
-                    Avie
-                </label>
-
-                <label class="team">
-                    <input type="checkbox" value="Kirby">
-                    Kirby
-                </label>
-
-                <label class="team">
-                    <input type="checkbox" value="Neil">
-                    Neil
-                </label>
-
-            </div>
-
+        <div class="tabs">
+            <button class="tab active" onclick="showTab('daily', this)">📋 Daily Report</button>
+            <button class="tab" onclick="showTab('escalate', this)">⚠️ Escalate</button>
         </div>
 
+        <!-- ==================== DAILY REPORT ==================== -->
 
-        <!-- EXTRA TASK -->
+        <div id="daily" class="tab-content active">
 
-        <div class="card">
-
-            <h2>Extra Task</h2>
-
-            <div class="extra-task">
-
-                <textarea
-                    id="extraTaskInput"
-                    placeholder="Enter any additional tasks completed today..."
-                ></textarea>
-
-                <div>
-                    <button
-                        class="submit-btn"
-                        onclick="submitExtraTask()">
-                        Submit
-                    </button>
-
-                    <button
-                        class="clear-btn"
-                        onclick="clearExtraTask()">
-                        Clear
-                    </button>
-                </div>
-
-            </div>
-
-            <div id="taskList"></div>
-
-        </div>
-
-
-        <!-- DATA STATUS -->
-
-        <div class="card">
-
-            <div id="dataStatus" class="loading">
-                Loading CSV data...
-            </div>
-
-        </div>
-
-
-        <!-- CALL ACTIVITY -->
-
-        <div class="card">
-
-            <h2>Call Activity Summary</h2>
-
-            <div id="callTypeDisplay"></div>
-
-            <br>
-
-            <div class="stats">
-
-                <div class="stat">
-                    <div class="stat-number" id="followUpCount">0</div>
-                    <div class="stat-label">
-                        Follow-Up Scheduled
+            <div class="card">
+                <h1>Customer Success Daily Report</h1>
+                <div class="grid">
+                    <div>
+                        <label>REPORT DATE</label>
+                        <input type="date" id="reportDate" onchange="loadReport()">
+                    </div>
+                    <div>
+                        <label>CSV File Loaded</label>
+                        <div id="fileStatus" class="file-info">No file loaded yet. Upload a CSV above.</div>
                     </div>
                 </div>
-
-                <div class="stat">
-                    <div class="stat-number" id="retainedCount">0</div>
-                    <div class="stat-label">
-                        Retained / Satisfied
-                    </div>
-                </div>
-
-                <div class="stat">
-                    <div class="stat-number" id="voicemailCount">0</div>
-                    <div class="stat-label">
-                        Voicemail Left
-                    </div>
-                </div>
-
-                <div class="stat">
-                    <div class="stat-number" id="noAnswerCount">0</div>
-                    <div class="stat-label">
-                        No Answer / Hang Up
-                    </div>
-                </div>
-
-                <div class="stat">
-                    <div class="stat-number" id="churnedCount">0</div>
-                    <div class="stat-label">
-                        Churned / Cancelled
-                    </div>
-                </div>
-
-            </div>
-
-            <br>
-
-            <h3>Total Calls Made:
-                <span id="totalCalls">0</span>
-            </h3>
-
-        </div>
-
-
-        <!-- TICKETS -->
-
-        <div class="card">
-
-            <h2>
-                Merchant Issues / Tickets Handled
-            </h2>
-
-            <h3>
-                Total Tickets:
-                <span id="totalTickets">0</span>
-            </h3>
-
-            <div id="ticketContainer"></div>
-
-        </div>
-
-
-        <!-- REPORT PREVIEW -->
-
-        <div class="card">
-
-            <h2>Daily Report</h2>
-
-            <div
-                id="reportPreview"
-                class="report-preview">
-            </div>
-
-            <div class="report-actions">
-
-                <button
-                    class="copy-btn"
-                    onclick="copyFullReport()">
-                    📋 Copy Whole Report
-                </button>
-
-            </div>
-
-        </div>
-
-    </div>
-
-
-    <!-- ========================= -->
-    <!-- ESCALATE -->
-    <!-- ========================= -->
-
-    <div id="escalate" class="tab-content">
-
-        <div class="card">
-
-            <h1>Escalate</h1>
-
-            <div class="escalate-box">
-
-                <label>Store:</label>
-                <input id="escStore"
-                       placeholder="Enter store">
-
-                <br><br>
-
-                <label>Name:</label>
-                <input id="escName"
-                       placeholder="Enter customer name">
-
-                <br><br>
-
-                <label>Contact:</label>
-                <input id="escContact"
-                       placeholder="Enter contact information">
-
-                <br><br>
-
-                <label>Issue:</label>
-                <textarea id="escIssue"
-                          placeholder="Describe the issue"></textarea>
-
                 <br>
-
-                <label>Availability:</label>
-                <textarea id="escAvailability"
-                          placeholder="Enter customer's availability"></textarea>
-
-                <button
-                    class="copy-btn"
-                    onclick="copyEscalation()">
-                    📋 Copy
-                </button>
-
+                <label>TEAM MEMBERS PRESENT</label>
+                <div class="team-list">
+                    <label class="team"><input type="checkbox" value="Vince"> <span>Vince</span></label>
+                    <label class="team"><input type="checkbox" value="Avie"> <span>Avie</span></label>
+                    <label class="team"><input type="checkbox" value="Kirby"> <span>Kirby</span></label>
+                    <label class="team"><input type="checkbox" value="Neil"> <span>Neil</span></label>
+                    <label class="team"><input type="checkbox" value="Ronel"> <span>Ronel</span></label>
+                </div>
             </div>
 
+            <!-- Extra Task -->
+            <div class="card">
+                <h2>Extra Task</h2>
+                <div class="extra-task">
+                    <textarea id="extraTaskInput" placeholder="Enter any additional tasks completed today..."></textarea>
+                    <div class="extra-task-actions">
+                        <button class="submit-btn" onclick="submitExtraTask()">Submit</button>
+                        <button class="clear-btn" onclick="clearExtraTask()">Clear</button>
+                    </div>
+                </div>
+                <div id="taskList"></div>
+            </div>
 
-            <div class="reference-box">
+            <!-- Data Status -->
+            <div class="card">
+                <div id="dataStatus" class="loading">⏳ Loading CSV data... Please wait.</div>
+            </div>
 
-                <strong>For Reference:</strong>
-
-                Initiated by Customer Retention; to be handled by Credit Card Support.
-
+            <!-- Call Activity -->
+            <div class="card">
+                <h2>Call Activity Summary</h2>
+                <div id="callTypeDisplay"></div>
                 <br>
+                <div class="stats">
+                    <div class="stat"><div class="stat-number" id="followUpCount">0</div><div class="stat-label">Follow-Up Scheduled</div></div>
+                    <div class="stat"><div class="stat-number" id="retainedCount">0</div><div class="stat-label">Retained / Satisfied</div></div>
+                    <div class="stat"><div class="stat-number" id="voicemailCount">0</div><div class="stat-label">Voicemail Left</div></div>
+                    <div class="stat"><div class="stat-number" id="noAnswerCount">0</div><div class="stat-label">No Answer / Hang Up</div></div>
+                    <div class="stat"><div class="stat-number" id="churnedCount">0</div><div class="stat-label">Churned / Cancelled</div></div>
+                    <div class="stat"><div class="stat-number" id="totalCalls">0</div><div class="stat-label">Total Calls Made</div></div>
+                </div>
 
-                <strong>Contact Person:</strong>
-                <span id="refName"></span>
+                <!-- Employee Breakdown -->
+                <div class="employee-breakdown" id="employeeBreakdown">
+                    <h3>Breakdown by Employee</h3>
+                    <div id="employeeStats">No data available for this date.</div>
+                </div>
+            </div>
 
-                <strong>Callback Number:</strong>
-                <span id="refContact"></span>
+            <!-- Tickets -->
+            <div class="card">
+                <h2>Merchant Issues / Tickets Handled</h2>
+                <h3>Total Tickets: <span id="totalTickets">0</span></h3>
+                <div id="ticketContainer"></div>
+            </div>
 
-                <strong>Issue:</strong>
-                <span id="refIssue"></span>
-
-                <strong>Availability:</strong>
-                <span id="refAvailability"></span>
-
+            <!-- Report Preview -->
+            <div class="card">
+                <h2>Daily Report</h2>
+                <div id="reportPreview" class="report-preview">No report data available. Load a CSV file and select a date to generate the report.</div>
+                <div class="report-actions">
+                    <button class="copy-btn" onclick="copyFullReport()">📋 Copy Whole Report</button>
+                    <button class="clear-report-btn" onclick="clearReport()">🗑️ Clear Report</button>
+                    <button class="summary-btn" onclick="generateSummary()" id="summaryBtn">🤖 Generate Summary</button>
+                </div>
+                <div id="summaryBox" class="summary-box">
+                    <strong>📊 AI Summary:</strong>
+                    <div id="summaryContent" class="loading-text">Generating summary...</div>
+                </div>
             </div>
 
         </div>
 
+        <!-- ==================== ESCALATE ==================== -->
+
+        <div id="escalate" class="tab-content">
+            <div class="card">
+                <h1>Escalate</h1>
+                <div class="escalate-box">
+                    <label>Store:</label>
+                    <input id="escStore" placeholder="Enter store">
+
+                    <br><br>
+                    <label>Name:</label>
+                    <input id="escName" placeholder="Enter customer name">
+
+                    <br><br>
+                    <label>Contact:</label>
+                    <input id="escContact" placeholder="Enter contact information">
+
+                    <br><br>
+                    <label>Issue:</label>
+                    <textarea id="escIssue" placeholder="Describe the issue"></textarea>
+
+                    <br>
+                    <label>Availability:</label>
+                    <textarea id="escAvailability" placeholder="Enter customer's availability"></textarea>
+
+                    <button class="copy-btn" onclick="copyEscalation()">📋 Copy</button>
+                </div>
+
+                <div class="reference-box" id="escalationPreview">
+                    <strong>For Reference:</strong>
+                    Initiated by Customer Retention; to be handled by Credit Card Support.
+
+                    <br>
+                    <strong>Contact Person:</strong> <span id="refName"></span>
+                    &nbsp;|&nbsp;
+                    <strong>Callback Number:</strong> <span id="refContact"></span>
+                    &nbsp;|&nbsp;
+                    <strong>Issue:</strong> <span id="refIssue"></span>
+                    &nbsp;|&nbsp;
+                    <strong>Availability:</strong> <span id="refAvailability"></span>
+                </div>
+            </div>
+        </div>
+
     </div>
 
-</div>
+    <script>
+        /* ==========================================
+           CONFIGURATION
+        ========================================== */
+        // Try multiple possible file paths
+        const CSV_PATHS = [
+            "./Customer%20Success_2026(Retain%20In).csv",
+            "./Customer_Success_2026.csv",
+            "Customer%20Success_2026(Retain%20In).csv",
+            "Customer_Success_2026.csv",
+            "./data/Customer%20Success_2026(Retain%20In).csv",
+            "./docs/Customer%20Success_2026(Retain%20In).csv"
+        ];
 
+        let csvData = [];
+        let currentTickets = [];
+        let loadedFileName = "";
+        let reportData = {};
 
-<script>
+        /* ==========================================
+           INITIALIZE
+        ========================================== */
+        document.addEventListener("DOMContentLoaded", function() {
+            setToday();
+            loadTasks();
+            loadCSV();
+            updateEscalationPreview();
 
-/* ==========================================
-   CSV FILE
-========================================== */
+            document.querySelectorAll("#escalate input, #escalate textarea")
+                .forEach(input => {
+                    input.addEventListener("input", updateEscalationPreview);
+                });
 
-/*
-   IMPORTANT:
-
-   This assumes your CSV is inside the same
-   "docs" folder as index.html.
-
-   Current filename from your GitHub screenshot:
-*/
-
-const CSV_FILE =
-    "./Customer%20Success_2026%28Retain%20In%29.csv";
-
-
-let csvData = [];
-let currentTickets = [];
-
-
-/* ==========================================
-   INITIALIZE
-========================================== */
-
-document.addEventListener("DOMContentLoaded", function() {
-
-    setToday();
-
-    loadTasks();
-
-    loadCSV();
-
-    updateEscalationPreview();
-
-    document.querySelectorAll("#escalate input, #escalate textarea")
-        .forEach(input => {
-            input.addEventListener(
-                "input",
-                updateEscalationPreview
-            );
+            document.querySelectorAll(".team input").forEach(input => {
+                input.addEventListener("change", updateReportPreview);
+            });
         });
 
-});
+        /* ==========================================
+           FILE UPLOAD
+        ========================================== */
+        function handleFileUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
 
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const result = Papa.parse(e.target.result, {
+                    header: true,
+                    skipEmptyLines: true,
+                });
 
-/* ==========================================
-   DATE
-========================================== */
+                if (result.data && result.data.length) {
+                    csvData = result.data;
+                    loadedFileName = file.name;
+                    document.getElementById("fileStatus").textContent = "✅ Loaded: " + file.name;
+                    document.getElementById("dataStatus").className = "success";
+                    document.getElementById("dataStatus").textContent = "✓ CSV data loaded successfully. (" +
+                        csvData.length + " rows)";
+                    loadReport();
+                } else {
+                    document.getElementById("dataStatus").className = "error";
+                    document.getElementById("dataStatus").textContent = "✗ Failed to parse CSV file.";
+                }
+            };
+            reader.readAsText(file);
+            event.target.value = "";
+        }
 
-function setToday() {
+        /* ==========================================
+           LOAD CSV - Try multiple paths
+        ========================================== */
+        function loadCSV() {
+            let attempts = 0;
+            let totalPaths = CSV_PATHS.length;
 
-    const dateInput =
-        document.getElementById("reportDate");
+            function tryNextPath() {
+                if (attempts >= totalPaths) {
+                    document.getElementById("dataStatus").className = "error";
+                    document.getElementById("dataStatus").innerHTML =
+                        "⚠️ Could not load CSV from any known path.<br><br>" +
+                        "📤 Please use the <strong>'Upload CSV'</strong> button above to manually select your file.<br><br>" +
+                        "If your file is named differently, rename it to <code>Customer_Success_2026.csv</code> or upload it directly.";
+                    return;
+                }
 
-    const today =
-        new Date();
+                const path = CSV_PATHS[attempts];
+                document.getElementById("dataStatus").textContent = "⏳ Trying to load: " + path;
 
-    const year =
-        today.getFullYear();
-
-    const month =
-        String(today.getMonth() + 1)
-        .padStart(2, "0");
-
-    const day =
-        String(today.getDate())
-        .padStart(2, "0");
-
-    dateInput.value =
-        `${year}-${month}-${day}`;
-
-}
-
-
-/* ==========================================
-   LOAD CSV
-========================================== */
-
-function loadCSV() {
-
-    Papa.parse(
-        CSV_FILE,
-        {
-            download: true,
-            header: true,
-            skipEmptyLines: true,
-
-            complete: function(results) {
-
-                csvData =
-                    results.data;
-
-                document.getElementById(
-                    "dataStatus"
-                ).className = "success";
-
-                document.getElementById(
-                    "dataStatus"
-                ).textContent =
-                    "✓ CSV data loaded successfully.";
-
-                loadReport();
-
-            },
-
-            error: function(error) {
-
-                document.getElementById(
-                    "dataStatus"
-                ).className = "error";
-
-                document.getElementById(
-                    "dataStatus"
-                ).innerHTML =
-                    "Unable to load the CSV file.<br><br>" +
-                    "Make sure the CSV is inside the docs folder " +
-                    "and the filename in the code matches exactly.";
-
+                Papa.parse(path, {
+                    download: true,
+                    header: true,
+                    skipEmptyLines: true,
+                    complete: function(results) {
+                        if (results.data && results.data.length > 5) {
+                            csvData = results.data;
+                            loadedFileName = path.split('/').pop();
+                            document.getElementById("fileStatus").textContent = "✅ Loaded: " + loadedFileName;
+                            document.getElementById("dataStatus").className = "success";
+                            document.getElementById("dataStatus").textContent = "✓ CSV data loaded successfully. (" +
+                                csvData.length + " rows)";
+                            loadReport();
+                        } else {
+                            attempts++;
+                            tryNextPath();
+                        }
+                    },
+                    error: function() {
+                        attempts++;
+                        tryNextPath();
+                    }
+                });
             }
 
-        }
-    );
-
-}
-
-
-/* ==========================================
-   LOAD REPORT FOR DATE
-========================================== */
-
-function loadReport() {
-
-    if (!csvData.length) {
-        return;
-    }
-
-    const selectedDate =
-        document.getElementById("reportDate").value;
-
-    const parts =
-        selectedDate.split("-");
-
-    const targetDate =
-        `${parts[1]}/${parts[2]}/${parts[0]}`;
-
-    const targetDate2 =
-        `${parts[1]}/${parts[2]}/${parts[0].slice(2)}`;
-
-    const filtered =
-        csvData.filter(row => {
-
-            const rowDate =
-                normalizeDate(row["Date"]);
-
-            return (
-                rowDate === selectedDate ||
-                rowDate === targetDate ||
-                rowDate === targetDate2
-            );
-
-        });
-
-    calculateCalls(filtered);
-
-    calculateTickets(filtered);
-
-    updateReportPreview();
-
-}
-
-
-/* ==========================================
-   NORMALIZE DATE
-========================================== */
-
-function normalizeDate(value) {
-
-    if (!value) return "";
-
-    let text =
-        String(value).trim();
-
-    /*
-       Handles:
-       8/26/2026
-       08/26/2026
-       2026-08-26
-    */
-
-    if (/^\d{4}-\d{1,2}-\d{1,2}$/.test(text)) {
-
-        const [y,m,d] =
-            text.split("-");
-
-        return `${y}-${m.padStart(2,"0")}-${d.padStart(2,"0")}`;
-
-    }
-
-    const match =
-        text.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
-
-    if (match) {
-
-        const month =
-            match[1].padStart(2,"0");
-
-        const day =
-            match[2].padStart(2,"0");
-
-        const year =
-            match[3];
-
-        return `${year}-${month}-${day}`;
-
-    }
-
-    return text;
-
-}
-
-
-/* ==========================================
-   CALL SUMMARY
-========================================== */
-
-function calculateCalls(rows) {
-
-    let followUp = 0;
-    let retained = 0;
-    let voicemail = 0;
-    let noAnswer = 0;
-    let churned = 0;
-
-    const callTypes =
-        new Set();
-
-    rows.forEach(row => {
-
-        const outcome =
-            String(row["Outcome"] || "")
-            .trim()
-            .toLowerCase();
-
-        const callType =
-            String(row["Call Type"] || "")
-            .trim();
-
-        if (callType) {
-            callTypes.add(callType);
+            tryNextPath();
         }
 
-        if (
-            outcome === "follow-up scheduled"
-        ) {
-
-            followUp++;
-
-        }
-        else if (
-            outcome === "retained / satisfied" ||
-            outcome === "retained/satisfied"
-        ) {
-
-            retained++;
-
-        }
-        else if (
-            outcome === "voicemail left"
-        ) {
-
-            voicemail++;
-
-        }
-        else if (
-            outcome === "churned / cancelled" ||
-            outcome === "churned/cancelled"
-        ) {
-
-            churned++;
-
-        }
-        else if (
-            outcome === "" ||
-            outcome === "no answer" ||
-            outcome === "hang up" ||
-            outcome === "no answer / hang up"
-        ) {
-
-            noAnswer++;
-
-        }
-        else {
-
-            /*
-               Unknown/blank outcomes are treated
-               as No Answer / Hang Up.
-            */
-
-            noAnswer++;
-
+        /* ==========================================
+           DATE
+        ========================================== */
+        function setToday() {
+            const dateInput = document.getElementById("reportDate");
+            const today = new Date();
+            const year = today.getFullYear();
+            const month = String(today.getMonth() + 1).padStart(2, "0");
+            const day = String(today.getDate()).padStart(2, "0");
+            dateInput.value = `${year}-${month}-${day}`;
         }
 
-    });
+        /* ==========================================
+           LOAD REPORT
+        ========================================== */
+        function loadReport() {
+            if (!csvData.length) {
+                document.getElementById("reportPreview").textContent = "No CSV data loaded. Please upload a CSV file.";
+                return;
+            }
 
+            const selectedDate = document.getElementById("reportDate").value;
+            const parts = selectedDate.split("-");
+            const targetDate = `${parts[1]}/${parts[2]}/${parts[0]}`;
+            const targetDate2 = `${parts[1]}/${parts[2]}/${parts[0].slice(2)}`;
+            const targetDate3 = `${parts[1]}/${parseInt(parts[2])}/${parts[0]}`;
 
-    document.getElementById(
-        "followUpCount"
-    ).textContent = followUp;
+            const filtered = csvData.filter(row => {
+                const rowDate = normalizeDate(row["Date"]);
+                return rowDate === selectedDate ||
+                    rowDate === targetDate ||
+                    rowDate === targetDate2 ||
+                    rowDate === targetDate3;
+            });
 
-    document.getElementById(
-        "retainedCount"
-    ).textContent = retained;
+            if (filtered.length === 0) {
+                document.getElementById("reportPreview").textContent =
+                    `No data found for ${formatReportDate(selectedDate)}. Try selecting a different date.`;
+                // Reset stats
+                document.getElementById("followUpCount").textContent = "0";
+                document.getElementById("retainedCount").textContent = "0";
+                document.getElementById("voicemailCount").textContent = "0";
+                document.getElementById("noAnswerCount").textContent = "0";
+                document.getElementById("churnedCount").textContent = "0";
+                document.getElementById("totalCalls").textContent = "0";
+                document.getElementById("totalTickets").textContent = "0";
+                document.getElementById("ticketContainer").innerHTML = "";
+                document.getElementById("employeeStats").textContent = "No data available for this date.";
+                document.getElementById("callTypeDisplay").innerHTML = "";
+                return;
+            }
 
-    document.getElementById(
-        "voicemailCount"
-    ).textContent = voicemail;
+            calculateCalls(filtered);
+            calculateTickets(filtered);
+            updateReportPreview();
+        }
 
-    document.getElementById(
-        "noAnswerCount"
-    ).textContent = noAnswer;
+        /* ==========================================
+           NORMALIZE DATE
+        ========================================== */
+        function normalizeDate(value) {
+            if (!value) return "";
+            let text = String(value).trim();
 
-    document.getElementById(
-        "churnedCount"
-    ).textContent = churned;
+            if (/^\d{4}-\d{1,2}-\d{1,2}$/.test(text)) {
+                const [y, m, d] = text.split("-");
+                return `${y}-${m.padStart(2, "0")}-${d.padStart(2, "0")}`;
+            }
 
+            const match = text.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
+            if (match) {
+                const month = match[1].padStart(2, "0");
+                const day = match[2].padStart(2, "0");
+                const year = match[3];
+                return `${year}-${month}-${day}`;
+            }
 
-    const total =
-        followUp +
-        retained +
-        voicemail +
-        noAnswer +
-        churned;
+            return text;
+        }
 
-    document.getElementById(
-        "totalCalls"
-    ).textContent = total;
+        /* ==========================================
+           CALL SUMMARY
+        ========================================== */
+        function calculateCalls(rows) {
+            let followUp = 0,
+                retained = 0,
+                voicemail = 0,
+                noAnswer = 0,
+                churned = 0;
+            const callTypes = new Set();
+            const employeeStats = {};
 
+            rows.forEach(row => {
+                const outcome = String(row["Outcome"] || "").trim().toLowerCase();
+                const callType = String(row["Call Type"] || "").trim();
+                const employee = String(row["Employee"] || "Unknown").trim();
 
-    const typeBox =
-        document.getElementById(
-            "callTypeDisplay"
-        );
+                if (callType) callTypes.add(callType);
 
-    if (callTypes.size) {
+                if (outcome === "follow-up scheduled") followUp++;
+                else if (outcome === "retained / satisfied" || outcome === "retained/satisfied") retained++;
+                else if (outcome === "voicemail left") voicemail++;
+                else if (outcome === "churned / cancelled" || outcome === "churned/cancelled") churned++;
+                else noAnswer++;
 
-        typeBox.innerHTML =
-            "<strong>Call Activity:</strong> " +
-            Array.from(callTypes).join(" / ");
+                if (!employeeStats[employee]) {
+                    employeeStats[employee] = { followUp: 0, retained: 0, voicemail: 0, noAnswer: 0, churned: 0, total: 0 };
+                }
+                if (outcome === "follow-up scheduled") employeeStats[employee].followUp++;
+                else if (outcome === "retained / satisfied" || outcome === "retained/satisfied") employeeStats[employee]
+                    .retained++;
+                else if (outcome === "voicemail left") employeeStats[employee].voicemail++;
+                else if (outcome === "churned / cancelled" || outcome === "churned/cancelled") employeeStats[employee]
+                    .churned++;
+                else employeeStats[employee].noAnswer++;
+                employeeStats[employee].total++;
+            });
 
-    } else {
+            document.getElementById("followUpCount").textContent = followUp;
+            document.getElementById("retainedCount").textContent = retained;
+            document.getElementById("voicemailCount").textContent = voicemail;
+            document.getElementById("noAnswerCount").textContent = noAnswer;
+            document.getElementById("churnedCount").textContent = churned;
+            document.getElementById("totalCalls").textContent = followUp + retained + voicemail + noAnswer + churned;
 
-        typeBox.innerHTML = "";
+            const typeBox = document.getElementById("callTypeDisplay");
+            typeBox.innerHTML = callTypes.size ?
+                "<strong>Call Activity:</strong> " + Array.from(callTypes).join(" / ") :
+                "";
 
-    }
+            renderEmployeeBreakdown(employeeStats);
 
-}
+            // Store for summary
+            reportData = {
+                followUp,
+                retained,
+                voicemail,
+                noAnswer,
+                churned,
+                totalCalls: followUp + retained + voicemail + noAnswer + churned,
+                totalTickets: currentTickets.length,
+                date: document.getElementById("reportDate").value,
+                employeeStats
+            };
+        }
 
+        function renderEmployeeBreakdown(stats) {
+            const container = document.getElementById("employeeStats");
+            const employees = Object.keys(stats);
+            if (!employees.length) {
+                container.textContent = "No data available for this date.";
+                return;
+            }
 
-/* ==========================================
-   TICKETS
-========================================== */
+            let html = `<table>
+                <thead><tr>
+                    <th>Employee</th>
+                    <th>Follow-Up</th>
+                    <th>Retained</th>
+                    <th>Voicemail</th>
+                    <th>No Answer</th>
+                    <th>Churned</th>
+                    <th>Total</th>
+                </tr></thead><tbody>`;
 
-function calculateTickets(rows) {
+            employees.forEach(emp => {
+                const s = stats[emp];
+                html += `<tr>
+                    <td><strong>${emp}</strong></td>
+                    <td>${s.followUp}</td>
+                    <td>${s.retained}</td>
+                    <td>${s.voicemail}</td>
+                    <td>${s.noAnswer}</td>
+                    <td>${s.churned}</td>
+                    <td><strong>${s.total}</strong></td>
+                </tr>`;
+            });
 
-    /*
-       Only rows with a Ticket ID count as tickets.
-    */
+            html += `</tbody></table>`;
+            container.innerHTML = html;
+        }
 
-    currentTickets =
-        rows.filter(row => {
+        /* ==========================================
+           TICKETS
+        ========================================== */
+        function calculateTickets(rows) {
+            currentTickets = rows.filter(row => {
+                const ticket = String(row["Ticket ID (Optional)"] || row["Ticket ID"] || row["TicketID"] || "")
+                    .trim();
+                return ticket !== "" && ticket !== "Ticket ID (Optional)";
+            });
 
-            const ticket =
-                String(
-                    row["Ticket ID (Optional)"] ||
-                    row["Ticket ID"] ||
-                    row["TicketID"] ||
-                    ""
-                ).trim();
+            document.getElementById("totalTickets").textContent = currentTickets.length;
+            const container = document.getElementById("ticketContainer");
+            container.innerHTML = "";
 
-            return ticket !== "";
+            if (currentTickets.length === 0) {
+                container.innerHTML = "<p style='color:var(--muted);'>No tickets found for this date.</p>";
+                return;
+            }
 
-        });
+            currentTickets.forEach((row, index) => {
+                const ticket = String(row["Ticket ID (Optional)"] || row["Ticket ID"] || row["TicketID"] || "")
+                    .trim();
+                const store = String(row["Store Name"] || "").trim();
+                const notes = String(row["Notes"] || "").trim();
+                const category = String(row["Category"] || "").trim();
+                const type = String(row["Type"] || "").trim();
 
-
-    document.getElementById(
-        "totalTickets"
-    ).textContent =
-        currentTickets.length;
-
-
-    const container =
-        document.getElementById(
-            "ticketContainer"
-        );
-
-    container.innerHTML = "";
-
-
-    currentTickets.forEach(
-        (row, index) => {
-
-            const ticket =
-                String(
-                    row["Ticket ID (Optional)"] ||
-                    row["Ticket ID"] ||
-                    row["TicketID"] ||
-                    ""
-                ).trim();
-
-            const store =
-                String(
-                    row["Store Name"] ||
-                    ""
-                ).trim();
-
-            const notes =
-                String(
-                    row["Notes"] ||
-                    ""
-                ).trim();
-
-
-            const div =
-                document.createElement("div");
-
-            div.className = "ticket";
-
-
-            div.innerHTML = `
-
-                <div class="ticket-header">
-
-                    <div class="ticket-title">
-                        Ticket: #${escapeHTML(ticket)}
+                const div = document.createElement("div");
+                div.className = "ticket";
+                div.innerHTML = `
+                    <div class="ticket-header">
+                        <div class="ticket-title">#${escapeHTML(ticket)}</div>
+                        <span style="font-size:13px;color:var(--muted);">${escapeHTML(category)} ${type ? '| ' + escapeHTML(type) : ''}</span>
                     </div>
-
-                </div>
-
-                <div class="ticket-field">
-                    <strong>Store:</strong>
-                    ${escapeHTML(store)}
-                </div>
-
-                <div class="ticket-field">
-                    <strong>Issue:</strong>
-                    ${escapeHTML(notes)}
-                </div>
-
-                <div class="ticket-field">
-
-                    <strong>Status:</strong>
-
-                    <select
-                        class="status-select"
-                        id="ticketStatus${index}"
-                        onchange="updateReportPreview()">
-
-                        <option value="Open">
-                            Open
-                        </option>
-
-                        <option value="Solved">
-                            Solved
-                        </option>
-
-                        <option value="Pending">
-                            Pending
-                        </option>
-
-                    </select>
-
-                </div>
-
-            `;
-
-            container.appendChild(div);
-
+                    <div class="ticket-field"><strong>Store:</strong> ${escapeHTML(store)}</div>
+                    <div class="ticket-field"><strong>Issue:</strong> ${escapeHTML(notes)}</div>
+                    <div class="ticket-field">
+                        <strong>Status:</strong>
+                        <select class="status-select" id="ticketStatus${index}" onchange="updateReportPreview()">
+                            <option value="Open">Open</option>
+                            <option value="Solved">Solved</option>
+                            <option value="Pending">Pending</option>
+                        </select>
+                    </div>
+                `;
+                container.appendChild(div);
+            });
         }
-    );
 
-}
-
-
-/* ==========================================
-   EXTRA TASKS
-========================================== */
-
-function getTaskStorageKey() {
-
-    const date =
-        document.getElementById(
-            "reportDate"
-        ).value;
-
-    return "customerRetentionTasks_" + date;
-
-}
-
-
-function submitExtraTask() {
-
-    const input =
-        document.getElementById(
-            "extraTaskInput"
-        );
-
-    const text =
-        input.value.trim();
-
-    if (!text) {
-        return;
-    }
-
-
-    const key =
-        getTaskStorageKey();
-
-    let tasks =
-        JSON.parse(
-            localStorage.getItem(key) || "[]"
-        );
-
-
-    tasks.push(text);
-
-
-    localStorage.setItem(
-        key,
-        JSON.stringify(tasks)
-    );
-
-
-    input.value = "";
-
-    loadTasks();
-
-    updateReportPreview();
-
-}
-
-
-function clearExtraTask() {
-
-    document.getElementById(
-        "extraTaskInput"
-    ).value = "";
-
-}
-
-
-function loadTasks() {
-
-    const key =
-        getTaskStorageKey();
-
-    const tasks =
-        JSON.parse(
-            localStorage.getItem(key) || "[]"
-        );
-
-
-    const container =
-        document.getElementById(
-            "taskList"
-        );
-
-    container.innerHTML = "";
-
-
-    tasks.forEach(
-        (task, index) => {
-
-            const div =
-                document.createElement("div");
-
-            div.className =
-                "task";
-
-
-            div.innerHTML = `
-
-                <span>
-                    ${escapeHTML(task)}
-                </span>
-
-                <button
-                    class="delete-btn"
-                    onclick="deleteTask(${index})">
-                    Delete
-                </button>
-
-            `;
-
-
-            container.appendChild(div);
-
+        /* ==========================================
+           EXTRA TASKS
+        ========================================== */
+        function getTaskStorageKey() {
+            const date = document.getElementById("reportDate").value;
+            return "customerRetentionTasks_" + date;
         }
-    );
 
-}
+        function submitExtraTask() {
+            const input = document.getElementById("extraTaskInput");
+            const text = input.value.trim();
+            if (!text) return;
 
-
-function deleteTask(index) {
-
-    const key =
-        getTaskStorageKey();
-
-    let tasks =
-        JSON.parse(
-            localStorage.getItem(key) || "[]"
-        );
-
-
-    tasks.splice(index, 1);
-
-
-    localStorage.setItem(
-        key,
-        JSON.stringify(tasks)
-    );
-
-
-    loadTasks();
-
-    updateReportPreview();
-
-}
-
-
-/* ==========================================
-   REPORT PREVIEW
-========================================== */
-
-function updateReportPreview() {
-
-    const dateValue =
-        document.getElementById(
-            "reportDate"
-        ).value;
-
-    const formattedDate =
-        formatReportDate(dateValue);
-
-
-    const team =
-        Array.from(
-            document.querySelectorAll(
-                ".team input:checked"
-            )
-        )
-        .map(input => input.value)
-        .join(", ");
-
-
-    const tasks =
-        JSON.parse(
-            localStorage.getItem(
-                getTaskStorageKey()
-            ) || "[]"
-        );
-
-
-    const extraTask =
-        tasks.length
-            ? tasks.join("\n")
-            : "";
-
-
-    const followUp =
-        document.getElementById(
-            "followUpCount"
-        ).textContent;
-
-    const retained =
-        document.getElementById(
-            "retainedCount"
-        ).textContent;
-
-    const voicemail =
-        document.getElementById(
-            "voicemailCount"
-        ).textContent;
-
-    const noAnswer =
-        document.getElementById(
-            "noAnswerCount"
-        ).textContent;
-
-    const churned =
-        document.getElementById(
-            "churnedCount"
-        ).textContent;
-
-    const totalCalls =
-        document.getElementById(
-            "totalCalls"
-        ).textContent;
-
-    const totalTickets =
-        document.getElementById(
-            "totalTickets"
-        ).textContent;
-
-
-    let report = "";
-
-    report += "Customer Success Daily Report\n";
-    report += "Date: " + formattedDate + "\n\n";
-
-    report += "Team Members Present: ";
-    report += team || "";
-    report += "\n\n";
-
-    report += "Extra Task:\n";
-    report += extraTask || "";
-    report += "\n\n";
-
-    report += "Call Activity Summary\n\n";
-
-    report += "Total Calls Made: ";
-    report += totalCalls;
-    report += "\n\n";
-
-    report += "OUTCOMES\n";
-
-    report += "Follow-Up Scheduled: ";
-    report += followUp;
-    report += "\n";
-
-    report += "Retained / Satisfied: ";
-    report += retained;
-    report += "\n";
-
-    report += "Voicemail Left: ";
-    report += voicemail;
-    report += "\n";
-
-    report += "No Answer / Hang Up: ";
-    report += noAnswer;
-    report += "\n";
-
-    report += "Churned / Cancelled: ";
-    report += churned;
-    report += "\n\n";
-
-
-    report += "Total Tickets: ";
-    report += totalTickets;
-    report += "\n\n";
-
-
-    currentTickets.forEach(
-        (row, index) => {
-
-            const ticket =
-                String(
-                    row["Ticket ID (Optional)"] ||
-                    row["Ticket ID"] ||
-                    row["TicketID"] ||
-                    ""
-                ).trim();
-
-            const store =
-                String(
-                    row["Store Name"] ||
-                    ""
-                ).trim();
-
-            const notes =
-                String(
-                    row["Notes"] ||
-                    ""
-                ).trim();
-
-
-            const statusElement =
-                document.getElementById(
-                    "ticketStatus" + index
-                );
-
-
-            const status =
-                statusElement
-                    ? statusElement.value
-                    : "Open";
-
-
-            report += "Ticket: #" + ticket + "\n";
-            report += "Store: " + store + "\n";
-            report += "Issue: " + notes + "\n";
-            report += "Status: " + status + "\n\n";
-
+            const key = getTaskStorageKey();
+            let tasks = JSON.parse(localStorage.getItem(key) || "[]");
+            tasks.push(text);
+            localStorage.setItem(key, JSON.stringify(tasks));
+            input.value = "";
+            loadTasks();
+            updateReportPreview();
         }
-    );
 
-
-    document.getElementById(
-        "reportPreview"
-    ).textContent =
-        report;
-
-}
-
-
-/* ==========================================
-   COPY REPORT
-========================================== */
-
-function copyFullReport() {
-
-    const text =
-        document.getElementById(
-            "reportPreview"
-        ).textContent;
-
-    navigator.clipboard.writeText(text)
-        .then(() => {
-
-            alert(
-                "Daily report copied successfully!"
-            );
-
-        });
-
-}
-
-
-/* ==========================================
-   ESCALATE
-========================================== */
-
-function updateEscalationPreview() {
-
-    document.getElementById(
-        "refName"
-    ).textContent =
-        document.getElementById(
-            "escName"
-        ).value;
-
-    document.getElementById(
-        "refContact"
-    ).textContent =
-        document.getElementById(
-            "escContact"
-        ).value;
-
-    document.getElementById(
-        "refIssue"
-    ).textContent =
-        document.getElementById(
-            "escIssue"
-        ).value;
-
-    document.getElementById(
-        "refAvailability"
-    ).textContent =
-        document.getElementById(
-            "escAvailability"
-        ).value;
-
-}
-
-
-function copyEscalation() {
-
-    const store =
-        document.getElementById(
-            "escStore"
-        ).value;
-
-    const name =
-        document.getElementById(
-            "escName"
-        ).value;
-
-    const contact =
-        document.getElementById(
-            "escContact"
-        ).value;
-
-    const issue =
-        document.getElementById(
-            "escIssue"
-        ).value;
-
-    const availability =
-        document.getElementById(
-            "escAvailability"
-        ).value;
-
-
-    const text =
-
-`Store: ${store}
-Name: ${name}
-Contact: ${contact}
-Issue: ${issue}
-Availability: ${availability}
-
-For Reference:
-Initiated by Customer Retention; to be handled by Credit Card Support.
-
-Contact Person: ${name}
-Callback Number: ${contact}
-
-Issue: ${issue}
-
-Availability: ${availability}`;
-
-
-    navigator.clipboard.writeText(text)
-        .then(() => {
-
-            alert(
-                "Escalation copied successfully!"
-            );
-
-        });
-
-}
-
-
-/* ==========================================
-   TABS
-========================================== */
-
-function showTab(tabName, button) {
-
-    document.querySelectorAll(
-        ".tab-content"
-    ).forEach(tab => {
-
-        tab.classList.remove("active");
-
-    });
-
-
-    document.querySelectorAll(
-        ".tab"
-    ).forEach(tab => {
-
-        tab.classList.remove("active");
-
-    });
-
-
-    document.getElementById(
-        tabName
-    ).classList.add("active");
-
-
-    button.classList.add("active");
-
-}
-
-
-/* ==========================================
-   DARK MODE
-========================================== */
-
-function toggleDarkMode() {
-
-    document.body.classList.toggle("dark");
-
-    const dark =
-        document.body.classList.contains("dark");
-
-
-    localStorage.setItem(
-        "darkMode",
-        dark ? "true" : "false"
-    );
-
-
-    document.getElementById(
-        "modeButton"
-    ).textContent =
-        dark
-            ? "☀️ Light Mode"
-            : "🌙 Dark Mode";
-
-}
-
-
-function loadDarkMode() {
-
-    const dark =
-        localStorage.getItem(
-            "darkMode"
-        ) === "true";
-
-
-    if (dark) {
-
-        document.body.classList.add("dark");
-
-        document.getElementById(
-            "modeButton"
-        ).textContent =
-            "☀️ Light Mode";
-
-    }
-
-}
-
-
-loadDarkMode();
-
-
-/* ==========================================
-   UTILITIES
-========================================== */
-
-function formatReportDate(value) {
-
-    if (!value) return "";
-
-    const [year, month, day] =
-        value.split("-");
-
-    return `${month}/${day}/${year}`;
-
-}
-
-
-function escapeHTML(value) {
-
-    return String(value)
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;")
-        .replace(/'/g, "&#039;");
-
-}
-
-
-/*
-   Update the report whenever team members
-   are checked or unchecked.
-*/
-
-document.querySelectorAll(
-    ".team input"
-).forEach(input => {
-
-    input.addEventListener(
-        "change",
-        updateReportPreview
-    );
-
-});
-
-</script>
-
-</body>
-</html>
+        function clearExtraTask() {
+            document.getElementById("extraTaskInput").value = "";
+        }
+
+        function loadTasks() {
+            const key = getTaskStorageKey();
+            const tasks = JSON.parse(localStorage.getItem(key) || "[]");
+            const container = document.getElementById("taskList");
+            container.innerHTML = "";
+
+            tasks.forEach((task, index) => {
+                const div = document.createElement("div");
+                div.className = "task";
+                div.innerHTML = `
+                    <span>${escapeHTML(task)}</span>
+                    <button class="delete-btn" onclick="deleteTask(${index})">Delete</button>
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        function deleteTask(index) {
+            const key = getTaskStorageKey();
+            let tasks = JSON.parse
