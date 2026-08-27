@@ -1,12 +1,19 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
+
     <meta charset="UTF-8">
+
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <title>Customer Success Daily Report</title>
 
+    <!-- Excel reader -->
+    <script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
+
     <style>
+
         * {
             box-sizing: border-box;
             margin: 0;
@@ -14,412 +21,751 @@
         }
 
         :root {
-            --background: #f4f6f8;
+            --bg: #f3f5f8;
             --card: #ffffff;
             --primary: #315efb;
             --primary-dark: #244bd0;
-            --text: #1f2937;
-            --muted: #6b7280;
-            --border: #e2e8f0;
-            --soft-blue: #eef3ff;
-            --success: #16a34a;
+            --text: #18202f;
+            --muted: #687386;
+            --border: #dfe4ec;
+            --soft: #f0f4ff;
+            --green: #168447;
+            --danger: #c73535;
         }
 
         body {
-            font-family: Arial, Helvetica, sans-serif;
-            background: var(--background);
+            font-family:
+                Arial,
+                Helvetica,
+                sans-serif;
+
+            background: var(--bg);
+
             color: var(--text);
+
             min-height: 100vh;
         }
 
-        /* TOP BAR */
+        /* =========================
+           HEADER
+        ========================= */
 
         .topbar {
             background: #111827;
+
             color: white;
+
             padding: 18px 40px;
+
             display: flex;
+
             justify-content: space-between;
+
             align-items: center;
         }
 
         .brand {
             display: flex;
+
             align-items: center;
+
             gap: 12px;
-            font-size: 20px;
+
+            font-size: 19px;
+
             font-weight: 700;
         }
 
         .brand-icon {
             width: 38px;
+
             height: 38px;
-            background: var(--primary);
+
             border-radius: 10px;
+
+            background: var(--primary);
+
             display: flex;
+
             align-items: center;
+
             justify-content: center;
-            font-size: 20px;
+
+            font-size: 13px;
+
+            font-weight: bold;
         }
 
-        .status {
+        .topbar-status {
             font-size: 13px;
+
             color: #cbd5e1;
         }
 
-        /* MAIN */
+        /* =========================
+           MAIN
+        ========================= */
 
         .container {
-            width: min(1100px, calc(100% - 40px));
-            margin: 40px auto;
+            width: min(1150px, calc(100% - 32px));
+
+            margin: 35px auto 70px;
         }
 
         .page-header {
-            margin-bottom: 28px;
+            margin-bottom: 25px;
         }
 
         .page-header h1 {
             font-size: 34px;
-            margin-bottom: 8px;
-            letter-spacing: -0.8px;
+
+            margin-bottom: 7px;
+
+            letter-spacing: -0.7px;
         }
 
         .page-header p {
             color: var(--muted);
-            font-size: 15px;
+
+            font-size: 14px;
         }
 
-        /* DATE CARD */
+        /* =========================
+           DATE
+        ========================= */
 
         .date-card {
-            background: var(--soft-blue);
-            border: 1px solid #dbe4ff;
+            background: var(--soft);
+
+            border: 1px solid #d7e1ff;
+
             border-radius: 16px;
-            padding: 20px 24px;
-            margin-bottom: 24px;
+
+            padding: 20px 22px;
+
+            margin-bottom: 22px;
+
             display: flex;
+
             justify-content: space-between;
+
             align-items: center;
         }
 
-        .date-label {
-            font-size: 12px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            font-weight: 700;
+        .date-card label {
+            display: block;
+
             color: var(--primary);
-            margin-bottom: 5px;
+
+            font-size: 11px;
+
+            font-weight: 800;
+
+            text-transform: uppercase;
+
+            letter-spacing: 1px;
+
+            margin-bottom: 7px;
         }
 
-        .date-value {
-            font-size: 22px;
-            font-weight: 700;
+        #reportDate {
+            border: 1px solid var(--border);
+
+            background: white;
+
+            border-radius: 9px;
+
+            padding: 10px 12px;
+
+            font-size: 15px;
+
+            color: var(--text);
         }
 
-        .calendar-icon {
-            font-size: 32px;
-        }
-
-        /* SECTIONS */
+        /* =========================
+           SECTION
+        ========================= */
 
         .section {
             background: var(--card);
+
             border: 1px solid var(--border);
-            border-radius: 18px;
-            padding: 28px;
-            margin-bottom: 24px;
-            box-shadow: 0 4px 15px rgba(15, 23, 42, 0.04);
+
+            border-radius: 17px;
+
+            padding: 26px;
+
+            margin-bottom: 22px;
+
+            box-shadow:
+                0 5px 18px rgba(15, 23, 42, 0.04);
         }
 
-        .section-header {
+        .section-heading {
             display: flex;
+
             align-items: center;
+
             gap: 12px;
-            margin-bottom: 24px;
+
+            margin-bottom: 23px;
         }
 
         .section-number {
-            width: 38px;
-            height: 38px;
+            width: 37px;
+
+            height: 37px;
+
             border-radius: 10px;
+
             background: var(--primary);
+
             color: white;
+
             display: flex;
+
             align-items: center;
+
             justify-content: center;
-            font-weight: 700;
-        }
 
-        .section-title {
-            font-size: 21px;
-            font-weight: 700;
-        }
+            font-weight: 800;
 
-        .section-description {
-            color: var(--muted);
             font-size: 13px;
+        }
+
+        .section-heading h2 {
+            font-size: 20px;
+        }
+
+        .section-heading p {
+            color: var(--muted);
+
+            font-size: 12px;
+
             margin-top: 3px;
         }
 
-        /* TEAM MEMBERS */
+        /* =========================
+           TEAM
+        ========================= */
 
         .team-grid {
             display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 14px;
+
+            grid-template-columns:
+                repeat(4, 1fr);
+
+            gap: 12px;
         }
 
-        .member {
+        .team-member {
             position: relative;
         }
 
-        .member input {
+        .team-member input {
             position: absolute;
+
             opacity: 0;
         }
 
-        .member label {
+        .team-member label {
             display: block;
+
+            padding: 15px;
+
             border: 1px solid var(--border);
-            border-radius: 12px;
-            padding: 16px;
+
+            border-radius: 11px;
+
             cursor: pointer;
+
             transition: 0.2s;
-            background: white;
+
+            font-weight: 700;
         }
 
-        .member label:hover {
+        .team-member label:hover {
             border-color: var(--primary);
-            transform: translateY(-1px);
         }
 
-        .member input:checked + label {
-            background: var(--soft-blue);
+        .team-member input:checked + label {
+            background: var(--soft);
+
             border-color: var(--primary);
+
             color: var(--primary);
         }
 
-        .member-name {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            font-weight: 600;
+        /* =========================
+           EXTRA TASK
+        ========================= */
+
+        textarea {
+            width: 100%;
+
+            min-height: 120px;
+
+            resize: vertical;
+
+            border: 1px solid var(--border);
+
+            border-radius: 11px;
+
+            padding: 14px;
+
+            font-family: inherit;
+
+            font-size: 14px;
+
+            outline: none;
         }
 
-        .check-circle {
-            width: 22px;
-            height: 22px;
-            border: 2px solid #cbd5e1;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 12px;
-        }
-
-        .member input:checked + label .check-circle {
-            background: var(--primary);
+        textarea:focus,
+        select:focus {
             border-color: var(--primary);
-            color: white;
+
+            box-shadow:
+                0 0 0 3px rgba(49, 94, 251, 0.1);
         }
 
-        /* FORM */
+        /* =========================
+           EXCEL UPLOAD
+        ========================= */
 
-        .form-group {
+        .upload-box {
+            border: 2px dashed #cbd5e1;
+
+            border-radius: 14px;
+
+            padding: 25px;
+
+            text-align: center;
+
+            background: #fafbfc;
+        }
+
+        .upload-box h3 {
+            margin-bottom: 7px;
+
+            font-size: 16px;
+        }
+
+        .upload-box p {
+            color: var(--muted);
+
+            font-size: 13px;
+
+            margin-bottom: 17px;
+        }
+
+        .file-input {
+            display: none;
+        }
+
+        .upload-button {
+            display: inline-block;
+
+            background: var(--primary);
+
+            color: white;
+
+            padding: 11px 18px;
+
+            border-radius: 9px;
+
+            cursor: pointer;
+
+            font-size: 13px;
+
+            font-weight: 700;
+        }
+
+        .file-status {
+            margin-top: 13px;
+
+            font-size: 13px;
+
+            color: var(--green);
+
+            font-weight: 700;
+        }
+
+        /* =========================
+           CALL TYPE
+        ========================= */
+
+        .call-types {
+            display: grid;
+
+            grid-template-columns: 1fr 1fr;
+
+            gap: 14px;
+
             margin-bottom: 22px;
         }
 
-        .form-group:last-child {
-            margin-bottom: 0;
-        }
-
-        .form-label {
-            display: block;
-            font-size: 14px;
-            font-weight: 700;
-            margin-bottom: 9px;
-        }
-
-        .form-help {
-            font-size: 12px;
-            color: var(--muted);
-            margin-top: 7px;
-        }
-
-        input[type="text"],
-        select,
-        textarea {
-            width: 100%;
-            border: 1px solid var(--border);
-            border-radius: 11px;
-            padding: 13px 15px;
-            font-size: 14px;
-            font-family: inherit;
-            color: var(--text);
-            background: white;
-            outline: none;
-            transition: 0.2s;
-        }
-
-        input[type="text"]:focus,
-        select:focus,
-        textarea:focus {
-            border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(49, 94, 251, 0.1);
-        }
-
-        textarea {
-            resize: vertical;
-            min-height: 110px;
-        }
-
-        /* CALL TYPE */
-
-        .call-type-container {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-        }
-
-        .call-option {
+        .call-type {
             position: relative;
         }
 
-        .call-option input {
+        .call-type input {
             position: absolute;
+
             opacity: 0;
         }
 
-        .call-option label {
+        .call-type label {
             display: block;
+
+            padding: 19px;
+
             border: 1px solid var(--border);
-            border-radius: 14px;
-            padding: 20px;
+
+            border-radius: 13px;
+
             cursor: pointer;
-            transition: 0.2s;
         }
 
-        .call-option label:hover {
+        .call-type label:hover {
             border-color: var(--primary);
         }
 
-        .call-option input:checked + label {
-            background: var(--soft-blue);
+        .call-type input:checked + label {
+            background: var(--soft);
+
             border-color: var(--primary);
+
+            color: var(--primary);
         }
 
-        .call-option-title {
-            font-size: 16px;
-            font-weight: 700;
+        .call-type-title {
+            font-weight: 800;
+
             margin-bottom: 5px;
         }
 
-        .call-option-description {
-            color: var(--muted);
+        .call-type-description {
             font-size: 12px;
+
+            color: var(--muted);
         }
 
-        /* EXTRA TASK */
+        /* =========================
+           STATS
+        ========================= */
 
-        .extra-task {
-            background: #fafafa;
+        .stats-grid {
+            display: grid;
+
+            grid-template-columns:
+                repeat(6, 1fr);
+
+            gap: 10px;
+        }
+
+        .stat {
+            border: 1px solid var(--border);
+
+            border-radius: 11px;
+
+            padding: 15px;
+
+            background: #fbfcfe;
+        }
+
+        .stat-label {
+            color: var(--muted);
+
+            font-size: 11px;
+
+            line-height: 1.3;
+
+            margin-bottom: 7px;
+        }
+
+        .stat-value {
+            font-size: 23px;
+
+            font-weight: 800;
+        }
+
+        .total-stat {
+            background: var(--soft);
+
+            border-color: #d7e1ff;
+        }
+
+        .total-stat .stat-value {
+            color: var(--primary);
+        }
+
+        /* =========================
+           TICKETS
+        ========================= */
+
+        .ticket-summary {
+            display: flex;
+
+            justify-content: space-between;
+
+            align-items: center;
+
+            margin-bottom: 18px;
+        }
+
+        .ticket-count {
+            font-size: 21px;
+
+            font-weight: 800;
+        }
+
+        .ticket-card {
+            border: 1px solid var(--border);
+
+            border-radius: 13px;
+
+            padding: 19px;
+
+            margin-bottom: 13px;
+
+            background: #fbfcfe;
+        }
+
+        .ticket-top {
+            display: flex;
+
+            justify-content: space-between;
+
+            align-items: center;
+
+            gap: 15px;
+
+            margin-bottom: 15px;
+        }
+
+        .ticket-number {
+            font-size: 17px;
+
+            font-weight: 800;
+
+            color: var(--primary);
+        }
+
+        .ticket-field {
+            margin-bottom: 12px;
+        }
+
+        .ticket-field:last-child {
+            margin-bottom: 0;
+        }
+
+        .ticket-label {
+            display: block;
+
+            color: var(--muted);
+
+            font-size: 10px;
+
+            text-transform: uppercase;
+
+            letter-spacing: 0.7px;
+
+            font-weight: 800;
+
+            margin-bottom: 4px;
+        }
+
+        .ticket-value {
+            font-size: 14px;
+
+            line-height: 1.45;
+        }
+
+        .ticket-status {
+            width: 145px;
+
+            border: 1px solid var(--border);
+
+            background: white;
+
+            border-radius: 8px;
+
+            padding: 9px;
+
+            font-size: 13px;
+        }
+
+        .no-data {
+            padding: 22px;
+
+            border-radius: 11px;
+
+            background: #f8fafc;
+
+            color: var(--muted);
+
+            text-align: center;
+
+            font-size: 13px;
+        }
+
+        /* =========================
+           REPORT PREVIEW
+        ========================= */
+
+        .report-preview {
+            background: #111827;
+
+            color: #f8fafc;
+
             border-radius: 14px;
-            padding: 20px;
-            border: 1px dashed #cbd5e1;
+
+            padding: 24px;
+
+            white-space: pre-wrap;
+
+            line-height: 1.65;
+
+            font-size: 14px;
+
+            font-family:
+                Arial,
+                Helvetica,
+                sans-serif;
+
+            min-height: 300px;
         }
 
-        /* BUTTONS */
+        /* =========================
+           BUTTONS
+        ========================= */
 
         .actions {
             display: flex;
+
             justify-content: flex-end;
-            gap: 12px;
-            margin-top: 30px;
+
+            gap: 10px;
+
+            margin-top: 18px;
         }
 
         button {
             border: none;
-            border-radius: 10px;
-            padding: 13px 22px;
-            font-size: 14px;
-            font-weight: 700;
+
+            border-radius: 9px;
+
+            padding: 12px 18px;
+
             cursor: pointer;
-            transition: 0.2s;
+
+            font-size: 13px;
+
+            font-weight: 800;
         }
 
-        .clear-btn {
-            background: #e5e7eb;
-            color: #374151;
-        }
-
-        .clear-btn:hover {
-            background: #d1d5db;
-        }
-
-        .save-btn {
+        .copy-button {
             background: var(--primary);
+
             color: white;
         }
 
-        .save-btn:hover {
+        .copy-button:hover {
             background: var(--primary-dark);
-            transform: translateY(-1px);
         }
 
-        /* SAVE MESSAGE */
+        .clear-button {
+            background: #e5e7eb;
 
-        .save-message {
-            display: none;
-            margin-top: 15px;
-            padding: 12px;
+            color: #374151;
+        }
+
+        /* =========================
+           MESSAGE
+        ========================= */
+
+        .message {
+            position: fixed;
+
+            bottom: 25px;
+
+            right: 25px;
+
+            background: #111827;
+
+            color: white;
+
+            padding: 13px 18px;
+
             border-radius: 10px;
-            background: #ecfdf5;
-            color: var(--success);
+
+            display: none;
+
             font-size: 13px;
-            text-align: center;
-            font-weight: 600;
+
+            box-shadow:
+                0 10px 25px rgba(0,0,0,.2);
         }
 
-        .save-message.show {
+        .message.show {
             display: block;
         }
 
-        /* RESPONSIVE */
+        /* =========================
+           RESPONSIVE
+        ========================= */
 
-        @media (max-width: 800px) {
+        @media(max-width: 900px) {
+
+            .stats-grid {
+                grid-template-columns:
+                    repeat(3, 1fr);
+            }
+
+            .team-grid {
+                grid-template-columns:
+                    repeat(2, 1fr);
+            }
+
+        }
+
+        @media(max-width: 600px) {
+
             .topbar {
                 padding: 16px 20px;
             }
 
             .container {
-                width: min(100% - 24px, 1100px);
-                margin: 24px auto;
-            }
+                width: calc(100% - 20px);
 
-            .team-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-
-            .call-type-container {
-                grid-template-columns: 1fr;
-            }
-
-            .page-header h1 {
-                font-size: 27px;
-            }
-        }
-
-        @media (max-width: 500px) {
-            .team-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .date-card {
-                align-items: flex-start;
+                margin-top: 20px;
             }
 
             .section {
-                padding: 20px;
+                padding: 19px;
+            }
+
+            .call-types {
+                grid-template-columns: 1fr;
+            }
+
+            .stats-grid {
+                grid-template-columns:
+                    repeat(2, 1fr);
+            }
+
+            .team-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .ticket-top {
+                flex-direction: column;
+
+                align-items: flex-start;
+            }
+
+            .ticket-status {
+                width: 100%;
             }
 
             .actions {
@@ -429,505 +775,1883 @@
             button {
                 width: 100%;
             }
+
         }
+
     </style>
+
 </head>
+
 
 <body>
 
-    <!-- TOP BAR -->
 
-    <header class="topbar">
-        <div class="brand">
-            <div class="brand-icon">CS</div>
-            Customer Success
+<header class="topbar">
+
+    <div class="brand">
+
+        <div class="brand-icon">
+            CS
         </div>
 
-        <div class="status">
-            Daily Report System
+        Customer Success
+
+    </div>
+
+    <div class="topbar-status">
+        Daily Report System
+    </div>
+
+</header>
+
+
+<main class="container">
+
+
+    <div class="page-header">
+
+        <h1>
+            Customer Success Daily Report
+        </h1>
+
+        <p>
+            Select the report date and call type. Excel information will be calculated automatically.
+        </p>
+
+    </div>
+
+
+    <!-- DATE -->
+
+    <section class="date-card">
+
+        <div>
+
+            <label for="reportDate">
+                Report Date
+            </label>
+
+            <input
+                type="date"
+                id="reportDate"
+            >
+
         </div>
-    </header>
 
-
-    <!-- MAIN CONTENT -->
-
-    <main class="container">
-
-        <div class="page-header">
-            <h1>Customer Success Daily Report</h1>
-            <p>Complete today's report quickly and keep everything organized.</p>
+        <div style="font-size:32px;">
+            📅
         </div>
 
+    </section>
 
-        <!-- AUTOMATIC DATE -->
 
-        <div class="date-card">
+    <!-- TEAM -->
+
+    <section class="section">
+
+        <div class="section-heading">
+
+            <div class="section-number">
+                01
+            </div>
 
             <div>
-                <div class="date-label">Report Date</div>
-                <div class="date-value" id="currentDate">
-                    Loading...
-                </div>
-            </div>
 
-            <div class="calendar-icon">
-                📅
+                <h2>
+                    Team Members Present
+                </h2>
+
+                <p>
+                    Select the team members who are present today.
+                </p>
+
             </div>
 
         </div>
 
 
-        <!-- TEAM MEMBERS -->
+        <div class="team-grid">
 
-        <section class="section">
 
-            <div class="section-header">
+            <div class="team-member">
 
-                <div class="section-number">
-                    01
-                </div>
+                <input
+                    type="checkbox"
+                    id="vince"
+                    value="Vince"
+                    class="team-checkbox"
+                >
 
-                <div>
-                    <div class="section-title">
-                        Team Members Present
-                    </div>
-
-                    <div class="section-description">
-                        Select everyone who is currently working today.
-                    </div>
-                </div>
+                <label for="vince">
+                    Vince
+                </label>
 
             </div>
 
 
-            <div class="team-grid">
+            <div class="team-member">
 
-                <div class="member">
-                    <input type="checkbox" id="vince" value="Vince">
-                    <label for="vince">
-                        <div class="member-name">
-                            <span class="check-circle">✓</span>
-                            Vince
-                        </div>
-                    </label>
-                </div>
+                <input
+                    type="checkbox"
+                    id="avie"
+                    value="Avie"
+                    class="team-checkbox"
+                >
 
-
-                <div class="member">
-                    <input type="checkbox" id="avie" value="Avie">
-                    <label for="avie">
-                        <div class="member-name">
-                            <span class="check-circle">✓</span>
-                            Avie
-                        </div>
-                    </label>
-                </div>
-
-
-                <div class="member">
-                    <input type="checkbox" id="kirby" value="Kirby">
-                    <label for="kirby">
-                        <div class="member-name">
-                            <span class="check-circle">✓</span>
-                            Kirby
-                        </div>
-                    </label>
-                </div>
-
-
-                <div class="member">
-                    <input type="checkbox" id="neil" value="Neil">
-                    <label for="neil">
-                        <div class="member-name">
-                            <span class="check-circle">✓</span>
-                            Neil
-                        </div>
-                    </label>
-                </div>
-
-            </div>
-
-        </section>
-
-
-        <!-- EXTRA TASK -->
-
-        <section class="section">
-
-            <div class="section-header">
-
-                <div class="section-number">
-                    02
-                </div>
-
-                <div>
-                    <div class="section-title">
-                        Extra Task
-                    </div>
-
-                    <div class="section-description">
-                        Record anything important the team worked on today.
-                    </div>
-                </div>
+                <label for="avie">
+                    Avie
+                </label>
 
             </div>
 
 
-            <div class="extra-task">
+            <div class="team-member">
 
-                <div class="form-group">
+                <input
+                    type="checkbox"
+                    id="kirby"
+                    value="Kirby"
+                    class="team-checkbox"
+                >
 
-                    <label class="form-label" for="extraTask">
-                        What did the team work on?
-                    </label>
-
-                    <textarea
-                        id="extraTask"
-                        placeholder="Example: Created a module for new features in Retailz POS as requested by Tisha Maam..."
-                    ></textarea>
-
-                    <div class="form-help">
-                        You can add multiple tasks if necessary.
-                    </div>
-
-                </div>
-
-            </div>
-
-        </section>
-
-
-        <!-- CALL ACTIVITY -->
-
-        <section class="section">
-
-            <div class="section-header">
-
-                <div class="section-number">
-                    03
-                </div>
-
-                <div>
-                    <div class="section-title">
-                        Call Activity Summary
-                    </div>
-
-                    <div class="section-description">
-                        Choose the type of customer call activity being reported.
-                    </div>
-                </div>
+                <label for="kirby">
+                    Kirby
+                </label>
 
             </div>
 
 
-            <div class="call-type-container">
+            <div class="team-member">
 
-                <div class="call-option">
+                <input
+                    type="checkbox"
+                    id="neil"
+                    value="Neil"
+                    class="team-checkbox"
+                >
 
-                    <input
-                        type="radio"
-                        name="callType"
-                        id="onboarding"
-                        value="Onboarding"
-                    >
-
-                    <label for="onboarding">
-
-                        <div class="call-option-title">
-                            Onboarding
-                        </div>
-
-                        <div class="call-option-description">
-                            Calls related to helping new customers get started.
-                        </div>
-
-                    </label>
-
-                </div>
-
-
-                <div class="call-option">
-
-                    <input
-                        type="radio"
-                        name="callType"
-                        id="quarterly"
-                        value="Quarterly Check-In"
-                    >
-
-                    <label for="quarterly">
-
-                        <div class="call-option-title">
-                            Quarterly Check-In
-                        </div>
-
-                        <div class="call-option-description">
-                            Regular customer check-in and relationship calls.
-                        </div>
-
-                    </label>
-
-                </div>
+                <label for="neil">
+                    Neil
+                </label>
 
             </div>
 
-        </section>
+
+        </div>
+
+    </section>
 
 
-        <!-- ACTIONS -->
+    <!-- EXTRA TASK -->
 
-        <div class="actions">
+    <section class="section">
 
-            <button
-                type="button"
-                class="clear-btn"
-                onclick="clearReport()"
+        <div class="section-heading">
+
+            <div class="section-number">
+                02
+            </div>
+
+            <div>
+
+                <h2>
+                    Extra Task
+                </h2>
+
+                <p>
+                    Add additional work completed by the team.
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <textarea
+            id="extraTask"
+            placeholder="Example: Created a module for new features in Retailz POS as requested by Tisha Maam..."
+        ></textarea>
+
+    </section>
+
+
+    <!-- EXCEL -->
+
+    <section class="section">
+
+        <div class="section-heading">
+
+            <div class="section-number">
+                03
+            </div>
+
+            <div>
+
+                <h2>
+                    Excel Data
+                </h2>
+
+                <p>
+                    Upload the Excel workbook containing your call activity.
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <div class="upload-box">
+
+            <h3>
+                Load Customer Success Data
+            </h3>
+
+            <p>
+                Use the Excel file containing Date, Employee, Store Name, Call Type, Outcome, Notes and Ticket ID.
+            </p>
+
+
+            <label
+                for="excelFile"
+                class="upload-button"
             >
-                Clear
-            </button>
+                Choose Excel File
+            </label>
 
-            <button
-                type="button"
-                class="save-btn"
-                onclick="saveReport()"
+
+            <input
+                type="file"
+                id="excelFile"
+                class="file-input"
+                accept=".xlsx,.xls,.csv"
             >
-                Save Report
-            </button>
+
+
+            <div
+                id="fileStatus"
+                class="file-status"
+            >
+                No Excel file loaded.
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- CALL ACTIVITY -->
+
+    <section class="section">
+
+        <div class="section-heading">
+
+            <div class="section-number">
+                04
+            </div>
+
+            <div>
+
+                <h2>
+                    Call Activity Summary
+                </h2>
+
+                <p>
+                    Select the type of calls to include in this report.
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <div class="call-types">
+
+
+            <div class="call-type">
+
+                <input
+                    type="radio"
+                    name="callType"
+                    id="quarterly"
+                    value="Quarterly Check-In"
+                    checked
+                >
+
+                <label for="quarterly">
+
+                    <div class="call-type-title">
+                        Quarterly Check-In
+                    </div>
+
+                    <div class="call-type-description">
+                        Regular customer check-in calls.
+                    </div>
+
+                </label>
+
+            </div>
+
+
+            <div class="call-type">
+
+                <input
+                    type="radio"
+                    name="callType"
+                    id="onboarding"
+                    value="Onboarding"
+                >
+
+                <label for="onboarding">
+
+                    <div class="call-type-title">
+                        Onboarding
+                    </div>
+
+                    <div class="call-type-description">
+                        Calls for new customer onboarding.
+                    </div>
+
+                </label>
+
+            </div>
+
+
+        </div>
+
+
+        <div class="stats-grid">
+
+
+            <div class="stat total-stat">
+
+                <div class="stat-label">
+                    Total Calls Made
+                </div>
+
+                <div
+                    class="stat-value"
+                    id="totalCalls"
+                >
+                    0
+                </div>
+
+            </div>
+
+
+            <div class="stat">
+
+                <div class="stat-label">
+                    Follow-Up Scheduled
+                </div>
+
+                <div
+                    class="stat-value"
+                    id="followUp"
+                >
+                    0
+                </div>
+
+            </div>
+
+
+            <div class="stat">
+
+                <div class="stat-label">
+                    Retained / Satisfied
+                </div>
+
+                <div
+                    class="stat-value"
+                    id="retained"
+                >
+                    0
+                </div>
+
+            </div>
+
+
+            <div class="stat">
+
+                <div class="stat-label">
+                    Voicemail Left
+                </div>
+
+                <div
+                    class="stat-value"
+                    id="voicemail"
+                >
+                    0
+                </div>
+
+            </div>
+
+
+            <div class="stat">
+
+                <div class="stat-label">
+                    No Answer / Hang Up
+                </div>
+
+                <div
+                    class="stat-value"
+                    id="noAnswer"
+                >
+                    0
+                </div>
+
+            </div>
+
+
+            <div class="stat">
+
+                <div class="stat-label">
+                    Churned / Cancelled
+                </div>
+
+                <div
+                    class="stat-value"
+                    id="churned"
+                >
+                    0
+                </div>
+
+            </div>
+
+
+        </div>
+
+    </section>
+
+
+    <!-- TICKETS -->
+
+    <section class="section">
+
+        <div class="section-heading">
+
+            <div class="section-number">
+                05
+            </div>
+
+            <div>
+
+                <h2>
+                    Merchant Issues / Tickets Handled
+                </h2>
+
+                <p>
+                    Tickets are automatically detected from the Ticket ID column.
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <div class="ticket-summary">
+
+            <div>
+                <div style="color:#687386;font-size:12px;">
+                    TOTAL TICKETS
+                </div>
+
+                <div
+                    class="ticket-count"
+                    id="totalTickets"
+                >
+                    0
+                </div>
+            </div>
+
+        </div>
+
+
+        <div id="ticketContainer">
+
+            <div class="no-data">
+                Upload an Excel file to display tickets.
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- REPORT -->
+
+    <section class="section">
+
+        <div class="section-heading">
+
+            <div class="section-number">
+                06
+            </div>
+
+            <div>
+
+                <h2>
+                    Generated Daily Report
+                </h2>
+
+                <p>
+                    This is the exact text that can be copied and submitted.
+                </p>
+
+            </div>
 
         </div>
 
 
         <div
-            id="saveMessage"
-            class="save-message"
+            id="reportPreview"
+            class="report-preview"
         >
-            ✓ Report saved successfully.
+            Customer Success Daily Report
         </div>
 
-    </main>
+
+        <div class="actions">
+
+            <button
+                class="clear-button"
+                onclick="clearReport()"
+            >
+                Clear Report
+            </button>
+
+            <button
+                class="copy-button"
+                onclick="copyReport()"
+            >
+                Copy Whole Report
+            </button>
+
+        </div>
+
+    </section>
 
 
-    <script>
-
-        /*
-        ==========================================
-        AUTOMATIC CURRENT DATE
-        ==========================================
-        */
-
-        function updateDate() {
-
-            const today = new Date();
-
-            const options = {
-                year: "numeric",
-                month: "long",
-                day: "numeric"
-            };
-
-            document.getElementById("currentDate").textContent =
-                today.toLocaleDateString("en-US", options);
-        }
+</main>
 
 
-        /*
-        ==========================================
-        SAVE REPORT
-        ==========================================
-        */
-
-        function saveReport() {
-
-            const teamMembers = [];
-
-            document
-                .querySelectorAll(".member input:checked")
-                .forEach(function(member) {
-
-                    teamMembers.push(member.value);
-
-                });
+<div
+    id="message"
+    class="message"
+>
+    Report copied successfully.
+</div>
 
 
-            const selectedCall =
-                document.querySelector(
-                    'input[name="callType"]:checked'
-                );
+<script>
 
 
-            const report = {
+/* =====================================================
+   GLOBAL DATA
+===================================================== */
 
-                date:
-                    document.getElementById("currentDate").textContent,
+let excelRows = [];
 
-                teamMembers:
-                    teamMembers,
-
-                extraTask:
-                    document.getElementById("extraTask").value,
-
-                callType:
-                    selectedCall ? selectedCall.value : ""
-
-            };
+let ticketStatuses = {};
 
 
-            localStorage.setItem(
-                "customerSuccessDailyReport",
-                JSON.stringify(report)
+/* =====================================================
+   DEFAULT DATE
+===================================================== */
+
+function setDefaultDate() {
+
+    const today = new Date();
+
+    const year =
+        today.getFullYear();
+
+    const month =
+        String(today.getMonth() + 1)
+            .padStart(2, "0");
+
+    const day =
+        String(today.getDate())
+            .padStart(2, "0");
+
+    document.getElementById("reportDate").value =
+        `${year}-${month}-${day}`;
+
+}
+
+
+/* =====================================================
+   NORMALIZE TEXT
+===================================================== */
+
+function normalize(value) {
+
+    if (
+        value === null ||
+        value === undefined
+    ) {
+        return "";
+    }
+
+    return String(value)
+        .trim()
+        .toLowerCase();
+
+}
+
+
+/* =====================================================
+   DATE NORMALIZATION
+===================================================== */
+
+function normalizeExcelDate(value) {
+
+    if (!value) {
+        return "";
+    }
+
+
+    /*
+       Excel date object
+    */
+
+    if (value instanceof Date) {
+
+        return formatDateForComparison(value);
+
+    }
+
+
+    /*
+       Excel serial date
+    */
+
+    if (
+        typeof value === "number" &&
+        value > 20000 &&
+        value < 60000
+    ) {
+
+        const date =
+            new Date(
+                Math.round(
+                    (value - 25569) *
+                    86400 *
+                    1000
+                )
             );
 
+        return formatDateForComparison(date);
 
-            const message =
-                document.getElementById("saveMessage");
-
-            message.classList.add("show");
+    }
 
 
-            setTimeout(function() {
-
-                message.classList.remove("show");
-
-            }, 3000);
-
-        }
+    let text =
+        String(value).trim();
 
 
-        /*
-        ==========================================
-        CLEAR REPORT
-        ==========================================
-        */
+    /*
+       Try normal JavaScript date
+    */
 
-        function clearReport() {
+    const parsed =
+        new Date(text);
 
-            const confirmed =
-                confirm(
-                    "Are you sure you want to clear today's report?"
-                );
+    if (!isNaN(parsed.getTime())) {
 
+        return formatDateForComparison(parsed);
 
-            if (!confirmed) {
-                return;
-            }
+    }
 
 
-            document
-                .querySelectorAll(".member input")
-                .forEach(function(member) {
+    /*
+       Handle M/D/YYYY manually
+    */
 
-                    member.checked = false;
-
-                });
-
-
-            document
-                .querySelectorAll('input[name="callType"]')
-                .forEach(function(option) {
-
-                    option.checked = false;
-
-                });
+    const match =
+        text.match(
+            /^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})$/
+        );
 
 
-            document.getElementById("extraTask").value = "";
+    if (match) {
+
+        const month =
+            match[1].padStart(2, "0");
+
+        const day =
+            match[2].padStart(2, "0");
+
+        const year =
+            match[3];
+
+        return `${year}-${month}-${day}`;
+
+    }
 
 
-            localStorage.removeItem(
-                "customerSuccessDailyReport"
+    return "";
+
+}
+
+
+/* =====================================================
+   DATE FORMAT
+===================================================== */
+
+function formatDateForComparison(date) {
+
+    const year =
+        date.getFullYear();
+
+    const month =
+        String(date.getMonth() + 1)
+            .padStart(2, "0");
+
+    const day =
+        String(date.getDate())
+            .padStart(2, "0");
+
+    return `${year}-${month}-${day}`;
+
+}
+
+
+/* =====================================================
+   FIND COLUMN
+===================================================== */
+
+function getColumn(row, possibleNames) {
+
+    const keys =
+        Object.keys(row);
+
+
+    for (const possible of possibleNames) {
+
+        const match =
+            keys.find(
+                key =>
+                    normalize(key) ===
+                    normalize(possible)
             );
 
+        if (match) {
+
+            return row[match];
+
         }
 
-
-        /*
-        ==========================================
-        LOAD PREVIOUSLY SAVED REPORT
-        ==========================================
-        */
-
-        function loadReport() {
-
-            const saved =
-                localStorage.getItem(
-                    "customerSuccessDailyReport"
-                );
+    }
 
 
-            if (!saved) {
-                return;
-            }
+    /*
+       More flexible partial matching
+    */
+
+    for (const possible of possibleNames) {
+
+        const match =
+            keys.find(
+                key =>
+                    normalize(key)
+                        .includes(
+                            normalize(possible)
+                        )
+            );
+
+        if (match) {
+
+            return row[match];
+
+        }
+
+    }
 
 
-            const report = JSON.parse(saved);
+    return "";
+
+}
 
 
-            /*
-            Restore team members
-            */
+/* =====================================================
+   LOAD EXCEL
+===================================================== */
 
-            if (report.teamMembers) {
-
-                report.teamMembers.forEach(function(name) {
-
-                    const checkbox =
-                        document.querySelector(
-                            '.member input[value="' + name + '"]'
-                        );
-
-                    if (checkbox) {
-                        checkbox.checked = true;
-                    }
-
-                });
-
-            }
+document
+    .getElementById("excelFile")
+    .addEventListener(
+        "change",
+        handleExcelFile
+    );
 
 
-            /*
-            Restore extra task
-            */
+function handleExcelFile(event) {
 
-            if (report.extraTask) {
-
-                document.getElementById("extraTask").value =
-                    report.extraTask;
-
-            }
+    const file =
+        event.target.files[0];
 
 
-            /*
-            Restore call type
-            */
+    if (!file) {
+        return;
+    }
 
-            if (report.callType) {
 
-                const option =
-                    document.querySelector(
-                        'input[name="callType"][value="' +
-                        report.callType +
-                        '"]'
+    const status =
+        document.getElementById("fileStatus");
+
+
+    status.textContent =
+        "Loading Excel file...";
+
+
+    const reader =
+        new FileReader();
+
+
+    reader.onload =
+        function(e) {
+
+            try {
+
+                const data =
+                    new Uint8Array(
+                        e.target.result
                     );
 
-                if (option) {
-                    option.checked = true;
-                }
+
+                const workbook =
+                    XLSX.read(
+                        data,
+                        {
+                            type: "array",
+                            cellDates: true
+                        }
+                    );
+
+
+                /*
+                   Use first worksheet
+                */
+
+                const firstSheet =
+                    workbook.Sheets[
+                        workbook.SheetNames[0]
+                    ];
+
+
+                excelRows =
+                    XLSX.utils.sheet_to_json(
+                        firstSheet,
+                        {
+                            defval: ""
+                        }
+                    );
+
+
+                status.textContent =
+                    `✓ Loaded ${excelRows.length} Excel rows successfully.`;
+
+
+                updateReport();
+
+
+            } catch(error) {
+
+                console.error(error);
+
+                status.textContent =
+                    "Could not read the Excel file.";
+
+                alert(
+                    "There was a problem reading the Excel file. Make sure it is an .xlsx, .xls, or .csv file."
+                );
 
             }
+
+        };
+
+
+    reader.readAsArrayBuffer(file);
+
+}
+
+
+/* =====================================================
+   GET SELECTED CALL TYPE
+===================================================== */
+
+function getSelectedCallType() {
+
+    const selected =
+        document.querySelector(
+            'input[name="callType"]:checked'
+        );
+
+
+    return selected
+        ? selected.value
+        : "Quarterly Check-In";
+
+}
+
+
+/* =====================================================
+   GET FILTERED ROWS
+===================================================== */
+
+function getFilteredRows() {
+
+    const selectedDate =
+        document.getElementById(
+            "reportDate"
+        ).value;
+
+
+    const selectedCallType =
+        getSelectedCallType();
+
+
+    return excelRows.filter(row => {
+
+        const excelDate =
+            normalizeExcelDate(
+                getColumn(
+                    row,
+                    [
+                        "Date"
+                    ]
+                )
+            );
+
+
+        const excelCallType =
+            normalize(
+                getColumn(
+                    row,
+                    [
+                        "Call Type",
+                        "CallType"
+                    ]
+                )
+            );
+
+
+        const targetCallType =
+            normalize(
+                selectedCallType
+            );
+
+
+        return (
+            excelDate === selectedDate &&
+            excelCallType === targetCallType
+        );
+
+    });
+
+}
+
+
+/* =====================================================
+   CALCULATE OUTCOMES
+===================================================== */
+
+function calculateOutcomes(rows) {
+
+    const counts = {
+
+        followUp: 0,
+
+        retained: 0,
+
+        voicemail: 0,
+
+        noAnswer: 0,
+
+        churned: 0
+
+    };
+
+
+    rows.forEach(row => {
+
+        const outcome =
+            normalize(
+                getColumn(
+                    row,
+                    [
+                        "Outcome"
+                    ]
+                )
+            );
+
+
+        if (
+            outcome ===
+            "follow-up scheduled"
+        ) {
+
+            counts.followUp++;
 
         }
 
 
+        else if (
+            outcome ===
+            "retained / satisfied" ||
+            outcome ===
+            "retained/satisfied"
+        ) {
+
+            counts.retained++;
+
+        }
+
+
+        else if (
+            outcome ===
+            "voicemail left"
+        ) {
+
+            counts.voicemail++;
+
+        }
+
+
+        else if (
+            outcome ===
+            "no answer" ||
+            outcome ===
+            "hang up" ||
+            outcome ===
+            "no answer / hang up" ||
+            outcome ===
+            "no answer/hang up"
+        ) {
+
+            counts.noAnswer++;
+
+        }
+
+
+        else if (
+            outcome ===
+            "churned / cancelled" ||
+            outcome ===
+            "churned/cancelled"
+        ) {
+
+            counts.churned++;
+
+        }
+
+    });
+
+
+    return counts;
+
+}
+
+
+/* =====================================================
+   GET TICKETS
+===================================================== */
+
+function getTickets(rows) {
+
+    const tickets = [];
+
+    const ticketIdsSeen =
+        new Set();
+
+
+    rows.forEach(row => {
+
+        const ticketId =
+            String(
+                getColumn(
+                    row,
+                    [
+                        "Ticket ID (Optional)",
+                        "Ticket ID",
+                        "TicketID"
+                    ]
+                )
+            ).trim();
+
+
         /*
-        ==========================================
-        START APPLICATION
-        ==========================================
+           Only rows with a Ticket ID
+           are considered tickets.
         */
 
-        updateDate();
-        loadReport();
+        if (!ticketId) {
+            return;
+        }
 
-    </script>
+
+        /*
+           Prevent duplicate ticket IDs
+           from appearing multiple times.
+        */
+
+        const normalizedTicketId =
+            normalize(ticketId);
+
+
+        if (
+            ticketIdsSeen.has(
+                normalizedTicketId
+            )
+        ) {
+
+            return;
+
+        }
+
+
+        ticketIdsSeen.add(
+            normalizedTicketId
+        );
+
+
+        tickets.push({
+
+            id: ticketId,
+
+            store:
+                getColumn(
+                    row,
+                    [
+                        "Store Name",
+                        "StoreName"
+                    ]
+                ),
+
+            issue:
+                getColumn(
+                    row,
+                    [
+                        "Notes"
+                    ]
+                ),
+
+            category:
+                getColumn(
+                    row,
+                    [
+                        "Category"
+                    ]
+                )
+
+        });
+
+    });
+
+
+    return tickets;
+
+}
+
+
+/* =====================================================
+   UPDATE REPORT
+===================================================== */
+
+function updateReport() {
+
+    const rows =
+        getFilteredRows();
+
+
+    const counts =
+        calculateOutcomes(rows);
+
+
+    /*
+       Update statistics
+    */
+
+    document.getElementById(
+        "totalCalls"
+    ).textContent =
+        rows.length;
+
+
+    document.getElementById(
+        "followUp"
+    ).textContent =
+        counts.followUp;
+
+
+    document.getElementById(
+        "retained"
+    ).textContent =
+        counts.retained;
+
+
+    document.getElementById(
+        "voicemail"
+    ).textContent =
+        counts.voicemail;
+
+
+    document.getElementById(
+        "noAnswer"
+    ).textContent =
+        counts.noAnswer;
+
+
+    document.getElementById(
+        "churned"
+    ).textContent =
+        counts.churned;
+
+
+    /*
+       Tickets
+    */
+
+    const tickets =
+        getTickets(rows);
+
+
+    document.getElementById(
+        "totalTickets"
+    ).textContent =
+        tickets.length;
+
+
+    renderTickets(tickets);
+
+
+    /*
+       Generated report
+    */
+
+    generateReport(
+        rows,
+        counts,
+        tickets
+    );
+
+}
+
+
+/* =====================================================
+   RENDER TICKETS
+===================================================== */
+
+function renderTickets(tickets) {
+
+    const container =
+        document.getElementById(
+            "ticketContainer"
+        );
+
+
+    if (tickets.length === 0) {
+
+        container.innerHTML = `
+            <div class="no-data">
+                No tickets found for the selected date and call type.
+            </div>
+        `;
+
+        return;
+
+    }
+
+
+    container.innerHTML = "";
+
+
+    tickets.forEach(
+        (ticket, index) => {
+
+            const ticketKey =
+                String(ticket.id);
+
+
+            if (
+                !ticketStatuses[
+                    ticketKey
+                ]
+            ) {
+
+                ticketStatuses[
+                    ticketKey
+                ] = "Open";
+
+            }
+
+
+            const card =
+                document.createElement(
+                    "div"
+                );
+
+
+            card.className =
+                "ticket-card";
+
+
+            card.innerHTML = `
+
+                <div class="ticket-top">
+
+                    <div class="ticket-number">
+                        Ticket: #${escapeHtml(ticket.id)}
+                    </div>
+
+                    <select
+                        class="ticket-status"
+                        data-ticket-id="${escapeHtml(ticket.id)}"
+                    >
+
+                        <option value="Open"
+                            ${ticketStatuses[ticketKey] === "Open" ? "selected" : ""}>
+                            Open
+                        </option>
+
+                        <option value="Solved"
+                            ${ticketStatuses[ticketKey] === "Solved" ? "selected" : ""}>
+                            Solved
+                        </option>
+
+                        <option value="Pending"
+                            ${ticketStatuses[ticketKey] === "Pending" ? "selected" : ""}>
+                            Pending
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <div class="ticket-field">
+
+                    <span class="ticket-label">
+                        Store
+                    </span>
+
+                    <div class="ticket-value">
+                        ${escapeHtml(ticket.store || "Not provided")}
+                    </div>
+
+                </div>
+
+
+                <div class="ticket-field">
+
+                    <span class="ticket-label">
+                        Issue
+                    </span>
+
+                    <div class="ticket-value">
+                        ${escapeHtml(ticket.issue || "No notes provided")}
+                    </div>
+
+                </div>
+
+            `;
+
+
+            container.appendChild(
+                card
+            );
+
+        }
+    );
+
+
+    /*
+       Add status listeners
+    */
+
+    container
+        .querySelectorAll(
+            ".ticket-status"
+        )
+        .forEach(select => {
+
+            select.addEventListener(
+                "change",
+                function() {
+
+                    const id =
+                        this.dataset.ticketId;
+
+
+                    ticketStatuses[id] =
+                        this.value;
+
+
+                    /*
+                       Refresh report text
+                    */
+
+                    updateReport();
+
+                }
+            );
+
+        });
+
+}
+
+
+/* =====================================================
+   ESCAPE HTML
+===================================================== */
+
+function escapeHtml(value) {
+
+    return String(value)
+
+        .replace(
+            /&/g,
+            "&amp;"
+        )
+
+        .replace(
+            /</g,
+            "&lt;"
+        )
+
+        .replace(
+            />/g,
+            "&gt;"
+        )
+
+        .replace(
+            /"/g,
+            "&quot;"
+        )
+
+        .replace(
+            /'/g,
+            "&#039;"
+        );
+
+}
+
+
+/* =====================================================
+   GENERATE REPORT
+===================================================== */
+
+function generateReport(
+    rows,
+    counts,
+    tickets
+) {
+
+    const date =
+        document.getElementById(
+            "reportDate"
+        ).value;
+
+
+    const formattedDate =
+        formatDisplayDate(
+            date
+        );
+
+
+    const teamMembers =
+        Array.from(
+            document.querySelectorAll(
+                ".team-checkbox:checked"
+            )
+        )
+        .map(
+            checkbox =>
+                checkbox.value
+        );
+
+
+    const extraTask =
+        document.getElementById(
+            "extraTask"
+        ).value.trim();
+
+
+    const callType =
+        getSelectedCallType();
+
+
+    let report = "";
+
+
+    report +=
+        "Customer Success Daily Report\n";
+
+
+    report +=
+        `Date: ${formattedDate}\n\n`;
+
+
+    report +=
+        "Team Members Present: ";
+
+
+    report +=
+        teamMembers.length
+            ? teamMembers.join(", ")
+            : "";
+
+
+    report +=
+        "\n\n";
+
+
+    report +=
+        "Extra Task: ";
+
+
+    report +=
+        extraTask;
+
+
+    report +=
+        "\n\n";
+
+
+    report +=
+        "Call Activity Summary\n\n";
+
+
+    report +=
+        `${callType}\n`;
+
+
+    report +=
+        `Total Calls Made: ${rows.length}\n\n`;
+
+
+    report +=
+        "OUTCOMES\n";
+
+
+    report +=
+        `Follow-Up Scheduled: ${counts.followUp}\n`;
+
+
+    report +=
+        `Retained / Satisfied: ${counts.retained}\n`;
+
+
+    report +=
+        `Voicemail Left: ${counts.voicemail}\n`;
+
+
+    report +=
+        `No Answer / Hang Up: ${counts.noAnswer}\n`;
+
+
+    report +=
+        `Churned / Cancelled: ${counts.churned}\n\n`;
+
+
+    report +=
+        `Total Tickets: ${tickets.length}\n\n`;
+
+
+    tickets.forEach(
+        ticket => {
+
+            const status =
+                ticketStatuses[
+                    String(ticket.id)
+                ] || "Open";
+
+
+            report +=
+                `Ticket: #${ticket.id}\n`;
+
+
+            report +=
+                `Store: ${ticket.store || ""}\n`;
+
+
+            report +=
+                `Issue: ${ticket.issue || ""}\n`;
+
+
+            report +=
+                `Status: ${status}\n\n`;
+
+        }
+    );
+
+
+    document.getElementById(
+        "reportPreview"
+    ).textContent =
+        report;
+
+}
+
+
+/* =====================================================
+   DISPLAY DATE
+===================================================== */
+
+function formatDisplayDate(
+    dateString
+) {
+
+    if (!dateString) {
+        return "";
+    }
+
+
+    const parts =
+        dateString.split("-");
+
+
+    if (parts.length !== 3) {
+        return dateString;
+    }
+
+
+    const date =
+        new Date(
+            Number(parts[0]),
+            Number(parts[1]) - 1,
+            Number(parts[2])
+        );
+
+
+    return date.toLocaleDateString(
+        "en-US",
+        {
+            month: "long",
+            day: "numeric",
+            year: "numeric"
+        }
+    );
+
+}
+
+
+/* =====================================================
+   COPY REPORT
+===================================================== */
+
+async function copyReport() {
+
+    const report =
+        document.getElementById(
+            "reportPreview"
+        ).textContent;
+
+
+    try {
+
+        await navigator.clipboard.writeText(
+            report
+        );
+
+
+        showMessage(
+            "✓ Whole report copied."
+        );
+
+
+    } catch(error) {
+
+        /*
+           Fallback
+        */
+
+        const textarea =
+            document.createElement(
+                "textarea"
+            );
+
+
+        textarea.value =
+            report;
+
+
+        document.body.appendChild(
+            textarea
+        );
+
+
+        textarea.select();
+
+
+        document.execCommand(
+            "copy"
+        );
+
+
+        textarea.remove();
+
+
+        showMessage(
+            "✓ Whole report copied."
+        );
+
+    }
+
+}
+
+
+/* =====================================================
+   MESSAGE
+===================================================== */
+
+function showMessage(text) {
+
+    const message =
+        document.getElementById(
+            "message"
+        );
+
+
+    message.textContent =
+        text;
+
+
+    message.classList.add(
+        "show"
+    );
+
+
+    setTimeout(
+        () => {
+
+            message.classList.remove(
+                "show"
+            );
+
+        },
+        2500
+    );
+
+}
+
+
+/* =====================================================
+   CLEAR
+===================================================== */
+
+function clearReport() {
+
+    const confirmed =
+        confirm(
+            "Clear today's report information?"
+        );
+
+
+    if (!confirmed) {
+        return;
+    }
+
+
+    document.querySelectorAll(
+        ".team-checkbox"
+    )
+    .forEach(
+        checkbox =>
+            checkbox.checked = false
+    );
+
+
+    document.getElementById(
+        "extraTask"
+    ).value = "";
+
+
+    excelRows = [];
+
+
+    ticketStatuses = {};
+
+
+    document.getElementById(
+        "excelFile"
+    ).value = "";
+
+
+    document.getElementById(
+        "fileStatus"
+    ).textContent =
+        "No Excel file loaded.";
+
+
+    updateReport();
+
+}
+
+
+/* =====================================================
+   EVENT LISTENERS
+===================================================== */
+
+document
+    .getElementById("reportDate")
+    .addEventListener(
+        "change",
+        updateReport
+    );
+
+
+document
+    .getElementById("extraTask")
+    .addEventListener(
+        "input",
+        updateReport
+    );
+
+
+document
+    .querySelectorAll(
+        ".team-checkbox"
+    )
+    .forEach(
+        checkbox => {
+
+            checkbox.addEventListener(
+                "change",
+                updateReport
+            );
+
+        }
+    );
+
+
+document
+    .querySelectorAll(
+        'input[name="callType"]'
+    )
+    .forEach(
+        radio => {
+
+            radio.addEventListener(
+                "change",
+                updateReport
+            );
+
+        }
+    );
+
+
+/* =====================================================
+   START
+===================================================== */
+
+setDefaultDate();
+
+updateReport();
+
+</script>
+
 
 </body>
+
 </html>
