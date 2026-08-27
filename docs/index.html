@@ -6,105 +6,176 @@
 
 <title>Customer Success Daily Report</title>
 
-<script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.3/papaparse.min.js"></script>
-
 <style>
+    :root {
+        --bg: #eef2f7;
+        --card: #ffffff;
+        --card2: #f8fafc;
+        --text: #172033;
+        --muted: #64748b;
+        --border: #d9e0ea;
+        --primary: #2563eb;
+        --primary-dark: #1d4ed8;
+        --success: #16a34a;
+        --danger: #dc2626;
+        --warning: #d97706;
+        --input: #ffffff;
+        --shadow: 0 8px 25px rgba(15, 23, 42, .08);
+    }
+
+    body.dark {
+        --bg: #0b1220;
+        --card: #151f31;
+        --card2: #101827;
+        --text: #f1f5f9;
+        --muted: #94a3b8;
+        --border: #2d3a50;
+        --primary: #3b82f6;
+        --primary-dark: #2563eb;
+        --success: #22c55e;
+        --danger: #ef4444;
+        --warning: #f59e0b;
+        --input: #0e1727;
+        --shadow: 0 8px 25px rgba(0,0,0,.25);
+    }
+
     * {
         box-sizing: border-box;
     }
 
     body {
         margin: 0;
+        padding: 0;
         font-family: Arial, Helvetica, sans-serif;
-        background: #f4f6f8;
-        color: #1f2937;
+        background: var(--bg);
+        color: var(--text);
+        transition: .2s;
+    }
+
+    .container {
+        width: min(1200px, 94%);
+        margin: auto;
+        padding: 25px 0 60px;
     }
 
     header {
-        background: #172033;
-        color: white;
-        padding: 28px 20px;
-        box-shadow: 0 3px 12px rgba(0,0,0,0.15);
-    }
-
-    header .header-inner {
-        max-width: 1150px;
-        margin: auto;
-    }
-
-    header h1 {
-        margin: 0;
-        font-size: 30px;
-        font-weight: 700;
-    }
-
-    header p {
-        margin: 8px 0 0;
-        color: #b8c2d4;
-    }
-
-    main {
-        max-width: 1150px;
-        margin: 30px auto;
-        padding: 0 18px;
-    }
-
-    .panel {
-        background: white;
-        border-radius: 14px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 20px;
         margin-bottom: 22px;
-        padding: 25px;
-        box-shadow: 0 4px 18px rgba(20,30,50,0.08);
-        border: 1px solid #e1e6ed;
     }
 
-    .panel-title {
-        font-size: 21px;
+    .title {
+        font-size: 30px;
+        font-weight: 800;
+    }
+
+    .subtitle {
+        color: var(--muted);
+        margin-top: 5px;
+    }
+
+    .top-buttons {
+        display: flex;
+        gap: 10px;
+    }
+
+    button,
+    select,
+    input,
+    textarea {
+        font-family: inherit;
+    }
+
+    button {
+        cursor: pointer;
+        border: none;
+    }
+
+    .mode-btn,
+    .tab-btn {
+        background: var(--card);
+        color: var(--text);
+        border: 1px solid var(--border);
+        padding: 10px 15px;
+        border-radius: 10px;
         font-weight: 700;
+    }
+
+    .mode-btn:hover,
+    .tab-btn:hover {
+        border-color: var(--primary);
+    }
+
+    .main-tabs {
+        display: flex;
+        gap: 10px;
         margin-bottom: 20px;
-        color: #172033;
+    }
+
+    .tab-btn.active {
+        background: var(--primary);
+        color: white;
+        border-color: var(--primary);
+    }
+
+    .page {
+        display: none;
+    }
+
+    .page.active {
+        display: block;
+    }
+
+    .card {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        padding: 22px;
+        margin-bottom: 20px;
+        box-shadow: var(--shadow);
+    }
+
+    .section-title {
+        font-size: 20px;
+        font-weight: 800;
+        margin-bottom: 18px;
     }
 
     .grid {
         display: grid;
         grid-template-columns: repeat(2, 1fr);
-        gap: 20px;
+        gap: 16px;
     }
 
-    .field {
-        display: flex;
-        flex-direction: column;
-        gap: 8px;
-    }
-
-    .field.full {
+    .full {
         grid-column: 1 / -1;
     }
 
     label {
-        font-size: 14px;
+        display: block;
         font-weight: 700;
-        color: #475569;
+        margin-bottom: 7px;
     }
 
-    input[type="date"],
+    input,
     select,
     textarea {
         width: 100%;
-        border: 1px solid #cbd5e1;
+        background: var(--input);
+        color: var(--text);
+        border: 1px solid var(--border);
         border-radius: 9px;
-        padding: 12px 13px;
-        font-size: 15px;
-        background: white;
-        color: #1f2937;
+        padding: 12px;
         outline: none;
     }
 
-    input[type="date"]:focus,
+    input:focus,
     select:focus,
     textarea:focus {
-        border-color: #2563eb;
-        box-shadow: 0 0 0 3px rgba(37,99,235,0.1);
+        border-color: var(--primary);
+        box-shadow: 0 0 0 3px rgba(37,99,235,.12);
     }
 
     textarea {
@@ -115,218 +186,184 @@
     .members {
         display: grid;
         grid-template-columns: repeat(4, 1fr);
-        gap: 12px;
+        gap: 10px;
     }
 
     .member {
-        border: 1px solid #d8dee8;
+        display: flex;
+        align-items: center;
+        gap: 9px;
+        background: var(--card2);
+        border: 1px solid var(--border);
         border-radius: 9px;
-        padding: 13px;
+        padding: 12px;
         cursor: pointer;
-        background: #fafbfc;
-        transition: 0.15s;
-    }
-
-    .member:hover {
-        border-color: #2563eb;
-        background: #f5f8ff;
     }
 
     .member input {
-        margin-right: 8px;
+        width: auto;
     }
 
     .status {
-        padding: 12px 15px;
-        border-radius: 8px;
+        padding: 12px;
+        border-radius: 9px;
+        background: var(--card2);
+        border: 1px solid var(--border);
+        color: var(--muted);
         margin-bottom: 18px;
-        font-size: 14px;
-        background: #eef2ff;
-        color: #3730a3;
     }
 
     .status.success {
-        background: #ecfdf5;
-        color: #047857;
+        color: var(--success);
     }
 
     .status.error {
-        background: #fef2f2;
-        color: #b91c1c;
+        color: var(--danger);
     }
 
-    .outcomes {
+    .stats {
         display: grid;
         grid-template-columns: repeat(5, 1fr);
-        gap: 12px;
+        gap: 10px;
     }
 
-    .outcome-card {
-        background: #f8fafc;
-        border: 1px solid #e2e8f0;
-        border-radius: 10px;
-        padding: 16px;
+    .stat {
+        background: var(--card2);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 15px;
         text-align: center;
     }
 
-    .outcome-number {
-        font-size: 28px;
+    .stat-number {
+        font-size: 27px;
         font-weight: 800;
-        color: #172033;
         margin-bottom: 5px;
     }
 
-    .outcome-label {
+    .stat-label {
         font-size: 12px;
-        color: #64748b;
-        line-height: 1.3;
-    }
-
-    .total-calls {
-        margin-top: 15px;
-        padding: 16px;
-        border-radius: 10px;
-        background: #172033;
-        color: white;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-    }
-
-    .total-calls strong {
-        font-size: 26px;
+        color: var(--muted);
+        font-weight: 700;
     }
 
     .ticket {
-        border: 1px solid #d9e0e8;
-        border-radius: 12px;
-        padding: 20px;
+        background: var(--card2);
+        border: 1px solid var(--border);
+        border-radius: 13px;
+        padding: 18px;
         margin-bottom: 15px;
-        background: #fbfcfe;
     }
 
     .ticket-header {
         display: flex;
         justify-content: space-between;
-        gap: 15px;
         align-items: center;
+        gap: 15px;
         margin-bottom: 15px;
     }
 
     .ticket-number {
-        font-size: 19px;
+        font-size: 18px;
         font-weight: 800;
-        color: #172033;
     }
 
     .ticket-grid {
         display: grid;
         grid-template-columns: 1fr 1fr;
-        gap: 15px;
+        gap: 12px;
     }
 
-    .ticket-info {
-        background: white;
-        border: 1px solid #e2e8f0;
+    .ticket-field {
+        background: var(--card);
+        border: 1px solid var(--border);
         border-radius: 8px;
-        padding: 13px;
+        padding: 12px;
     }
 
-    .ticket-info.full {
+    .ticket-field.full {
         grid-column: 1 / -1;
     }
 
-    .ticket-info-title {
-        font-size: 11px;
-        font-weight: 800;
-        text-transform: uppercase;
-        color: #64748b;
-        margin-bottom: 6px;
+    .field-label {
+        font-size: 12px;
+        color: var(--muted);
+        font-weight: 700;
+        margin-bottom: 5px;
     }
 
-    .ticket-info-value {
-        line-height: 1.5;
+    .field-value {
         white-space: pre-wrap;
         word-break: break-word;
     }
 
-    .ticket-status {
-        width: 150px;
-    }
-
-    .no-tickets {
-        text-align: center;
-        padding: 25px;
-        border: 1px dashed #cbd5e1;
-        border-radius: 10px;
-        color: #64748b;
-    }
-
-    .report-box {
-        background: #111827;
-        color: #f8fafc;
-        border-radius: 12px;
-        padding: 22px;
-        white-space: pre-wrap;
-        line-height: 1.65;
-        font-family: Consolas, Monaco, monospace;
-        font-size: 14px;
-        min-height: 300px;
-        overflow-x: auto;
-    }
-
-    .button-row {
-        display: flex;
-        gap: 12px;
-        margin-top: 18px;
-        flex-wrap: wrap;
-    }
-
-    button {
-        border: 0;
-        border-radius: 9px;
-        padding: 13px 20px;
-        font-size: 15px;
-        font-weight: 700;
-        cursor: pointer;
-        transition: 0.15s;
-    }
-
     .primary {
-        background: #2563eb;
+        background: var(--primary);
         color: white;
+        padding: 13px 18px;
+        border-radius: 9px;
+        font-weight: 800;
     }
 
     .primary:hover {
-        background: #1d4ed8;
+        background: var(--primary-dark);
     }
 
     .secondary {
-        background: #e2e8f0;
-        color: #172033;
+        background: var(--card2);
+        color: var(--text);
+        border: 1px solid var(--border);
+        padding: 13px 18px;
+        border-radius: 9px;
+        font-weight: 800;
     }
 
-    .secondary:hover {
-        background: #cbd5e1;
+    .actions {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
     }
 
-    .copy-success {
-        display: none;
-        color: #047857;
-        font-weight: 700;
-        margin-left: 5px;
+    .report-box {
+        background: var(--card2);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 18px;
     }
 
-    footer {
-        text-align: center;
-        color: #64748b;
-        font-size: 13px;
+    #reportOutput {
+        min-height: 380px;
+        white-space: pre-wrap;
+        line-height: 1.55;
+        font-family: Arial, Helvetica, sans-serif;
+    }
+
+    .support-layout {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+    }
+
+    .copy-preview {
+        background: var(--card2);
+        border: 1px solid var(--border);
+        border-radius: 12px;
         padding: 20px;
+        white-space: pre-wrap;
+        line-height: 1.6;
+        min-height: 300px;
     }
 
-    @media (max-width: 800px) {
+    .small-note {
+        color: var(--muted);
+        font-size: 13px;
+        margin-top: 7px;
+    }
+
+    @media(max-width: 800px) {
         .grid,
-        .ticket-grid {
+        .ticket-grid,
+        .support-layout {
             grid-template-columns: 1fr;
         }
 
@@ -334,19 +371,13 @@
             grid-template-columns: repeat(2, 1fr);
         }
 
-        .outcomes {
+        .stats {
             grid-template-columns: repeat(2, 1fr);
         }
 
-        .ticket-info.full {
-            grid-column: auto;
-        }
-    }
-
-    @media (max-width: 500px) {
-        .members,
-        .outcomes {
-            grid-template-columns: 1fr;
+        header {
+            align-items: flex-start;
+            flex-direction: column;
         }
     }
 </style>
@@ -354,818 +385,1244 @@
 
 <body>
 
-<header>
-    <div class="header-inner">
-        <h1>Customer Success Daily Report</h1>
-        <p>Daily call activity, merchant issues and ticket tracking</p>
+<div class="container">
+
+    <header>
+        <div>
+            <div class="title">Customer Success Daily Report</div>
+            <div class="subtitle">Customer Retention • Daily Reporting System</div>
+        </div>
+
+        <div class="top-buttons">
+            <button class="mode-btn" onclick="toggleDarkMode()" id="modeButton">
+                🌙 Dark Mode
+            </button>
+        </div>
+    </header>
+
+    <div class="main-tabs">
+        <button class="tab-btn active" onclick="showPage('reportPage', this)">
+            📊 Daily Report
+        </button>
+
+        <button class="tab-btn" onclick="showPage('supportPage', this)">
+            💳 Credit Card Support
+        </button>
     </div>
-</header>
 
-<main>
 
-    <!-- REPORT INFORMATION -->
-    <section class="panel">
+    <!-- ========================= -->
+    <!-- DAILY REPORT -->
+    <!-- ========================= -->
 
-        <div class="panel-title">
-            Report Information
+    <div id="reportPage" class="page active">
+
+        <div class="card">
+
+            <div class="section-title">
+                Report Information
+            </div>
+
+            <div class="grid">
+
+                <div>
+                    <label>REPORT DATE</label>
+                    <input type="date" id="reportDate">
+                </div>
+
+                <div>
+                    <label>CALL TYPE</label>
+                    <select id="callType">
+                        <option value="Quarterly Check-In">Quarterly Check-In</option>
+                        <option value="Onboarding">Onboarding</option>
+                    </select>
+                </div>
+
+                <div class="full">
+                    <label>TEAM MEMBERS PRESENT</label>
+
+                    <div class="members">
+
+                        <label class="member">
+                            <input type="checkbox" value="Vince" class="team">
+                            Vince
+                        </label>
+
+                        <label class="member">
+                            <input type="checkbox" value="Avie" class="team">
+                            Avie
+                        </label>
+
+                        <label class="member">
+                            <input type="checkbox" value="Kirby" class="team">
+                            Kirby
+                        </label>
+
+                        <label class="member">
+                            <input type="checkbox" value="Neil" class="team">
+                            Neil
+                        </label>
+
+                    </div>
+                </div>
+
+                <div class="full">
+                    <label>EXTRA TASK</label>
+
+                    <textarea
+                        id="extraTask"
+                        placeholder="Enter any additional tasks completed today..."
+                    ></textarea>
+                </div>
+
+            </div>
+
         </div>
 
-        <div class="grid">
 
-            <div class="field">
-                <label for="reportDate">REPORT DATE</label>
-                <input type="date" id="reportDate">
+        <div class="card">
+
+            <div class="section-title">
+                Data Connection
             </div>
 
-            <div class="field">
-                <label for="callType">CALL TYPE</label>
-                <select id="callType">
-                    <option value="Quarterly Check-In">Quarterly Check-In</option>
-                    <option value="Onboarding">Onboarding</option>
-                </select>
+            <div id="dataStatus" class="status">
+                Loading CSV data...
             </div>
 
-            <div class="field full">
-                <label>TEAM MEMBERS PRESENT</label>
+            <div class="actions">
+                <button class="primary" onclick="loadCSV()">
+                    🔄 Refresh Data
+                </button>
+            </div>
 
-                <div class="members">
+        </div>
 
-                    <label class="member">
-                        <input type="checkbox" value="Vince" class="memberCheck">
-                        Vince
-                    </label>
 
-                    <label class="member">
-                        <input type="checkbox" value="Avie" class="memberCheck">
-                        Avie
-                    </label>
+        <div class="card">
 
-                    <label class="member">
-                        <input type="checkbox" value="Kirby" class="memberCheck">
-                        Kirby
-                    </label>
+            <div class="section-title">
+                Call Activity Summary
+            </div>
 
-                    <label class="member">
-                        <input type="checkbox" value="Neil" class="memberCheck">
-                        Neil
-                    </label>
+            <div class="stats">
 
+                <div class="stat">
+                    <div class="stat-number" id="followUpCount">0</div>
+                    <div class="stat-label">Follow-Up Scheduled</div>
+                </div>
+
+                <div class="stat">
+                    <div class="stat-number" id="retainedCount">0</div>
+                    <div class="stat-label">Retained / Satisfied</div>
+                </div>
+
+                <div class="stat">
+                    <div class="stat-number" id="voicemailCount">0</div>
+                    <div class="stat-label">Voicemail Left</div>
+                </div>
+
+                <div class="stat">
+                    <div class="stat-number" id="noAnswerCount">0</div>
+                    <div class="stat-label">No Answer / Hang Up</div>
+                </div>
+
+                <div class="stat">
+                    <div class="stat-number" id="churnedCount">0</div>
+                    <div class="stat-label">Churned / Cancelled</div>
+                </div>
+
+            </div>
+
+            <br>
+
+            <div>
+                <strong>Total Calls Made:</strong>
+                <span id="totalCalls">0</span>
+            </div>
+
+        </div>
+
+
+        <div class="card">
+
+            <div class="section-title">
+                Merchant Issues / Tickets
+            </div>
+
+            <div style="margin-bottom:15px;">
+                <strong>Total Tickets:</strong>
+                <span id="totalTickets">0</span>
+            </div>
+
+            <div id="ticketsContainer">
+                <div class="status">
+                    No tickets loaded yet.
                 </div>
             </div>
 
-            <div class="field full">
-                <label for="extraTask">EXTRA TASK</label>
+        </div>
 
-                <textarea
-                    id="extraTask"
-                    placeholder="Enter any additional tasks completed today..."
-                ></textarea>
+
+        <div class="card">
+
+            <div class="section-title">
+                Final Report
             </div>
 
-        </div>
+            <div class="report-box">
 
-    </section>
+                <textarea id="reportOutput" readonly></textarea>
 
+                <br>
 
-    <!-- DATA STATUS -->
-    <section class="panel">
+                <div class="actions">
 
-        <div id="dataStatus" class="status">
-            Loading CSV data...
-        </div>
+                    <button class="primary" onclick="generateReport()">
+                        📝 Generate Report
+                    </button>
 
-    </section>
+                    <button class="secondary" onclick="copyReport()">
+                        📋 Copy Whole Report
+                    </button>
 
-
-    <!-- CALL ACTIVITY -->
-    <section class="panel">
-
-        <div class="panel-title">
-            Call Activity Summary
-        </div>
-
-        <div class="outcomes">
-
-            <div class="outcome-card">
-                <div id="followUpCount" class="outcome-number">0</div>
-                <div class="outcome-label">
-                    Follow-Up Scheduled
                 </div>
+
             </div>
 
-            <div class="outcome-card">
-                <div id="retainedCount" class="outcome-number">0</div>
-                <div class="outcome-label">
-                    Retained / Satisfied
+        </div>
+
+    </div>
+
+
+    <!-- ========================= -->
+    <!-- CREDIT CARD SUPPORT -->
+    <!-- ========================= -->
+
+    <div id="supportPage" class="page">
+
+        <div class="card">
+
+            <div class="section-title">
+                Credit Card Support Request
+            </div>
+
+            <div class="support-layout">
+
+                <div>
+
+                    <div class="grid">
+
+                        <div class="full">
+                            <label>STORE</label>
+                            <input
+                                id="supportStore"
+                                placeholder="Enter store name"
+                            >
+                        </div>
+
+                        <div>
+                            <label>NAME</label>
+                            <input
+                                id="supportName"
+                                placeholder="Contact person's name"
+                            >
+                        </div>
+
+                        <div>
+                            <label>CONTACT</label>
+                            <input
+                                id="supportContact"
+                                placeholder="Phone number"
+                            >
+                        </div>
+
+                        <div class="full">
+                            <label>ISSUE</label>
+                            <textarea
+                                id="supportIssue"
+                                placeholder="Describe the issue..."
+                            ></textarea>
+                        </div>
+
+                        <div class="full">
+                            <label>AVAILABILITY</label>
+                            <textarea
+                                id="supportAvailability"
+                                placeholder="Enter the merchant's availability..."
+                            ></textarea>
+                        </div>
+
+                    </div>
+
+                    <br>
+
+                    <button class="primary" onclick="generateSupportText()">
+                        Generate
+                    </button>
+
                 </div>
-            </div>
 
-            <div class="outcome-card">
-                <div id="voicemailCount" class="outcome-number">0</div>
-                <div class="outcome-label">
-                    Voicemail Left
+
+                <div>
+
+                    <label>TEXT TO COPY</label>
+
+                    <div id="supportPreview" class="copy-preview">
+***For Reference:***
+*Initiated by Customer Retention; to be handled by Credit Card Support.*
+
+**Contact Person:** 
+
+**Callback Number:** 
+
+**Issue:** 
+
+**Availability:**
+                    </div>
+
+                    <br>
+
+                    <button class="primary" onclick="copySupportText()">
+                        📋 Copy
+                    </button>
+
                 </div>
-            </div>
 
-            <div class="outcome-card">
-                <div id="noAnswerCount" class="outcome-number">0</div>
-                <div class="outcome-label">
-                    No Answer / Hang Up
-                </div>
-            </div>
-
-            <div class="outcome-card">
-                <div id="churnedCount" class="outcome-number">0</div>
-                <div class="outcome-label">
-                    Churned / Cancelled
-                </div>
             </div>
 
         </div>
 
-        <div class="total-calls">
-            <span>Total Calls Made</span>
-            <strong id="totalCalls">0</strong>
-        </div>
+    </div>
 
-    </section>
-
-
-    <!-- TICKETS -->
-    <section class="panel">
-
-        <div class="panel-title">
-            Merchant Issues / Tickets
-        </div>
-
-        <div class="total-calls" style="margin-bottom:20px;">
-            <span>Total Tickets</span>
-            <strong id="totalTickets">0</strong>
-        </div>
-
-        <div id="ticketsContainer">
-            <div class="no-tickets">
-                No tickets found for this date.
-            </div>
-        </div>
-
-    </section>
-
-
-    <!-- GENERATED REPORT -->
-    <section class="panel">
-
-        <div class="panel-title">
-            Generated Report
-        </div>
-
-        <div id="reportOutput" class="report-box"></div>
-
-        <div class="button-row">
-
-            <button
-                type="button"
-                class="primary"
-                onclick="copyReport()"
-            >
-                COPY WHOLE REPORT
-            </button>
-
-            <button
-                type="button"
-                class="secondary"
-                onclick="refreshData()"
-            >
-                REFRESH DATA
-            </button>
-
-            <span id="copySuccess" class="copy-success">
-                Report copied!
-            </span>
-
-        </div>
-
-    </section>
-
-</main>
-
-<footer>
-    Customer Success Daily Report System
-</footer>
+</div>
 
 
 <script>
 
-/* =========================================================
+/* =====================================================
    SETTINGS
-   ========================================================= */
+===================================================== */
 
-const CSV_FILE = "Customer Success_2026(Retain In).csv";
+/*
+   IMPORTANT:
+   Your CSV is inside the docs folder.
 
-let allData = [];
+   GitHub Pages normally serves the docs folder as
+   the website root.
+
+   We try the normal website path first.
+   If that fails, we try GitHub's raw file.
+*/
+
+const CSV_FILE = "Customer%20Success_2026%28Retain%20In%29.csv";
+
+const GITHUB_RAW =
+    "https://raw.githubusercontent.com/Daisho621/Customer-Retention-PH/main/docs/Customer%20Success_2026%28Retain%20In%29.csv";
+
+
+let csvRows = [];
 let ticketStatuses = {};
 
 
-/* =========================================================
-   INITIALIZATION
-   ========================================================= */
+/* =====================================================
+   DATE
+===================================================== */
 
-document.addEventListener("DOMContentLoaded", function () {
+function getTodayLocal() {
 
-    setToday();
+    const now = new Date();
 
-    document
-        .getElementById("reportDate")
-        .addEventListener("change", updateReport);
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, "0");
+    const day = String(now.getDate()).padStart(2, "0");
 
-    document
-        .getElementById("callType")
-        .addEventListener("change", updateReport);
+    return `${year}-${month}-${day}`;
+}
 
-    document
-        .getElementById("extraTask")
-        .addEventListener("input", generateReport);
-
-    document
-        .querySelectorAll(".memberCheck")
-        .forEach(function (checkbox) {
-            checkbox.addEventListener("change", generateReport);
-        });
-
-    loadCSV();
-
-});
+document.getElementById("reportDate").value = getTodayLocal();
 
 
-/* =========================================================
-   SET TODAY'S DATE
-   ========================================================= */
+/* =====================================================
+   DARK MODE
+===================================================== */
 
-function setToday() {
+function toggleDarkMode() {
 
-    const today = new Date();
+    document.body.classList.toggle("dark");
 
-    const year = today.getFullYear();
+    const dark = document.body.classList.contains("dark");
 
-    const month = String(today.getMonth() + 1).padStart(2, "0");
+    localStorage.setItem("customerReportDarkMode", dark ? "1" : "0");
 
-    const day = String(today.getDate()).padStart(2, "0");
-
-    document.getElementById("reportDate").value =
-        `${year}-${month}-${day}`;
+    document.getElementById("modeButton").innerHTML =
+        dark ? "☀️ Light Mode" : "🌙 Dark Mode";
 }
 
 
-/* =========================================================
-   LOAD CSV
-   ========================================================= */
+if (localStorage.getItem("customerReportDarkMode") === "1") {
 
-function loadCSV() {
+    document.body.classList.add("dark");
 
-    const status = document.getElementById("dataStatus");
+    document.getElementById("modeButton").innerHTML =
+        "☀️ Light Mode";
+}
 
-    status.className = "status";
 
-    status.textContent = "Loading CSV data...";
+/* =====================================================
+   TABS
+===================================================== */
 
-    /*
-       Cache-busting parameter prevents the browser from
-       keeping an old copy of the CSV.
-    */
+function showPage(pageId, button) {
 
-    const csvURL =
-        encodeURI(CSV_FILE) +
-        "?v=" +
-        Date.now();
+    document.querySelectorAll(".page").forEach(page => {
+        page.classList.remove("active");
+    });
 
-    Papa.parse(csvURL, {
+    document.getElementById(pageId).classList.add("active");
 
-        download: true,
+    document.querySelectorAll(".tab-btn").forEach(btn => {
+        btn.classList.remove("active");
+    });
 
-        header: true,
+    button.classList.add("active");
+}
 
-        skipEmptyLines: true,
 
-        complete: function(results) {
+/* =====================================================
+   CSV PARSER
+===================================================== */
 
-            allData = results.data || [];
+function parseCSV(text) {
 
-            if (allData.length === 0) {
+    const rows = [];
+    let row = [];
+    let value = "";
+    let insideQuotes = false;
 
-                status.className = "status error";
+    for (let i = 0; i < text.length; i++) {
 
-                status.textContent =
-                    "CSV loaded, but no data was found.";
+        const char = text[i];
+        const next = text[i + 1];
 
-                updateReport();
+        if (char === '"' && insideQuotes && next === '"') {
 
-                return;
-            }
-
-            status.className = "status success";
-
-            status.textContent =
-                "✓ CSV loaded successfully. " +
-                allData.length.toLocaleString() +
-                " rows available.";
-
-            updateReport();
-        },
-
-        error: function(error) {
-
-            console.error(error);
-
-            status.className = "status error";
-
-            status.innerHTML =
-                "Unable to load the CSV file. " +
-                "Make sure <strong>" +
-                CSV_FILE +
-                "</strong> is inside the docs folder.";
-
+            value += '"';
+            i++;
+            continue;
         }
 
+        if (char === '"') {
+
+            insideQuotes = !insideQuotes;
+            continue;
+        }
+
+        if (char === "," && !insideQuotes) {
+
+            row.push(value);
+            value = "";
+            continue;
+        }
+
+        if ((char === "\n" || char === "\r") && !insideQuotes) {
+
+            if (char === "\r" && next === "\n") {
+                i++;
+            }
+
+            row.push(value);
+
+            if (row.some(x => x.trim() !== "")) {
+                rows.push(row);
+            }
+
+            row = [];
+            value = "";
+
+            continue;
+        }
+
+        value += char;
+    }
+
+    if (value !== "" || row.length > 0) {
+
+        row.push(value);
+
+        if (row.some(x => x.trim() !== "")) {
+            rows.push(row);
+        }
+    }
+
+    if (!rows.length) return [];
+
+    const headers = rows[0].map(h =>
+        h.trim().replace(/^\uFEFF/, "")
+    );
+
+    return rows.slice(1).map(values => {
+
+        const obj = {};
+
+        headers.forEach((header, index) => {
+
+            obj[header] =
+                values[index] !== undefined
+                    ? values[index].trim()
+                    : "";
+        });
+
+        return obj;
     });
 }
 
 
-/* =========================================================
-   REFRESH DATA
-   ========================================================= */
-
-function refreshData() {
-
-    loadCSV();
-
-}
-
-
-/* =========================================================
-   NORMALIZE TEXT
-   ========================================================= */
-
-function normalize(value) {
-
-    if (value === null || value === undefined) {
-        return "";
-    }
-
-    return String(value)
-        .trim()
-        .replace(/\s+/g, " ")
-        .toLowerCase();
-}
-
-
-/* =========================================================
-   NORMALIZE DATE
-   ========================================================= */
+/* =====================================================
+   DATE NORMALIZATION
+===================================================== */
 
 function normalizeDate(value) {
 
-    if (!value) {
-        return "";
-    }
+    if (!value) return "";
 
-    let text = String(value).trim();
+    value = String(value).trim();
 
     /*
-       Handles:
-       8/26/2026
-       08/26/2026
-       8-26-2026
-       08-26-2026
-       2026-08-26
+      Handles:
+      8/26/2026
+      08/26/2026
+      8/26/26
+      2026-08-26
     */
 
-    let match = text.match(
-        /^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})/
-    );
+    let match = value.match(/^(\d{1,2})\/(\d{1,2})\/(\d{2,4})$/);
 
     if (match) {
 
-        let month = String(match[1]).padStart(2, "0");
-
-        let day = String(match[2]).padStart(2, "0");
-
+        let month = match[1].padStart(2, "0");
+        let day = match[2].padStart(2, "0");
         let year = match[3];
 
+        if (year.length === 2) {
+            year = "20" + year;
+        }
+
         return `${year}-${month}-${day}`;
     }
 
-    match = text.match(
-        /^(\d{4})[\/\-](\d{1,2})[\/\-](\d{1,2})/
-    );
+    match = value.match(/^(\d{4})-(\d{1,2})-(\d{1,2})$/);
 
     if (match) {
 
-        let year = match[1];
-
-        let month = String(match[2]).padStart(2, "0");
-
-        let day = String(match[3]).padStart(2, "0");
-
-        return `${year}-${month}-${day}`;
+        return `${match[1]}-${match[2].padStart(2,"0")}-${match[3].padStart(2,"0")}`;
     }
 
-    /*
-       Try JavaScript date parsing as a backup.
-    */
+    const parsed = new Date(value);
 
-    const parsed = new Date(text);
+    if (!isNaN(parsed)) {
 
-    if (!isNaN(parsed.getTime())) {
-
-        const year = parsed.getFullYear();
-
-        const month =
-            String(parsed.getMonth() + 1).padStart(2, "0");
-
-        const day =
-            String(parsed.getDate()).padStart(2, "0");
-
-        return `${year}-${month}-${day}`;
+        return `${parsed.getFullYear()}-${String(parsed.getMonth()+1).padStart(2,"0")}-${String(parsed.getDate()).padStart(2,"0")}`;
     }
 
     return "";
 }
 
 
-/* =========================================================
-   GET SELECTED DATE
-   ========================================================= */
+/* =====================================================
+   CSV LOADING
+===================================================== */
 
-function getSelectedDate() {
+async function loadCSV() {
 
-    return document.getElementById("reportDate").value;
+    const status = document.getElementById("dataStatus");
 
+    status.className = "status";
+    status.textContent = "Loading CSV data...";
+
+    const localURL =
+        "./" + CSV_FILE + "?v=" + Date.now();
+
+    try {
+
+        let response = await fetch(localURL, {
+            cache: "no-store"
+        });
+
+        if (!response.ok) {
+            throw new Error("Website CSV failed");
+        }
+
+        const text = await response.text();
+
+        if (!text || text.length < 10) {
+            throw new Error("CSV is empty");
+        }
+
+        csvRows = parseCSV(text);
+
+        if (!csvRows.length) {
+            throw new Error("No rows found");
+        }
+
+        status.className = "status success";
+
+        status.textContent =
+            `✓ Loaded ${csvRows.length.toLocaleString()} records successfully.`;
+
+        updateReport();
+
+    } catch (firstError) {
+
+        console.log("Normal CSV path failed:", firstError);
+
+        try {
+
+            const response = await fetch(
+                GITHUB_RAW + "?v=" + Date.now(),
+                {
+                    cache: "no-store"
+                }
+            );
+
+            if (!response.ok) {
+                throw new Error("GitHub Raw CSV failed");
+            }
+
+            const text = await response.text();
+
+            csvRows = parseCSV(text);
+
+            if (!csvRows.length) {
+                throw new Error("No rows found");
+            }
+
+            status.className = "status success";
+
+            status.textContent =
+                `✓ Loaded ${csvRows.length.toLocaleString()} records successfully.`;
+
+            updateReport();
+
+        } catch (secondError) {
+
+            console.error(secondError);
+
+            status.className = "status error";
+
+            status.innerHTML =
+                "❌ Could not load the CSV file.<br><br>" +
+                "Make sure the CSV is committed inside the <b>docs</b> folder " +
+                "and the filename matches:<br>" +
+                "<b>Customer Success_2026(Retain In).csv</b>";
+
+        }
+
+    }
 }
 
 
-/* =========================================================
-   GET SELECTED CALL TYPE
-   ========================================================= */
+/* =====================================================
+   COLUMN FINDER
+===================================================== */
 
-function getSelectedCallType() {
+function getValue(row, possibleNames) {
 
-    return normalize(
-        document.getElementById("callType").value
-    );
+    for (const name of possibleNames) {
 
-}
-
-
-/* =========================================================
-   FILTER DATA
-   ========================================================= */
-
-function getMatchingRows() {
-
-    const selectedDate = getSelectedDate();
-
-    const selectedCallType = getSelectedCallType();
-
-    if (!selectedDate) {
-        return [];
+        if (row[name] !== undefined) {
+            return row[name];
+        }
     }
 
-    return allData.filter(function(row) {
+    /*
+      Also search case-insensitively.
+    */
 
-        const rowDate =
-            normalizeDate(row["Date"]);
+    const keys = Object.keys(row);
 
-        const rowCallType =
-            normalize(row["Call Type"]);
+    for (const wanted of possibleNames) {
 
-        return (
-            rowDate === selectedDate &&
-            rowCallType === selectedCallType
+        const found = keys.find(key =>
+            key.trim().toLowerCase() === wanted.toLowerCase()
         );
 
-    });
+        if (found) {
+            return row[found];
+        }
+    }
 
+    return "";
 }
 
 
-/* =========================================================
-   UPDATE EVERYTHING
-   ========================================================= */
+/* =====================================================
+   UPDATE REPORT
+===================================================== */
 
 function updateReport() {
 
-    if (!allData.length) {
+    if (!csvRows.length) return;
 
-        resetCounts();
+    const selectedDate =
+        document.getElementById("reportDate").value;
 
-        renderTickets([]);
-
-        generateReport();
-
-        return;
-    }
-
-    const rows = getMatchingRows();
-
-    calculateOutcomes(rows);
-
-    renderTickets(rows);
-
-    generateReport();
-
-}
+    const selectedCallType =
+        document.getElementById("callType").value;
 
 
-/* =========================================================
-   RESET COUNTS
-   ========================================================= */
+    const filtered = csvRows.filter(row => {
 
-function resetCounts() {
+        const rowDate = normalizeDate(
+            getValue(row, ["Date", "date"])
+        );
 
-    document.getElementById("followUpCount").textContent = "0";
+        const rowCallType =
+            getValue(row, [
+                "Call Type",
+                "CallType",
+                "call type"
+            ]);
 
-    document.getElementById("retainedCount").textContent = "0";
-
-    document.getElementById("voicemailCount").textContent = "0";
-
-    document.getElementById("noAnswerCount").textContent = "0";
-
-    document.getElementById("churnedCount").textContent = "0";
-
-    document.getElementById("totalCalls").textContent = "0";
-
-    document.getElementById("totalTickets").textContent = "0";
-
-}
+        return rowDate === selectedDate &&
+               rowCallType.trim().toLowerCase() ===
+               selectedCallType.trim().toLowerCase();
+    });
 
 
-/* =========================================================
-   CALCULATE OUTCOMES
-   ========================================================= */
-
-function calculateOutcomes(rows) {
+    /* ==============================
+       OUTCOMES
+    ============================== */
 
     let followUp = 0;
-
     let retained = 0;
-
     let voicemail = 0;
-
     let noAnswer = 0;
-
     let churned = 0;
 
-    rows.forEach(function(row) {
 
-        const outcome =
-            normalize(row["Outcome"]);
+    filtered.forEach(row => {
 
-        if (
-            outcome === "follow-up scheduled" ||
-            outcome === "follow up scheduled"
-        ) {
+        const outcome = getValue(row, [
+            "Outcome",
+            "outcome"
+        ]).trim().toLowerCase();
+
+        if (outcome === "follow-up scheduled") {
             followUp++;
         }
 
-        else if (
-            outcome === "retained / satisfied" ||
-            outcome === "retained/satisfied"
-        ) {
+        else if (outcome === "retained / satisfied") {
             retained++;
         }
 
-        else if (
-            outcome === "voicemail left"
-        ) {
+        else if (outcome === "voicemail left") {
             voicemail++;
         }
 
         else if (
             outcome === "no answer" ||
             outcome === "hang up" ||
-            outcome === "no answer / hang up" ||
-            outcome === "no answer/hang up"
+            outcome === "no answer / hang up"
         ) {
             noAnswer++;
         }
 
         else if (
             outcome === "churned / cancelled" ||
-            outcome === "churned/cancelled" ||
-            outcome === "churned / canceled" ||
-            outcome === "churned/canceled"
+            outcome === "churned / canceled"
         ) {
             churned++;
         }
 
     });
 
-    document.getElementById("followUpCount").textContent =
-        followUp;
 
-    document.getElementById("retainedCount").textContent =
-        retained;
-
-    document.getElementById("voicemailCount").textContent =
-        voicemail;
-
-    document.getElementById("noAnswerCount").textContent =
-        noAnswer;
-
-    document.getElementById("churnedCount").textContent =
-        churned;
+    document.getElementById("followUpCount").textContent = followUp;
+    document.getElementById("retainedCount").textContent = retained;
+    document.getElementById("voicemailCount").textContent = voicemail;
+    document.getElementById("noAnswerCount").textContent = noAnswer;
+    document.getElementById("churnedCount").textContent = churned;
 
     document.getElementById("totalCalls").textContent =
-        rows.length;
-
-}
+        filtered.length;
 
 
-/* =========================================================
-   GET TICKETS
-   ========================================================= */
+    /* ==============================
+       TICKETS
+    ============================== */
 
-function getTickets(rows) {
+    const ticketMap = new Map();
 
-    return rows.filter(function(row) {
+    filtered.forEach(row => {
 
-        const ticketID =
-            String(row["Ticket ID (Optional)"] || "").trim();
+        const ticketId = getValue(row, [
+            "Ticket ID (Optional)",
+            "Ticket ID",
+            "TicketID",
+            "Ticket Id",
+            "ticket id"
+        ]).trim();
 
-        return ticketID !== "";
+        if (!ticketId) return;
+
+        /*
+          Prevent duplicate ticket numbers.
+        */
+
+        if (!ticketMap.has(ticketId)) {
+            ticketMap.set(ticketId, row);
+        }
 
     });
 
-}
 
-
-/* =========================================================
-   RENDER TICKETS
-   ========================================================= */
-
-function renderTickets(rows) {
-
-    const container =
-        document.getElementById("ticketsContainer");
-
-    const tickets = getTickets(rows);
+    const tickets = Array.from(ticketMap.entries());
 
     document.getElementById("totalTickets").textContent =
         tickets.length;
 
-    if (tickets.length === 0) {
 
-        container.innerHTML = `
-            <div class="no-tickets">
-                No tickets found for this date and call type.
-            </div>
-        `;
+    renderTickets(tickets);
+
+    generateReport();
+}
+
+
+/* =====================================================
+   RENDER TICKETS
+===================================================== */
+
+function renderTickets(tickets) {
+
+    const container =
+        document.getElementById("ticketsContainer");
+
+    container.innerHTML = "";
+
+    if (!tickets.length) {
+
+        container.innerHTML =
+            '<div class="status">No tickets found for this date and call type.</div>';
 
         return;
     }
 
-    container.innerHTML = "";
 
-    tickets.forEach(function(ticket, index) {
+    tickets.forEach(([ticketId, row], index) => {
 
-        const ticketID =
-            String(ticket["Ticket ID (Optional)"] || "").trim();
-
-        const store =
-            String(ticket["Store Name"] || "").trim();
-
-        const notes =
-            String(ticket["Notes"] || "").trim();
-
-        const category =
-            String(ticket["Category"] || "").trim();
-
-        /*
-           Use ticket ID as the key.
-           If multiple rows contain the same ticket ID,
-           append the index to keep statuses separate.
-        */
-
-        const statusKey =
-            ticketID + "_" + index;
-
-        if (!ticketStatuses[statusKey]) {
-            ticketStatuses[statusKey] = "Open";
+        if (!ticketStatuses[ticketId]) {
+            ticketStatuses[ticketId] = "Open";
         }
 
-        const ticketDiv =
-            document.createElement("div");
 
-        ticketDiv.className = "ticket";
+        const store = getValue(row, [
+            "Store Name",
+            "Store",
+            "store name"
+        ]);
 
-        ticketDiv.innerHTML = `
+        const notes = getValue(row, [
+            "Notes",
+            "Issue",
+            "notes"
+        ]);
+
+        const contact = getValue(row, [
+            "Contact Name",
+            "Contact",
+            "Person Name",
+            "Contact Person"
+        ]);
+
+        const phone = getValue(row, [
+            "Phone Number",
+            "Phone",
+            "Contact Number",
+            "Callback Number"
+        ]);
+
+
+        const ticket = document.createElement("div");
+
+        ticket.className = "ticket";
+
+        ticket.innerHTML = `
 
             <div class="ticket-header">
 
                 <div class="ticket-number">
-                    Ticket: #${escapeHTML(ticketID)}
+                    Ticket: #${escapeHTML(ticketId)}
                 </div>
 
                 <select
-                    class="ticket-status"
-                    data-status-key="${escapeHTML(statusKey)}"
+                    onchange="changeTicketStatus('${escapeAttribute(ticketId)}', this.value)"
+                    style="max-width:180px;"
                 >
-
                     <option value="Open"
-                        ${ticketStatuses[statusKey] === "Open" ? "selected" : ""}>
+                        ${ticketStatuses[ticketId] === "Open" ? "selected" : ""}>
                         Open
                     </option>
 
-                    <option value="Pending"
-                        ${ticketStatuses[statusKey] === "Pending" ? "selected" : ""}>
-                        Pending
-                    </option>
-
                     <option value="Solved"
-                        ${ticketStatuses[statusKey] === "Solved" ? "selected" : ""}>
+                        ${ticketStatuses[ticketId] === "Solved" ? "selected" : ""}>
                         Solved
                     </option>
 
+                    <option value="Pending"
+                        ${ticketStatuses[ticketId] === "Pending" ? "selected" : ""}>
+                        Pending
+                    </option>
                 </select>
 
             </div>
 
+
             <div class="ticket-grid">
 
-                <div class="ticket-info">
-
-                    <div class="ticket-info-title">
-                        Store
+                <div class="ticket-field">
+                    <div class="field-label">STORE</div>
+                    <div class="field-value">
+                        ${escapeHTML(store)}
                     </div>
-
-                    <div class="ticket-info-value">
-                        ${escapeHTML(store || "N/A")}
-                    </div>
-
                 </div>
 
-                <div class="ticket-info">
 
-                    <div class="ticket-info-title">
-                        Category
+                <div class="ticket-field">
+                    <div class="field-label">CONTACT</div>
+                    <div class="field-value">
+                        ${escapeHTML(contact)}
                     </div>
-
-                    <div class="ticket-info-value">
-                        ${escapeHTML(category || "N/A")}
-                    </div>
-
                 </div>
 
-                <div class="ticket-info full">
 
-                    <div class="ticket-info-title">
-                        Issue / Notes
+                <div class="ticket-field">
+                    <div class="field-label">PHONE</div>
+                    <div class="field-value">
+                        ${escapeHTML(phone)}
                     </div>
+                </div>
 
-                    <div class="ticket-info-value">
-                        ${escapeHTML(notes || "No notes provided.")}
+
+                <div class="ticket-field">
+                    <div class="field-label">STATUS</div>
+                    <div class="field-value">
+                        ${escapeHTML(ticketStatuses[ticketId])}
                     </div>
+                </div>
 
+
+                <div class="ticket-field full">
+                    <div class="field-label">ISSUE / NOTES</div>
+                    <div class="field-value">
+                        ${escapeHTML(notes)}
+                    </div>
                 </div>
 
             </div>
         `;
 
-        container.appendChild(ticketDiv);
+
+        container.appendChild(ticket);
 
     });
-
-
-    /*
-       Attach change listeners after creating ticket elements.
-    */
-
-    container
-        .querySelectorAll(".ticket-status")
-        .forEach(function(select) {
-
-            select.addEventListener("change", function() {
-
-                const key =
-                    this.getAttribute("data-status-key");
-
-                ticketStatuses[key] =
-                    this.value;
-
-                generateReport();
-
-            });
-
-        });
 
 }
 
 
-/* =========================================================
-   ESCAPE HTML
-   ========================================================= */
+/* =====================================================
+   TICKET STATUS
+===================================================== */
+
+function changeTicketStatus(ticketId, status) {
+
+    ticketStatuses[ticketId] = status;
+
+    updateReport();
+}
+
+
+/* =====================================================
+   GENERATE REPORT
+===================================================== */
+
+function generateReport() {
+
+    const date =
+        document.getElementById("reportDate").value;
+
+    const formattedDate =
+        formatDate(date);
+
+    const callType =
+        document.getElementById("callType").value;
+
+    const extraTask =
+        document.getElementById("extraTask").value.trim();
+
+
+    const members =
+        Array.from(
+            document.querySelectorAll(".team:checked")
+        )
+        .map(x => x.value)
+        .join(", ");
+
+
+    const followUp =
+        document.getElementById("followUpCount").textContent;
+
+    const retained =
+        document.getElementById("retainedCount").textContent;
+
+    const voicemail =
+        document.getElementById("voicemailCount").textContent;
+
+    const noAnswer =
+        document.getElementById("noAnswerCount").textContent;
+
+    const churned =
+        document.getElementById("churnedCount").textContent;
+
+    const totalCalls =
+        document.getElementById("totalCalls").textContent;
+
+    const totalTickets =
+        document.getElementById("totalTickets").textContent;
+
+
+    let report = "";
+
+    report += "Customer Success Daily Report\n";
+    report += `Date: ${formattedDate}\n\n`;
+
+    report += `Team Members Present: ${members || ""}\n\n`;
+
+    report += `Extra Task: ${extraTask || ""}\n\n`;
+
+    report += "Call Activity Summary\n\n";
+
+    report += `${callType}\n`;
+    report += `Total Calls Made: ${totalCalls}\n\n`;
+
+    report += "OUTCOMES\n";
+
+    report += `Follow-Up Scheduled: ${followUp}\n`;
+    report += `Retained / Satisfied: ${retained}\n`;
+    report += `Voicemail Left: ${voicemail}\n`;
+    report += `No Answer / Hang Up: ${noAnswer}\n`;
+    report += `Churned / Cancelled: ${churned}\n\n`;
+
+    report += `Total Tickets: ${totalTickets}\n\n`;
+
+
+    /* ==============================
+       TICKETS
+    ============================== */
+
+    const selectedDate =
+        document.getElementById("reportDate").value;
+
+    const selectedCallType =
+        document.getElementById("callType").value;
+
+
+    const filtered = csvRows.filter(row => {
+
+        const rowDate = normalizeDate(
+            getValue(row, ["Date", "date"])
+        );
+
+        const rowCallType =
+            getValue(row, [
+                "Call Type",
+                "CallType",
+                "call type"
+            ]);
+
+        return rowDate === selectedDate &&
+            rowCallType.trim().toLowerCase() ===
+            selectedCallType.trim().toLowerCase();
+    });
+
+
+    const ticketMap = new Map();
+
+    filtered.forEach(row => {
+
+        const ticketId = getValue(row, [
+            "Ticket ID (Optional)",
+            "Ticket ID",
+            "TicketID",
+            "Ticket Id",
+            "ticket id"
+        ]).trim();
+
+        if (ticketId && !ticketMap.has(ticketId)) {
+            ticketMap.set(ticketId, row);
+        }
+    });
+
+
+    ticketMap.forEach((row, ticketId) => {
+
+        const store = getValue(row, [
+            "Store Name",
+            "Store",
+            "store name"
+        ]);
+
+        const notes = getValue(row, [
+            "Notes",
+            "Issue",
+            "notes"
+        ]);
+
+        const status =
+            ticketStatuses[ticketId] || "Open";
+
+
+        report += `Ticket: #${ticketId}\n`;
+        report += `Store: ${store}\n`;
+        report += `Issue: ${notes}\n`;
+        report += `Status: ${status}\n\n`;
+
+    });
+
+
+    document.getElementById("reportOutput").value =
+        report.trim();
+}
+
+
+/* =====================================================
+   COPY REPORT
+===================================================== */
+
+async function copyReport() {
+
+    generateReport();
+
+    const text =
+        document.getElementById("reportOutput").value;
+
+    try {
+
+        await navigator.clipboard.writeText(text);
+
+        alert("✓ Report copied to clipboard!");
+
+    } catch (error) {
+
+        const textarea =
+            document.getElementById("reportOutput");
+
+        textarea.select();
+
+        document.execCommand("copy");
+
+        alert("✓ Report copied!");
+
+    }
+}
+
+
+/* =====================================================
+   CREDIT CARD SUPPORT
+===================================================== */
+
+function generateSupportText() {
+
+    const store =
+        document.getElementById("supportStore").value.trim();
+
+    const name =
+        document.getElementById("supportName").value.trim();
+
+    const contact =
+        document.getElementById("supportContact").value.trim();
+
+    const issue =
+        document.getElementById("supportIssue").value.trim();
+
+    const availability =
+        document.getElementById("supportAvailability").value.trim();
+
+
+    const text =
+`***For Reference:*** *Initiated by Customer Retention; to be handled by Credit Card Support.*
+
+**Contact Person:** ${name}
+
+**Callback Number:** ${contact}
+
+**Issue:** ${issue}
+
+**Availability:** ${availability}`;
+
+
+    document.getElementById("supportPreview").textContent =
+        text;
+}
+
+
+async function copySupportText() {
+
+    generateSupportText();
+
+    const text =
+        document.getElementById("supportPreview").textContent;
+
+    try {
+
+        await navigator.clipboard.writeText(text);
+
+        alert("✓ Credit Card Support text copied!");
+
+    } catch (error) {
+
+        const temp =
+            document.createElement("textarea");
+
+        temp.value = text;
+
+        document.body.appendChild(temp);
+
+        temp.select();
+
+        document.execCommand("copy");
+
+        temp.remove();
+
+        alert("✓ Copied!");
+
+    }
+}
+
+
+/* =====================================================
+   FORMATTING
+===================================================== */
+
+function formatDate(value) {
+
+    if (!value) return "";
+
+    const parts = value.split("-");
+
+    return `${parts[1]}/${parts[2]}/${parts[0]}`;
+}
+
+
+/* =====================================================
+   SECURITY / DISPLAY HELPERS
+===================================================== */
 
 function escapeHTML(value) {
+
+    if (value === null || value === undefined) {
+        return "";
+    }
 
     return String(value)
         .replace(/&/g, "&amp;")
@@ -1173,364 +1630,41 @@ function escapeHTML(value) {
         .replace(/>/g, "&gt;")
         .replace(/"/g, "&quot;")
         .replace(/'/g, "&#039;");
-
 }
 
 
-/* =========================================================
-   GET TEAM MEMBERS
-   ========================================================= */
+function escapeAttribute(value) {
 
-function getTeamMembers() {
-
-    const selected = [];
-
-    document
-        .querySelectorAll(".memberCheck:checked")
-        .forEach(function(box) {
-
-            selected.push(box.value);
-
-        });
-
-    return selected;
-
+    return String(value)
+        .replace(/\\/g, "\\\\")
+        .replace(/'/g, "\\'");
 }
 
 
-/* =========================================================
-   FORMAT DATE FOR REPORT
-   ========================================================= */
+/* =====================================================
+   AUTOMATIC UPDATES
+===================================================== */
 
-function formatReportDate(dateString) {
+document.getElementById("reportDate")
+    .addEventListener("change", updateReport);
 
-    if (!dateString) {
-        return "";
-    }
+document.getElementById("callType")
+    .addEventListener("change", updateReport);
 
-    const parts =
-        dateString.split("-");
+document.getElementById("extraTask")
+    .addEventListener("input", generateReport);
 
-    if (parts.length !== 3) {
-        return dateString;
-    }
-
-    const year = Number(parts[0]);
-
-    const month = Number(parts[1]);
-
-    const day = Number(parts[2]);
-
-    const date =
-        new Date(year, month - 1, day);
-
-    return date.toLocaleDateString(
-        "en-US",
-        {
-            month: "long",
-            day: "numeric",
-            year: "numeric"
-        }
-    );
-
-}
-
-
-/* =========================================================
-   GET TICKET STATUS
-   ========================================================= */
-
-function getTicketStatus(ticketID, index) {
-
-    const key =
-        ticketID + "_" + index;
-
-    return ticketStatuses[key] || "Open";
-
-}
-
-
-/* =========================================================
-   GENERATE REPORT
-   ========================================================= */
-
-function generateReport() {
-
-    const selectedDate =
-        getSelectedDate();
-
-    const callType =
-        document.getElementById("callType").value;
-
-    const rows =
-        getMatchingRows();
-
-    const tickets =
-        getTickets(rows);
-
-    const teamMembers =
-        getTeamMembers();
-
-    const extraTask =
-        document.getElementById("extraTask").value.trim();
-
-
-    /*
-       Calculate outcomes again for the text report.
-    */
-
-    let followUp = 0;
-
-    let retained = 0;
-
-    let voicemail = 0;
-
-    let noAnswer = 0;
-
-    let churned = 0;
-
-    rows.forEach(function(row) {
-
-        const outcome =
-            normalize(row["Outcome"]);
-
-        if (
-            outcome === "follow-up scheduled" ||
-            outcome === "follow up scheduled"
-        ) {
-            followUp++;
-        }
-
-        else if (
-            outcome === "retained / satisfied" ||
-            outcome === "retained/satisfied"
-        ) {
-            retained++;
-        }
-
-        else if (
-            outcome === "voicemail left"
-        ) {
-            voicemail++;
-        }
-
-        else if (
-            outcome === "no answer" ||
-            outcome === "hang up" ||
-            outcome === "no answer / hang up" ||
-            outcome === "no answer/hang up"
-        ) {
-            noAnswer++;
-        }
-
-        else if (
-            outcome === "churned / cancelled" ||
-            outcome === "churned/cancelled" ||
-            outcome === "churned / canceled" ||
-            outcome === "churned/canceled"
-        ) {
-            churned++;
-        }
-
+document.querySelectorAll(".team")
+    .forEach(box => {
+        box.addEventListener("change", generateReport);
     });
 
 
-    let report = "";
-
-    report += "Customer Success Daily Report\n";
-
-    report +=
-        "Date: " +
-        formatReportDate(selectedDate) +
-        "\n\n";
-
-
-    report +=
-        "Team Members Present: " +
-        (
-            teamMembers.length
-                ? teamMembers.join(", ")
-                : ""
-        ) +
-        "\n\n";
-
-
-    report +=
-        "Extra Task: " +
-        (
-            extraTask
-                ? extraTask
-                : ""
-        ) +
-        "\n\n";
-
-
-    report +=
-        "Call Activity Summary\n\n";
-
-
-    report +=
-        callType +
-        "\n";
-
-
-    report +=
-        "Total Calls Made: " +
-        rows.length +
-        "\n\n";
-
-
-    report += "OUTCOMES\n";
-
-    report +=
-        "Follow-Up Scheduled: " +
-        followUp +
-        "\n";
-
-    report +=
-        "Retained / Satisfied: " +
-        retained +
-        "\n";
-
-    report +=
-        "Voicemail Left: " +
-        voicemail +
-        "\n";
-
-    report +=
-        "No Answer / Hang Up: " +
-        noAnswer +
-        "\n";
-
-    report +=
-        "Churned / Cancelled: " +
-        churned +
-        "\n\n";
-
-
-    report +=
-        "Total Tickets: " +
-        tickets.length +
-        "\n\n";
-
-
-    /*
-       Add each ticket.
-    */
-
-    tickets.forEach(function(ticket, index) {
-
-        const ticketID =
-            String(
-                ticket["Ticket ID (Optional)"] || ""
-            ).trim();
-
-        const store =
-            String(
-                ticket["Store Name"] || ""
-            ).trim();
-
-        const notes =
-            String(
-                ticket["Notes"] || ""
-            ).trim();
-
-        const status =
-            getTicketStatus(ticketID, index);
-
-
-        report +=
-            "Ticket: #" +
-            ticketID +
-            "\n";
-
-        report +=
-            "Store: " +
-            store +
-            "\n";
-
-        report +=
-            "Issue: " +
-            notes +
-            "\n";
-
-        report +=
-            "Status: " +
-            status +
-            "\n\n";
-
-    });
-
-
-    document.getElementById("reportOutput").textContent =
-        report.trim();
-
-}
-
-
-/* =========================================================
-   COPY REPORT
-   ========================================================= */
-
-function copyReport() {
-
-    const report =
-        document.getElementById("reportOutput").textContent;
-
-    if (!report.trim()) {
-        return;
-    }
-
-
-    navigator.clipboard.writeText(report)
-        .then(function() {
-
-            const success =
-                document.getElementById("copySuccess");
-
-            success.style.display = "inline";
-
-            setTimeout(function() {
-
-                success.style.display = "none";
-
-            }, 2500);
-
-        })
-        .catch(function() {
-
-            /*
-               Backup copy method for browsers that block
-               navigator.clipboard.
-            */
-
-            const textarea =
-                document.createElement("textarea");
-
-            textarea.value = report;
-
-            document.body.appendChild(textarea);
-
-            textarea.select();
-
-            document.execCommand("copy");
-
-            document.body.removeChild(textarea);
-
-            const success =
-                document.getElementById("copySuccess");
-
-            success.style.display = "inline";
-
-            setTimeout(function() {
-
-                success.style.display = "none";
-
-            }, 2500);
-
-        });
-
-}
+/* =====================================================
+   START
+===================================================== */
+
+loadCSV();
 
 </script>
 
