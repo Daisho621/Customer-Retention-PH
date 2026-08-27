@@ -1,2428 +1,1228 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-
-    <meta charset="UTF-8">
-
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <title>Customer Success Daily Report</title>
-
-    <!-- Excel reader -->
-    <script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
-
-    <style>
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-
-        :root {
-            --bg: #f3f5f8;
-            --card: #ffffff;
-            --primary: #315efb;
-            --primary-dark: #244bd0;
-            --text: #18202f;
-            --muted: #687386;
-            --border: #dfe4ec;
-            --soft: #f0f4ff;
-            --green: #168447;
-            --danger: #c73535;
-        }
-
-        body {
-            font-family:
-                Arial,
-                Helvetica,
-                sans-serif;
-
-            background: var(--bg);
-
-            color: var(--text);
-
-            min-height: 100vh;
-        }
-
-        /* =========================
-           HEADER
-        ========================= */
-
-        .topbar {
-            background: #111827;
-
-            color: white;
-
-            padding: 18px 40px;
-
-            display: flex;
-
-            justify-content: space-between;
-
-            align-items: center;
-        }
-
-        .brand {
-            display: flex;
-
-            align-items: center;
-
-            gap: 12px;
-
-            font-size: 19px;
-
-            font-weight: 700;
-        }
-
-        .brand-icon {
-            width: 38px;
-
-            height: 38px;
-
-            border-radius: 10px;
-
-            background: var(--primary);
-
-            display: flex;
-
-            align-items: center;
-
-            justify-content: center;
-
-            font-size: 13px;
-
-            font-weight: bold;
-        }
-
-        .topbar-status {
-            font-size: 13px;
-
-            color: #cbd5e1;
-        }
-
-        /* =========================
-           MAIN
-        ========================= */
-
-        .container {
-            width: min(1150px, calc(100% - 32px));
-
-            margin: 35px auto 70px;
-        }
-
-        .page-header {
-            margin-bottom: 25px;
-        }
-
-        .page-header h1 {
-            font-size: 34px;
-
-            margin-bottom: 7px;
-
-            letter-spacing: -0.7px;
-        }
-
-        .page-header p {
-            color: var(--muted);
-
-            font-size: 14px;
-        }
-
-        /* =========================
-           DATE
-        ========================= */
-
-        .date-card {
-            background: var(--soft);
-
-            border: 1px solid #d7e1ff;
-
-            border-radius: 16px;
-
-            padding: 20px 22px;
-
-            margin-bottom: 22px;
-
-            display: flex;
-
-            justify-content: space-between;
-
-            align-items: center;
-        }
-
-        .date-card label {
-            display: block;
-
-            color: var(--primary);
-
-            font-size: 11px;
-
-            font-weight: 800;
-
-            text-transform: uppercase;
-
-            letter-spacing: 1px;
-
-            margin-bottom: 7px;
-        }
-
-        #reportDate {
-            border: 1px solid var(--border);
-
-            background: white;
-
-            border-radius: 9px;
-
-            padding: 10px 12px;
-
-            font-size: 15px;
-
-            color: var(--text);
-        }
-
-        /* =========================
-           SECTION
-        ========================= */
-
-        .section {
-            background: var(--card);
-
-            border: 1px solid var(--border);
-
-            border-radius: 17px;
-
-            padding: 26px;
-
-            margin-bottom: 22px;
-
-            box-shadow:
-                0 5px 18px rgba(15, 23, 42, 0.04);
-        }
-
-        .section-heading {
-            display: flex;
-
-            align-items: center;
-
-            gap: 12px;
-
-            margin-bottom: 23px;
-        }
-
-        .section-number {
-            width: 37px;
-
-            height: 37px;
-
-            border-radius: 10px;
-
-            background: var(--primary);
-
-            color: white;
-
-            display: flex;
-
-            align-items: center;
-
-            justify-content: center;
-
-            font-weight: 800;
-
-            font-size: 13px;
-        }
-
-        .section-heading h2 {
-            font-size: 20px;
-        }
-
-        .section-heading p {
-            color: var(--muted);
-
-            font-size: 12px;
-
-            margin-top: 3px;
-        }
-
-        /* =========================
-           TEAM
-        ========================= */
-
-        .team-grid {
-            display: grid;
-
-            grid-template-columns:
-                repeat(4, 1fr);
-
-            gap: 12px;
-        }
-
-        .team-member {
-            position: relative;
-        }
-
-        .team-member input {
-            position: absolute;
-
-            opacity: 0;
-        }
-
-        .team-member label {
-            display: block;
-
-            padding: 15px;
-
-            border: 1px solid var(--border);
-
-            border-radius: 11px;
-
-            cursor: pointer;
-
-            transition: 0.2s;
-
-            font-weight: 700;
-        }
-
-        .team-member label:hover {
-            border-color: var(--primary);
-        }
-
-        .team-member input:checked + label {
-            background: var(--soft);
-
-            border-color: var(--primary);
-
-            color: var(--primary);
-        }
-
-        /* =========================
-           EXTRA TASK
-        ========================= */
-
-        textarea {
-            width: 100%;
-
-            min-height: 120px;
-
-            resize: vertical;
-
-            border: 1px solid var(--border);
-
-            border-radius: 11px;
-
-            padding: 14px;
-
-            font-family: inherit;
-
-            font-size: 14px;
-
-            outline: none;
-        }
-
-        textarea:focus,
-        select:focus {
-            border-color: var(--primary);
-
-            box-shadow:
-                0 0 0 3px rgba(49, 94, 251, 0.1);
-        }
-
-        /* =========================
-           EXCEL UPLOAD
-        ========================= */
-
-        .upload-box {
-            border: 2px dashed #cbd5e1;
-
-            border-radius: 14px;
-
-            padding: 25px;
-
-            text-align: center;
-
-            background: #fafbfc;
-        }
-
-        .upload-box h3 {
-            margin-bottom: 7px;
-
-            font-size: 16px;
-        }
-
-        .upload-box p {
-            color: var(--muted);
-
-            font-size: 13px;
-
-            margin-bottom: 17px;
-        }
-
-        .file-input {
-            display: none;
-        }
-
-        .upload-button {
-            display: inline-block;
-
-            background: var(--primary);
-
-            color: white;
-
-            padding: 11px 18px;
-
-            border-radius: 9px;
-
-            cursor: pointer;
-
-            font-size: 13px;
-
-            font-weight: 700;
-        }
-
-        .file-status {
-            margin-top: 13px;
-
-            font-size: 13px;
-
-            color: var(--green);
-
-            font-weight: 700;
-        }
-
-        /* =========================
-           CALL TYPE
-        ========================= */
-
-        .call-types {
-            display: grid;
-
-            grid-template-columns: 1fr 1fr;
-
-            gap: 14px;
-
-            margin-bottom: 22px;
-        }
-
-        .call-type {
-            position: relative;
-        }
-
-        .call-type input {
-            position: absolute;
-
-            opacity: 0;
-        }
-
-        .call-type label {
-            display: block;
-
-            padding: 19px;
-
-            border: 1px solid var(--border);
-
-            border-radius: 13px;
-
-            cursor: pointer;
-        }
-
-        .call-type label:hover {
-            border-color: var(--primary);
-        }
-
-        .call-type input:checked + label {
-            background: var(--soft);
-
-            border-color: var(--primary);
-
-            color: var(--primary);
-        }
-
-        .call-type-title {
-            font-weight: 800;
-
-            margin-bottom: 5px;
-        }
-
-        .call-type-description {
-            font-size: 12px;
-
-            color: var(--muted);
-        }
-
-        /* =========================
-           STATS
-        ========================= */
-
-        .stats-grid {
-            display: grid;
-
-            grid-template-columns:
-                repeat(6, 1fr);
-
-            gap: 10px;
-        }
-
-        .stat {
-            border: 1px solid var(--border);
-
-            border-radius: 11px;
-
-            padding: 15px;
-
-            background: #fbfcfe;
-        }
-
-        .stat-label {
-            color: var(--muted);
-
-            font-size: 11px;
-
-            line-height: 1.3;
-
-            margin-bottom: 7px;
-        }
-
-        .stat-value {
-            font-size: 23px;
-
-            font-weight: 800;
-        }
-
-        .total-stat {
-            background: var(--soft);
-
-            border-color: #d7e1ff;
-        }
-
-        .total-stat .stat-value {
-            color: var(--primary);
-        }
-
-        /* =========================
-           TICKETS
-        ========================= */
-
-        .ticket-summary {
-            display: flex;
-
-            justify-content: space-between;
-
-            align-items: center;
-
-            margin-bottom: 18px;
-        }
-
-        .ticket-count {
-            font-size: 21px;
-
-            font-weight: 800;
-        }
-
-        .ticket-card {
-            border: 1px solid var(--border);
-
-            border-radius: 13px;
-
-            padding: 19px;
-
-            margin-bottom: 13px;
-
-            background: #fbfcfe;
-        }
-
-        .ticket-top {
-            display: flex;
-
-            justify-content: space-between;
-
-            align-items: center;
-
-            gap: 15px;
-
-            margin-bottom: 15px;
-        }
-
-        .ticket-number {
-            font-size: 17px;
-
-            font-weight: 800;
-
-            color: var(--primary);
-        }
-
-        .ticket-field {
-            margin-bottom: 12px;
-        }
-
-        .ticket-field:last-child {
-            margin-bottom: 0;
-        }
-
-        .ticket-label {
-            display: block;
-
-            color: var(--muted);
-
-            font-size: 10px;
-
-            text-transform: uppercase;
-
-            letter-spacing: 0.7px;
-
-            font-weight: 800;
-
-            margin-bottom: 4px;
-        }
-
-        .ticket-value {
-            font-size: 14px;
-
-            line-height: 1.45;
-        }
-
-        .ticket-status {
-            width: 145px;
-
-            border: 1px solid var(--border);
-
-            background: white;
-
-            border-radius: 8px;
-
-            padding: 9px;
-
-            font-size: 13px;
-        }
-
-        .no-data {
-            padding: 22px;
-
-            border-radius: 11px;
-
-            background: #f8fafc;
-
-            color: var(--muted);
-
-            text-align: center;
-
-            font-size: 13px;
-        }
-
-        /* =========================
-           REPORT PREVIEW
-        ========================= */
-
-        .report-preview {
-            background: #111827;
-
-            color: #f8fafc;
-
-            border-radius: 14px;
-
-            padding: 24px;
-
-            white-space: pre-wrap;
-
-            line-height: 1.65;
-
-            font-size: 14px;
-
-            font-family:
-                Arial,
-                Helvetica,
-                sans-serif;
-
-            min-height: 300px;
-        }
-
-        /* =========================
-           BUTTONS
-        ========================= */
-
-        .actions {
-            display: flex;
-
-            justify-content: flex-end;
-
-            gap: 10px;
-
-            margin-top: 18px;
-        }
-
-        button {
-            border: none;
-
-            border-radius: 9px;
-
-            padding: 12px 18px;
-
-            cursor: pointer;
-
-            font-size: 13px;
-
-            font-weight: 800;
-        }
-
-        .copy-button {
-            background: var(--primary);
-
-            color: white;
-        }
-
-        .copy-button:hover {
-            background: var(--primary-dark);
-        }
-
-        .clear-button {
-            background: #e5e7eb;
-
-            color: #374151;
-        }
-
-        /* =========================
-           MESSAGE
-        ========================= */
-
-        .message {
-            position: fixed;
-
-            bottom: 25px;
-
-            right: 25px;
-
-            background: #111827;
-
-            color: white;
-
-            padding: 13px 18px;
-
-            border-radius: 10px;
-
-            display: none;
-
-            font-size: 13px;
-
-            box-shadow:
-                0 10px 25px rgba(0,0,0,.2);
-        }
-
-        .message.show {
-            display: block;
-        }
-
-        /* =========================
-           RESPONSIVE
-        ========================= */
-
-        @media(max-width: 900px) {
-
-            .stats-grid {
-                grid-template-columns:
-                    repeat(3, 1fr);
-            }
-
-            .team-grid {
-                grid-template-columns:
-                    repeat(2, 1fr);
-            }
-
-        }
-
-        @media(max-width: 600px) {
-
-            .topbar {
-                padding: 16px 20px;
-            }
-
-            .container {
-                width: calc(100% - 20px);
-
-                margin-top: 20px;
-            }
-
-            .section {
-                padding: 19px;
-            }
-
-            .call-types {
-                grid-template-columns: 1fr;
-            }
-
-            .stats-grid {
-                grid-template-columns:
-                    repeat(2, 1fr);
-            }
-
-            .team-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .ticket-top {
-                flex-direction: column;
-
-                align-items: flex-start;
-            }
-
-            .ticket-status {
-                width: 100%;
-            }
-
-            .actions {
-                flex-direction: column;
-            }
-
-            button {
-                width: 100%;
-            }
-
-        }
-
-    </style>
-
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Customer Success Daily Report</title>
+
+<script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.3/papaparse.min.js"></script>
+
+<style>
+    * {
+        box-sizing: border-box;
+    }
+
+    body {
+        margin: 0;
+        font-family: Arial, Helvetica, sans-serif;
+        background: #f4f6f8;
+        color: #1f2937;
+    }
+
+    header {
+        background: #172033;
+        color: white;
+        padding: 28px 20px;
+        box-shadow: 0 3px 12px rgba(0,0,0,0.15);
+    }
+
+    header .header-inner {
+        max-width: 1150px;
+        margin: auto;
+    }
+
+    header h1 {
+        margin: 0;
+        font-size: 30px;
+        font-weight: 700;
+    }
+
+    header p {
+        margin: 8px 0 0;
+        color: #b8c2d4;
+    }
+
+    main {
+        max-width: 1150px;
+        margin: 30px auto;
+        padding: 0 18px;
+    }
+
+    .panel {
+        background: white;
+        border-radius: 14px;
+        margin-bottom: 22px;
+        padding: 25px;
+        box-shadow: 0 4px 18px rgba(20,30,50,0.08);
+        border: 1px solid #e1e6ed;
+    }
+
+    .panel-title {
+        font-size: 21px;
+        font-weight: 700;
+        margin-bottom: 20px;
+        color: #172033;
+    }
+
+    .grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 20px;
+    }
+
+    .field {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .field.full {
+        grid-column: 1 / -1;
+    }
+
+    label {
+        font-size: 14px;
+        font-weight: 700;
+        color: #475569;
+    }
+
+    input[type="date"],
+    select,
+    textarea {
+        width: 100%;
+        border: 1px solid #cbd5e1;
+        border-radius: 9px;
+        padding: 12px 13px;
+        font-size: 15px;
+        background: white;
+        color: #1f2937;
+        outline: none;
+    }
+
+    input[type="date"]:focus,
+    select:focus,
+    textarea:focus {
+        border-color: #2563eb;
+        box-shadow: 0 0 0 3px rgba(37,99,235,0.1);
+    }
+
+    textarea {
+        min-height: 100px;
+        resize: vertical;
+    }
+
+    .members {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 12px;
+    }
+
+    .member {
+        border: 1px solid #d8dee8;
+        border-radius: 9px;
+        padding: 13px;
+        cursor: pointer;
+        background: #fafbfc;
+        transition: 0.15s;
+    }
+
+    .member:hover {
+        border-color: #2563eb;
+        background: #f5f8ff;
+    }
+
+    .member input {
+        margin-right: 8px;
+    }
+
+    .status {
+        padding: 12px 15px;
+        border-radius: 8px;
+        margin-bottom: 18px;
+        font-size: 14px;
+        background: #eef2ff;
+        color: #3730a3;
+    }
+
+    .status.success {
+        background: #ecfdf5;
+        color: #047857;
+    }
+
+    .status.error {
+        background: #fef2f2;
+        color: #b91c1c;
+    }
+
+    .outcomes {
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        gap: 12px;
+    }
+
+    .outcome-card {
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        border-radius: 10px;
+        padding: 16px;
+        text-align: center;
+    }
+
+    .outcome-number {
+        font-size: 28px;
+        font-weight: 800;
+        color: #172033;
+        margin-bottom: 5px;
+    }
+
+    .outcome-label {
+        font-size: 12px;
+        color: #64748b;
+        line-height: 1.3;
+    }
+
+    .total-calls {
+        margin-top: 15px;
+        padding: 16px;
+        border-radius: 10px;
+        background: #172033;
+        color: white;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .total-calls strong {
+        font-size: 26px;
+    }
+
+    .ticket {
+        border: 1px solid #d9e0e8;
+        border-radius: 12px;
+        padding: 20px;
+        margin-bottom: 15px;
+        background: #fbfcfe;
+    }
+
+    .ticket-header {
+        display: flex;
+        justify-content: space-between;
+        gap: 15px;
+        align-items: center;
+        margin-bottom: 15px;
+    }
+
+    .ticket-number {
+        font-size: 19px;
+        font-weight: 800;
+        color: #172033;
+    }
+
+    .ticket-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 15px;
+    }
+
+    .ticket-info {
+        background: white;
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+        padding: 13px;
+    }
+
+    .ticket-info.full {
+        grid-column: 1 / -1;
+    }
+
+    .ticket-info-title {
+        font-size: 11px;
+        font-weight: 800;
+        text-transform: uppercase;
+        color: #64748b;
+        margin-bottom: 6px;
+    }
+
+    .ticket-info-value {
+        line-height: 1.5;
+        white-space: pre-wrap;
+        word-break: break-word;
+    }
+
+    .ticket-status {
+        width: 150px;
+    }
+
+    .no-tickets {
+        text-align: center;
+        padding: 25px;
+        border: 1px dashed #cbd5e1;
+        border-radius: 10px;
+        color: #64748b;
+    }
+
+    .report-box {
+        background: #111827;
+        color: #f8fafc;
+        border-radius: 12px;
+        padding: 22px;
+        white-space: pre-wrap;
+        line-height: 1.65;
+        font-family: Consolas, Monaco, monospace;
+        font-size: 14px;
+        min-height: 300px;
+        overflow-x: auto;
+    }
+
+    .button-row {
+        display: flex;
+        gap: 12px;
+        margin-top: 18px;
+        flex-wrap: wrap;
+    }
+
+    button {
+        border: 0;
+        border-radius: 9px;
+        padding: 13px 20px;
+        font-size: 15px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: 0.15s;
+    }
+
+    .primary {
+        background: #2563eb;
+        color: white;
+    }
+
+    .primary:hover {
+        background: #1d4ed8;
+    }
+
+    .secondary {
+        background: #e2e8f0;
+        color: #172033;
+    }
+
+    .secondary:hover {
+        background: #cbd5e1;
+    }
+
+    .copy-success {
+        display: none;
+        color: #047857;
+        font-weight: 700;
+        margin-left: 5px;
+    }
+
+    footer {
+        text-align: center;
+        color: #64748b;
+        font-size: 13px;
+        padding: 20px;
+    }
+
+    @media (max-width: 800px) {
+        .grid,
+        .ticket-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .members {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        .outcomes {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        .ticket-info.full {
+            grid-column: auto;
+        }
+    }
+
+    @media (max-width: 500px) {
+        .members,
+        .outcomes {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
 </head>
-
 
 <body>
 
-
-<header class="topbar">
-
-    <div class="brand">
-
-        <div class="brand-icon">
-            CS
-        </div>
-
-        Customer Success
-
+<header>
+    <div class="header-inner">
+        <h1>Customer Success Daily Report</h1>
+        <p>Daily call activity, merchant issues and ticket tracking</p>
     </div>
-
-    <div class="topbar-status">
-        Daily Report System
-    </div>
-
 </header>
 
+<main>
 
-<main class="container">
+    <!-- REPORT INFORMATION -->
+    <section class="panel">
 
-
-    <div class="page-header">
-
-        <h1>
-            Customer Success Daily Report
-        </h1>
-
-        <p>
-            Select the report date and call type. Excel information will be calculated automatically.
-        </p>
-
-    </div>
-
-
-    <!-- DATE -->
-
-    <section class="date-card">
-
-        <div>
-
-            <label for="reportDate">
-                Report Date
-            </label>
-
-            <input
-                type="date"
-                id="reportDate"
-            >
-
+        <div class="panel-title">
+            Report Information
         </div>
 
-        <div style="font-size:32px;">
-            📅
-        </div>
+        <div class="grid">
 
-    </section>
-
-
-    <!-- TEAM -->
-
-    <section class="section">
-
-        <div class="section-heading">
-
-            <div class="section-number">
-                01
+            <div class="field">
+                <label for="reportDate">REPORT DATE</label>
+                <input type="date" id="reportDate">
             </div>
 
-            <div>
-
-                <h2>
-                    Team Members Present
-                </h2>
-
-                <p>
-                    Select the team members who are present today.
-                </p>
-
+            <div class="field">
+                <label for="callType">CALL TYPE</label>
+                <select id="callType">
+                    <option value="Quarterly Check-In">Quarterly Check-In</option>
+                    <option value="Onboarding">Onboarding</option>
+                </select>
             </div>
 
-        </div>
+            <div class="field full">
+                <label>TEAM MEMBERS PRESENT</label>
 
+                <div class="members">
 
-        <div class="team-grid">
+                    <label class="member">
+                        <input type="checkbox" value="Vince" class="memberCheck">
+                        Vince
+                    </label>
 
+                    <label class="member">
+                        <input type="checkbox" value="Avie" class="memberCheck">
+                        Avie
+                    </label>
 
-            <div class="team-member">
+                    <label class="member">
+                        <input type="checkbox" value="Kirby" class="memberCheck">
+                        Kirby
+                    </label>
 
-                <input
-                    type="checkbox"
-                    id="vince"
-                    value="Vince"
-                    class="team-checkbox"
-                >
+                    <label class="member">
+                        <input type="checkbox" value="Neil" class="memberCheck">
+                        Neil
+                    </label>
 
-                <label for="vince">
-                    Vince
-                </label>
-
+                </div>
             </div>
 
+            <div class="field full">
+                <label for="extraTask">EXTRA TASK</label>
 
-            <div class="team-member">
-
-                <input
-                    type="checkbox"
-                    id="avie"
-                    value="Avie"
-                    class="team-checkbox"
-                >
-
-                <label for="avie">
-                    Avie
-                </label>
-
+                <textarea
+                    id="extraTask"
+                    placeholder="Enter any additional tasks completed today..."
+                ></textarea>
             </div>
-
-
-            <div class="team-member">
-
-                <input
-                    type="checkbox"
-                    id="kirby"
-                    value="Kirby"
-                    class="team-checkbox"
-                >
-
-                <label for="kirby">
-                    Kirby
-                </label>
-
-            </div>
-
-
-            <div class="team-member">
-
-                <input
-                    type="checkbox"
-                    id="neil"
-                    value="Neil"
-                    class="team-checkbox"
-                >
-
-                <label for="neil">
-                    Neil
-                </label>
-
-            </div>
-
 
         </div>
 
     </section>
 
 
-    <!-- EXTRA TASK -->
+    <!-- DATA STATUS -->
+    <section class="panel">
 
-    <section class="section">
-
-        <div class="section-heading">
-
-            <div class="section-number">
-                02
-            </div>
-
-            <div>
-
-                <h2>
-                    Extra Task
-                </h2>
-
-                <p>
-                    Add additional work completed by the team.
-                </p>
-
-            </div>
-
-        </div>
-
-
-        <textarea
-            id="extraTask"
-            placeholder="Example: Created a module for new features in Retailz POS as requested by Tisha Maam..."
-        ></textarea>
-
-    </section>
-
-
-    <!-- EXCEL -->
-
-    <section class="section">
-
-        <div class="section-heading">
-
-            <div class="section-number">
-                03
-            </div>
-
-            <div>
-
-                <h2>
-                    Excel Data
-                </h2>
-
-                <p>
-                    Upload the Excel workbook containing your call activity.
-                </p>
-
-            </div>
-
-        </div>
-
-
-        <div class="upload-box">
-
-            <h3>
-                Load Customer Success Data
-            </h3>
-
-            <p>
-                Use the Excel file containing Date, Employee, Store Name, Call Type, Outcome, Notes and Ticket ID.
-            </p>
-
-
-            <label
-                for="excelFile"
-                class="upload-button"
-            >
-                Choose Excel File
-            </label>
-
-
-            <input
-                type="file"
-                id="excelFile"
-                class="file-input"
-                accept=".xlsx,.xls,.csv"
-            >
-
-
-            <div
-                id="fileStatus"
-                class="file-status"
-            >
-                No Excel file loaded.
-            </div>
-
+        <div id="dataStatus" class="status">
+            Loading CSV data...
         </div>
 
     </section>
 
 
     <!-- CALL ACTIVITY -->
+    <section class="panel">
 
-    <section class="section">
-
-        <div class="section-heading">
-
-            <div class="section-number">
-                04
-            </div>
-
-            <div>
-
-                <h2>
-                    Call Activity Summary
-                </h2>
-
-                <p>
-                    Select the type of calls to include in this report.
-                </p>
-
-            </div>
-
+        <div class="panel-title">
+            Call Activity Summary
         </div>
 
+        <div class="outcomes">
 
-        <div class="call-types">
-
-
-            <div class="call-type">
-
-                <input
-                    type="radio"
-                    name="callType"
-                    id="quarterly"
-                    value="Quarterly Check-In"
-                    checked
-                >
-
-                <label for="quarterly">
-
-                    <div class="call-type-title">
-                        Quarterly Check-In
-                    </div>
-
-                    <div class="call-type-description">
-                        Regular customer check-in calls.
-                    </div>
-
-                </label>
-
-            </div>
-
-
-            <div class="call-type">
-
-                <input
-                    type="radio"
-                    name="callType"
-                    id="onboarding"
-                    value="Onboarding"
-                >
-
-                <label for="onboarding">
-
-                    <div class="call-type-title">
-                        Onboarding
-                    </div>
-
-                    <div class="call-type-description">
-                        Calls for new customer onboarding.
-                    </div>
-
-                </label>
-
-            </div>
-
-
-        </div>
-
-
-        <div class="stats-grid">
-
-
-            <div class="stat total-stat">
-
-                <div class="stat-label">
-                    Total Calls Made
-                </div>
-
-                <div
-                    class="stat-value"
-                    id="totalCalls"
-                >
-                    0
-                </div>
-
-            </div>
-
-
-            <div class="stat">
-
-                <div class="stat-label">
+            <div class="outcome-card">
+                <div id="followUpCount" class="outcome-number">0</div>
+                <div class="outcome-label">
                     Follow-Up Scheduled
                 </div>
-
-                <div
-                    class="stat-value"
-                    id="followUp"
-                >
-                    0
-                </div>
-
             </div>
 
-
-            <div class="stat">
-
-                <div class="stat-label">
+            <div class="outcome-card">
+                <div id="retainedCount" class="outcome-number">0</div>
+                <div class="outcome-label">
                     Retained / Satisfied
                 </div>
-
-                <div
-                    class="stat-value"
-                    id="retained"
-                >
-                    0
-                </div>
-
             </div>
 
-
-            <div class="stat">
-
-                <div class="stat-label">
+            <div class="outcome-card">
+                <div id="voicemailCount" class="outcome-number">0</div>
+                <div class="outcome-label">
                     Voicemail Left
                 </div>
-
-                <div
-                    class="stat-value"
-                    id="voicemail"
-                >
-                    0
-                </div>
-
             </div>
 
-
-            <div class="stat">
-
-                <div class="stat-label">
+            <div class="outcome-card">
+                <div id="noAnswerCount" class="outcome-number">0</div>
+                <div class="outcome-label">
                     No Answer / Hang Up
                 </div>
-
-                <div
-                    class="stat-value"
-                    id="noAnswer"
-                >
-                    0
-                </div>
-
             </div>
 
-
-            <div class="stat">
-
-                <div class="stat-label">
+            <div class="outcome-card">
+                <div id="churnedCount" class="outcome-number">0</div>
+                <div class="outcome-label">
                     Churned / Cancelled
                 </div>
-
-                <div
-                    class="stat-value"
-                    id="churned"
-                >
-                    0
-                </div>
-
             </div>
 
+        </div>
 
+        <div class="total-calls">
+            <span>Total Calls Made</span>
+            <strong id="totalCalls">0</strong>
         </div>
 
     </section>
 
 
     <!-- TICKETS -->
+    <section class="panel">
 
-    <section class="section">
-
-        <div class="section-heading">
-
-            <div class="section-number">
-                05
-            </div>
-
-            <div>
-
-                <h2>
-                    Merchant Issues / Tickets Handled
-                </h2>
-
-                <p>
-                    Tickets are automatically detected from the Ticket ID column.
-                </p>
-
-            </div>
-
+        <div class="panel-title">
+            Merchant Issues / Tickets
         </div>
 
-
-        <div class="ticket-summary">
-
-            <div>
-                <div style="color:#687386;font-size:12px;">
-                    TOTAL TICKETS
-                </div>
-
-                <div
-                    class="ticket-count"
-                    id="totalTickets"
-                >
-                    0
-                </div>
-            </div>
-
+        <div class="total-calls" style="margin-bottom:20px;">
+            <span>Total Tickets</span>
+            <strong id="totalTickets">0</strong>
         </div>
 
-
-        <div id="ticketContainer">
-
-            <div class="no-data">
-                Upload an Excel file to display tickets.
+        <div id="ticketsContainer">
+            <div class="no-tickets">
+                No tickets found for this date.
             </div>
-
         </div>
 
     </section>
 
 
-    <!-- REPORT -->
+    <!-- GENERATED REPORT -->
+    <section class="panel">
 
-    <section class="section">
-
-        <div class="section-heading">
-
-            <div class="section-number">
-                06
-            </div>
-
-            <div>
-
-                <h2>
-                    Generated Daily Report
-                </h2>
-
-                <p>
-                    This is the exact text that can be copied and submitted.
-                </p>
-
-            </div>
-
+        <div class="panel-title">
+            Generated Report
         </div>
 
+        <div id="reportOutput" class="report-box"></div>
 
-        <div
-            id="reportPreview"
-            class="report-preview"
-        >
-            Customer Success Daily Report
-        </div>
-
-
-        <div class="actions">
+        <div class="button-row">
 
             <button
-                class="clear-button"
-                onclick="clearReport()"
-            >
-                Clear Report
-            </button>
-
-            <button
-                class="copy-button"
+                type="button"
+                class="primary"
                 onclick="copyReport()"
             >
-                Copy Whole Report
+                COPY WHOLE REPORT
             </button>
+
+            <button
+                type="button"
+                class="secondary"
+                onclick="refreshData()"
+            >
+                REFRESH DATA
+            </button>
+
+            <span id="copySuccess" class="copy-success">
+                Report copied!
+            </span>
 
         </div>
 
     </section>
-
 
 </main>
 
-
-<div
-    id="message"
-    class="message"
->
-    Report copied successfully.
-</div>
+<footer>
+    Customer Success Daily Report System
+</footer>
 
 
 <script>
 
+/* =========================================================
+   SETTINGS
+   ========================================================= */
 
-/* =====================================================
-   GLOBAL DATA
-===================================================== */
+const CSV_FILE = "Customer Success_2026(Retain In).csv";
 
-let excelRows = [];
-
+let allData = [];
 let ticketStatuses = {};
 
 
-/* =====================================================
-   DEFAULT DATE
-===================================================== */
+/* =========================================================
+   INITIALIZATION
+   ========================================================= */
 
-function setDefaultDate() {
+document.addEventListener("DOMContentLoaded", function () {
+
+    setToday();
+
+    document
+        .getElementById("reportDate")
+        .addEventListener("change", updateReport);
+
+    document
+        .getElementById("callType")
+        .addEventListener("change", updateReport);
+
+    document
+        .getElementById("extraTask")
+        .addEventListener("input", generateReport);
+
+    document
+        .querySelectorAll(".memberCheck")
+        .forEach(function (checkbox) {
+            checkbox.addEventListener("change", generateReport);
+        });
+
+    loadCSV();
+
+});
+
+
+/* =========================================================
+   SET TODAY'S DATE
+   ========================================================= */
+
+function setToday() {
 
     const today = new Date();
 
-    const year =
-        today.getFullYear();
+    const year = today.getFullYear();
 
-    const month =
-        String(today.getMonth() + 1)
-            .padStart(2, "0");
+    const month = String(today.getMonth() + 1).padStart(2, "0");
 
-    const day =
-        String(today.getDate())
-            .padStart(2, "0");
+    const day = String(today.getDate()).padStart(2, "0");
 
     document.getElementById("reportDate").value =
         `${year}-${month}-${day}`;
+}
+
+
+/* =========================================================
+   LOAD CSV
+   ========================================================= */
+
+function loadCSV() {
+
+    const status = document.getElementById("dataStatus");
+
+    status.className = "status";
+
+    status.textContent = "Loading CSV data...";
+
+    /*
+       Cache-busting parameter prevents the browser from
+       keeping an old copy of the CSV.
+    */
+
+    const csvURL =
+        encodeURI(CSV_FILE) +
+        "?v=" +
+        Date.now();
+
+    Papa.parse(csvURL, {
+
+        download: true,
+
+        header: true,
+
+        skipEmptyLines: true,
+
+        complete: function(results) {
+
+            allData = results.data || [];
+
+            if (allData.length === 0) {
+
+                status.className = "status error";
+
+                status.textContent =
+                    "CSV loaded, but no data was found.";
+
+                updateReport();
+
+                return;
+            }
+
+            status.className = "status success";
+
+            status.textContent =
+                "✓ CSV loaded successfully. " +
+                allData.length.toLocaleString() +
+                " rows available.";
+
+            updateReport();
+        },
+
+        error: function(error) {
+
+            console.error(error);
+
+            status.className = "status error";
+
+            status.innerHTML =
+                "Unable to load the CSV file. " +
+                "Make sure <strong>" +
+                CSV_FILE +
+                "</strong> is inside the docs folder.";
+
+        }
+
+    });
+}
+
+
+/* =========================================================
+   REFRESH DATA
+   ========================================================= */
+
+function refreshData() {
+
+    loadCSV();
 
 }
 
 
-/* =====================================================
+/* =========================================================
    NORMALIZE TEXT
-===================================================== */
+   ========================================================= */
 
 function normalize(value) {
 
-    if (
-        value === null ||
-        value === undefined
-    ) {
+    if (value === null || value === undefined) {
         return "";
     }
 
     return String(value)
         .trim()
+        .replace(/\s+/g, " ")
         .toLowerCase();
-
 }
 
 
-/* =====================================================
-   DATE NORMALIZATION
-===================================================== */
+/* =========================================================
+   NORMALIZE DATE
+   ========================================================= */
 
-function normalizeExcelDate(value) {
+function normalizeDate(value) {
 
     if (!value) {
         return "";
     }
 
+    let text = String(value).trim();
 
     /*
-       Excel date object
+       Handles:
+       8/26/2026
+       08/26/2026
+       8-26-2026
+       08-26-2026
+       2026-08-26
     */
 
-    if (value instanceof Date) {
-
-        return formatDateForComparison(value);
-
-    }
-
-
-    /*
-       Excel serial date
-    */
-
-    if (
-        typeof value === "number" &&
-        value > 20000 &&
-        value < 60000
-    ) {
-
-        const date =
-            new Date(
-                Math.round(
-                    (value - 25569) *
-                    86400 *
-                    1000
-                )
-            );
-
-        return formatDateForComparison(date);
-
-    }
-
-
-    let text =
-        String(value).trim();
-
-
-    /*
-       Try normal JavaScript date
-    */
-
-    const parsed =
-        new Date(text);
-
-    if (!isNaN(parsed.getTime())) {
-
-        return formatDateForComparison(parsed);
-
-    }
-
-
-    /*
-       Handle M/D/YYYY manually
-    */
-
-    const match =
-        text.match(
-            /^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})$/
-        );
-
+    let match = text.match(
+        /^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})/
+    );
 
     if (match) {
 
-        const month =
-            match[1].padStart(2, "0");
+        let month = String(match[1]).padStart(2, "0");
 
-        const day =
-            match[2].padStart(2, "0");
+        let day = String(match[2]).padStart(2, "0");
 
-        const year =
-            match[3];
+        let year = match[3];
 
         return `${year}-${month}-${day}`;
-
     }
 
-
-    return "";
-
-}
-
-
-/* =====================================================
-   DATE FORMAT
-===================================================== */
-
-function formatDateForComparison(date) {
-
-    const year =
-        date.getFullYear();
-
-    const month =
-        String(date.getMonth() + 1)
-            .padStart(2, "0");
-
-    const day =
-        String(date.getDate())
-            .padStart(2, "0");
-
-    return `${year}-${month}-${day}`;
-
-}
-
-
-/* =====================================================
-   FIND COLUMN
-===================================================== */
-
-function getColumn(row, possibleNames) {
-
-    const keys =
-        Object.keys(row);
-
-
-    for (const possible of possibleNames) {
-
-        const match =
-            keys.find(
-                key =>
-                    normalize(key) ===
-                    normalize(possible)
-            );
-
-        if (match) {
-
-            return row[match];
-
-        }
-
-    }
-
-
-    /*
-       More flexible partial matching
-    */
-
-    for (const possible of possibleNames) {
-
-        const match =
-            keys.find(
-                key =>
-                    normalize(key)
-                        .includes(
-                            normalize(possible)
-                        )
-            );
-
-        if (match) {
-
-            return row[match];
-
-        }
-
-    }
-
-
-    return "";
-
-}
-
-
-/* =====================================================
-   LOAD EXCEL
-===================================================== */
-
-document
-    .getElementById("excelFile")
-    .addEventListener(
-        "change",
-        handleExcelFile
+    match = text.match(
+        /^(\d{4})[\/\-](\d{1,2})[\/\-](\d{1,2})/
     );
 
+    if (match) {
 
-function handleExcelFile(event) {
+        let year = match[1];
 
-    const file =
-        event.target.files[0];
+        let month = String(match[2]).padStart(2, "0");
 
+        let day = String(match[3]).padStart(2, "0");
 
-    if (!file) {
-        return;
+        return `${year}-${month}-${day}`;
     }
 
+    /*
+       Try JavaScript date parsing as a backup.
+    */
 
-    const status =
-        document.getElementById("fileStatus");
+    const parsed = new Date(text);
 
+    if (!isNaN(parsed.getTime())) {
 
-    status.textContent =
-        "Loading Excel file...";
+        const year = parsed.getFullYear();
 
+        const month =
+            String(parsed.getMonth() + 1).padStart(2, "0");
 
-    const reader =
-        new FileReader();
+        const day =
+            String(parsed.getDate()).padStart(2, "0");
 
+        return `${year}-${month}-${day}`;
+    }
 
-    reader.onload =
-        function(e) {
-
-            try {
-
-                const data =
-                    new Uint8Array(
-                        e.target.result
-                    );
-
-
-                const workbook =
-                    XLSX.read(
-                        data,
-                        {
-                            type: "array",
-                            cellDates: true
-                        }
-                    );
+    return "";
+}
 
 
-                /*
-                   Use first worksheet
-                */
+/* =========================================================
+   GET SELECTED DATE
+   ========================================================= */
 
-                const firstSheet =
-                    workbook.Sheets[
-                        workbook.SheetNames[0]
-                    ];
+function getSelectedDate() {
 
-
-                excelRows =
-                    XLSX.utils.sheet_to_json(
-                        firstSheet,
-                        {
-                            defval: ""
-                        }
-                    );
-
-
-                status.textContent =
-                    `✓ Loaded ${excelRows.length} Excel rows successfully.`;
-
-
-                updateReport();
-
-
-            } catch(error) {
-
-                console.error(error);
-
-                status.textContent =
-                    "Could not read the Excel file.";
-
-                alert(
-                    "There was a problem reading the Excel file. Make sure it is an .xlsx, .xls, or .csv file."
-                );
-
-            }
-
-        };
-
-
-    reader.readAsArrayBuffer(file);
+    return document.getElementById("reportDate").value;
 
 }
 
 
-/* =====================================================
+/* =========================================================
    GET SELECTED CALL TYPE
-===================================================== */
+   ========================================================= */
 
 function getSelectedCallType() {
 
-    const selected =
-        document.querySelector(
-            'input[name="callType"]:checked'
-        );
-
-
-    return selected
-        ? selected.value
-        : "Quarterly Check-In";
-
-}
-
-
-/* =====================================================
-   GET FILTERED ROWS
-===================================================== */
-
-function getFilteredRows() {
-
-    const selectedDate =
-        document.getElementById(
-            "reportDate"
-        ).value;
-
-
-    const selectedCallType =
-        getSelectedCallType();
-
-
-    return excelRows.filter(row => {
-
-        const excelDate =
-            normalizeExcelDate(
-                getColumn(
-                    row,
-                    [
-                        "Date"
-                    ]
-                )
-            );
-
-
-        const excelCallType =
-            normalize(
-                getColumn(
-                    row,
-                    [
-                        "Call Type",
-                        "CallType"
-                    ]
-                )
-            );
-
-
-        const targetCallType =
-            normalize(
-                selectedCallType
-            );
-
-
-        return (
-            excelDate === selectedDate &&
-            excelCallType === targetCallType
-        );
-
-    });
-
-}
-
-
-/* =====================================================
-   CALCULATE OUTCOMES
-===================================================== */
-
-function calculateOutcomes(rows) {
-
-    const counts = {
-
-        followUp: 0,
-
-        retained: 0,
-
-        voicemail: 0,
-
-        noAnswer: 0,
-
-        churned: 0
-
-    };
-
-
-    rows.forEach(row => {
-
-        const outcome =
-            normalize(
-                getColumn(
-                    row,
-                    [
-                        "Outcome"
-                    ]
-                )
-            );
-
-
-        if (
-            outcome ===
-            "follow-up scheduled"
-        ) {
-
-            counts.followUp++;
-
-        }
-
-
-        else if (
-            outcome ===
-            "retained / satisfied" ||
-            outcome ===
-            "retained/satisfied"
-        ) {
-
-            counts.retained++;
-
-        }
-
-
-        else if (
-            outcome ===
-            "voicemail left"
-        ) {
-
-            counts.voicemail++;
-
-        }
-
-
-        else if (
-            outcome ===
-            "no answer" ||
-            outcome ===
-            "hang up" ||
-            outcome ===
-            "no answer / hang up" ||
-            outcome ===
-            "no answer/hang up"
-        ) {
-
-            counts.noAnswer++;
-
-        }
-
-
-        else if (
-            outcome ===
-            "churned / cancelled" ||
-            outcome ===
-            "churned/cancelled"
-        ) {
-
-            counts.churned++;
-
-        }
-
-    });
-
-
-    return counts;
-
-}
-
-
-/* =====================================================
-   GET TICKETS
-===================================================== */
-
-function getTickets(rows) {
-
-    const tickets = [];
-
-    const ticketIdsSeen =
-        new Set();
-
-
-    rows.forEach(row => {
-
-        const ticketId =
-            String(
-                getColumn(
-                    row,
-                    [
-                        "Ticket ID (Optional)",
-                        "Ticket ID",
-                        "TicketID"
-                    ]
-                )
-            ).trim();
-
-
-        /*
-           Only rows with a Ticket ID
-           are considered tickets.
-        */
-
-        if (!ticketId) {
-            return;
-        }
-
-
-        /*
-           Prevent duplicate ticket IDs
-           from appearing multiple times.
-        */
-
-        const normalizedTicketId =
-            normalize(ticketId);
-
-
-        if (
-            ticketIdsSeen.has(
-                normalizedTicketId
-            )
-        ) {
-
-            return;
-
-        }
-
-
-        ticketIdsSeen.add(
-            normalizedTicketId
-        );
-
-
-        tickets.push({
-
-            id: ticketId,
-
-            store:
-                getColumn(
-                    row,
-                    [
-                        "Store Name",
-                        "StoreName"
-                    ]
-                ),
-
-            issue:
-                getColumn(
-                    row,
-                    [
-                        "Notes"
-                    ]
-                ),
-
-            category:
-                getColumn(
-                    row,
-                    [
-                        "Category"
-                    ]
-                )
-
-        });
-
-    });
-
-
-    return tickets;
-
-}
-
-
-/* =====================================================
-   UPDATE REPORT
-===================================================== */
-
-function updateReport() {
-
-    const rows =
-        getFilteredRows();
-
-
-    const counts =
-        calculateOutcomes(rows);
-
-
-    /*
-       Update statistics
-    */
-
-    document.getElementById(
-        "totalCalls"
-    ).textContent =
-        rows.length;
-
-
-    document.getElementById(
-        "followUp"
-    ).textContent =
-        counts.followUp;
-
-
-    document.getElementById(
-        "retained"
-    ).textContent =
-        counts.retained;
-
-
-    document.getElementById(
-        "voicemail"
-    ).textContent =
-        counts.voicemail;
-
-
-    document.getElementById(
-        "noAnswer"
-    ).textContent =
-        counts.noAnswer;
-
-
-    document.getElementById(
-        "churned"
-    ).textContent =
-        counts.churned;
-
-
-    /*
-       Tickets
-    */
-
-    const tickets =
-        getTickets(rows);
-
-
-    document.getElementById(
-        "totalTickets"
-    ).textContent =
-        tickets.length;
-
-
-    renderTickets(tickets);
-
-
-    /*
-       Generated report
-    */
-
-    generateReport(
-        rows,
-        counts,
-        tickets
+    return normalize(
+        document.getElementById("callType").value
     );
 
 }
 
 
-/* =====================================================
-   RENDER TICKETS
-===================================================== */
+/* =========================================================
+   FILTER DATA
+   ========================================================= */
 
-function renderTickets(tickets) {
+function getMatchingRows() {
 
-    const container =
-        document.getElementById(
-            "ticketContainer"
+    const selectedDate = getSelectedDate();
+
+    const selectedCallType = getSelectedCallType();
+
+    if (!selectedDate) {
+        return [];
+    }
+
+    return allData.filter(function(row) {
+
+        const rowDate =
+            normalizeDate(row["Date"]);
+
+        const rowCallType =
+            normalize(row["Call Type"]);
+
+        return (
+            rowDate === selectedDate &&
+            rowCallType === selectedCallType
         );
 
+    });
+
+}
+
+
+/* =========================================================
+   UPDATE EVERYTHING
+   ========================================================= */
+
+function updateReport() {
+
+    if (!allData.length) {
+
+        resetCounts();
+
+        renderTickets([]);
+
+        generateReport();
+
+        return;
+    }
+
+    const rows = getMatchingRows();
+
+    calculateOutcomes(rows);
+
+    renderTickets(rows);
+
+    generateReport();
+
+}
+
+
+/* =========================================================
+   RESET COUNTS
+   ========================================================= */
+
+function resetCounts() {
+
+    document.getElementById("followUpCount").textContent = "0";
+
+    document.getElementById("retainedCount").textContent = "0";
+
+    document.getElementById("voicemailCount").textContent = "0";
+
+    document.getElementById("noAnswerCount").textContent = "0";
+
+    document.getElementById("churnedCount").textContent = "0";
+
+    document.getElementById("totalCalls").textContent = "0";
+
+    document.getElementById("totalTickets").textContent = "0";
+
+}
+
+
+/* =========================================================
+   CALCULATE OUTCOMES
+   ========================================================= */
+
+function calculateOutcomes(rows) {
+
+    let followUp = 0;
+
+    let retained = 0;
+
+    let voicemail = 0;
+
+    let noAnswer = 0;
+
+    let churned = 0;
+
+    rows.forEach(function(row) {
+
+        const outcome =
+            normalize(row["Outcome"]);
+
+        if (
+            outcome === "follow-up scheduled" ||
+            outcome === "follow up scheduled"
+        ) {
+            followUp++;
+        }
+
+        else if (
+            outcome === "retained / satisfied" ||
+            outcome === "retained/satisfied"
+        ) {
+            retained++;
+        }
+
+        else if (
+            outcome === "voicemail left"
+        ) {
+            voicemail++;
+        }
+
+        else if (
+            outcome === "no answer" ||
+            outcome === "hang up" ||
+            outcome === "no answer / hang up" ||
+            outcome === "no answer/hang up"
+        ) {
+            noAnswer++;
+        }
+
+        else if (
+            outcome === "churned / cancelled" ||
+            outcome === "churned/cancelled" ||
+            outcome === "churned / canceled" ||
+            outcome === "churned/canceled"
+        ) {
+            churned++;
+        }
+
+    });
+
+    document.getElementById("followUpCount").textContent =
+        followUp;
+
+    document.getElementById("retainedCount").textContent =
+        retained;
+
+    document.getElementById("voicemailCount").textContent =
+        voicemail;
+
+    document.getElementById("noAnswerCount").textContent =
+        noAnswer;
+
+    document.getElementById("churnedCount").textContent =
+        churned;
+
+    document.getElementById("totalCalls").textContent =
+        rows.length;
+
+}
+
+
+/* =========================================================
+   GET TICKETS
+   ========================================================= */
+
+function getTickets(rows) {
+
+    return rows.filter(function(row) {
+
+        const ticketID =
+            String(row["Ticket ID (Optional)"] || "").trim();
+
+        return ticketID !== "";
+
+    });
+
+}
+
+
+/* =========================================================
+   RENDER TICKETS
+   ========================================================= */
+
+function renderTickets(rows) {
+
+    const container =
+        document.getElementById("ticketsContainer");
+
+    const tickets = getTickets(rows);
+
+    document.getElementById("totalTickets").textContent =
+        tickets.length;
 
     if (tickets.length === 0) {
 
         container.innerHTML = `
-            <div class="no-data">
-                No tickets found for the selected date and call type.
+            <div class="no-tickets">
+                No tickets found for this date and call type.
             </div>
         `;
 
         return;
-
     }
-
 
     container.innerHTML = "";
 
+    tickets.forEach(function(ticket, index) {
 
-    tickets.forEach(
-        (ticket, index) => {
+        const ticketID =
+            String(ticket["Ticket ID (Optional)"] || "").trim();
 
-            const ticketKey =
-                String(ticket.id);
+        const store =
+            String(ticket["Store Name"] || "").trim();
 
+        const notes =
+            String(ticket["Notes"] || "").trim();
 
-            if (
-                !ticketStatuses[
-                    ticketKey
-                ]
-            ) {
+        const category =
+            String(ticket["Category"] || "").trim();
 
-                ticketStatuses[
-                    ticketKey
-                ] = "Open";
+        /*
+           Use ticket ID as the key.
+           If multiple rows contain the same ticket ID,
+           append the index to keep statuses separate.
+        */
 
-            }
+        const statusKey =
+            ticketID + "_" + index;
 
-
-            const card =
-                document.createElement(
-                    "div"
-                );
-
-
-            card.className =
-                "ticket-card";
-
-
-            card.innerHTML = `
-
-                <div class="ticket-top">
-
-                    <div class="ticket-number">
-                        Ticket: #${escapeHtml(ticket.id)}
-                    </div>
-
-                    <select
-                        class="ticket-status"
-                        data-ticket-id="${escapeHtml(ticket.id)}"
-                    >
-
-                        <option value="Open"
-                            ${ticketStatuses[ticketKey] === "Open" ? "selected" : ""}>
-                            Open
-                        </option>
-
-                        <option value="Solved"
-                            ${ticketStatuses[ticketKey] === "Solved" ? "selected" : ""}>
-                            Solved
-                        </option>
-
-                        <option value="Pending"
-                            ${ticketStatuses[ticketKey] === "Pending" ? "selected" : ""}>
-                            Pending
-                        </option>
-
-                    </select>
-
-                </div>
-
-
-                <div class="ticket-field">
-
-                    <span class="ticket-label">
-                        Store
-                    </span>
-
-                    <div class="ticket-value">
-                        ${escapeHtml(ticket.store || "Not provided")}
-                    </div>
-
-                </div>
-
-
-                <div class="ticket-field">
-
-                    <span class="ticket-label">
-                        Issue
-                    </span>
-
-                    <div class="ticket-value">
-                        ${escapeHtml(ticket.issue || "No notes provided")}
-                    </div>
-
-                </div>
-
-            `;
-
-
-            container.appendChild(
-                card
-            );
-
+        if (!ticketStatuses[statusKey]) {
+            ticketStatuses[statusKey] = "Open";
         }
-    );
+
+        const ticketDiv =
+            document.createElement("div");
+
+        ticketDiv.className = "ticket";
+
+        ticketDiv.innerHTML = `
+
+            <div class="ticket-header">
+
+                <div class="ticket-number">
+                    Ticket: #${escapeHTML(ticketID)}
+                </div>
+
+                <select
+                    class="ticket-status"
+                    data-status-key="${escapeHTML(statusKey)}"
+                >
+
+                    <option value="Open"
+                        ${ticketStatuses[statusKey] === "Open" ? "selected" : ""}>
+                        Open
+                    </option>
+
+                    <option value="Pending"
+                        ${ticketStatuses[statusKey] === "Pending" ? "selected" : ""}>
+                        Pending
+                    </option>
+
+                    <option value="Solved"
+                        ${ticketStatuses[statusKey] === "Solved" ? "selected" : ""}>
+                        Solved
+                    </option>
+
+                </select>
+
+            </div>
+
+            <div class="ticket-grid">
+
+                <div class="ticket-info">
+
+                    <div class="ticket-info-title">
+                        Store
+                    </div>
+
+                    <div class="ticket-info-value">
+                        ${escapeHTML(store || "N/A")}
+                    </div>
+
+                </div>
+
+                <div class="ticket-info">
+
+                    <div class="ticket-info-title">
+                        Category
+                    </div>
+
+                    <div class="ticket-info-value">
+                        ${escapeHTML(category || "N/A")}
+                    </div>
+
+                </div>
+
+                <div class="ticket-info full">
+
+                    <div class="ticket-info-title">
+                        Issue / Notes
+                    </div>
+
+                    <div class="ticket-info-value">
+                        ${escapeHTML(notes || "No notes provided.")}
+                    </div>
+
+                </div>
+
+            </div>
+        `;
+
+        container.appendChild(ticketDiv);
+
+    });
 
 
     /*
-       Add status listeners
+       Attach change listeners after creating ticket elements.
     */
 
     container
-        .querySelectorAll(
-            ".ticket-status"
-        )
-        .forEach(select => {
+        .querySelectorAll(".ticket-status")
+        .forEach(function(select) {
 
-            select.addEventListener(
-                "change",
-                function() {
+            select.addEventListener("change", function() {
 
-                    const id =
-                        this.dataset.ticketId;
+                const key =
+                    this.getAttribute("data-status-key");
 
+                ticketStatuses[key] =
+                    this.value;
 
-                    ticketStatuses[id] =
-                        this.value;
+                generateReport();
 
-
-                    /*
-                       Refresh report text
-                    */
-
-                    updateReport();
-
-                }
-            );
+            });
 
         });
 
 }
 
 
-/* =====================================================
+/* =========================================================
    ESCAPE HTML
-===================================================== */
+   ========================================================= */
 
-function escapeHtml(value) {
+function escapeHTML(value) {
 
     return String(value)
-
-        .replace(
-            /&/g,
-            "&amp;"
-        )
-
-        .replace(
-            /</g,
-            "&lt;"
-        )
-
-        .replace(
-            />/g,
-            "&gt;"
-        )
-
-        .replace(
-            /"/g,
-            "&quot;"
-        )
-
-        .replace(
-            /'/g,
-            "&#039;"
-        );
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
 
 }
 
 
-/* =====================================================
-   GENERATE REPORT
-===================================================== */
+/* =========================================================
+   GET TEAM MEMBERS
+   ========================================================= */
 
-function generateReport(
-    rows,
-    counts,
-    tickets
-) {
+function getTeamMembers() {
 
-    const date =
-        document.getElementById(
-            "reportDate"
-        ).value;
+    const selected = [];
 
+    document
+        .querySelectorAll(".memberCheck:checked")
+        .forEach(function(box) {
 
-    const formattedDate =
-        formatDisplayDate(
-            date
-        );
+            selected.push(box.value);
 
+        });
 
-    const teamMembers =
-        Array.from(
-            document.querySelectorAll(
-                ".team-checkbox:checked"
-            )
-        )
-        .map(
-            checkbox =>
-                checkbox.value
-        );
-
-
-    const extraTask =
-        document.getElementById(
-            "extraTask"
-        ).value.trim();
-
-
-    const callType =
-        getSelectedCallType();
-
-
-    let report = "";
-
-
-    report +=
-        "Customer Success Daily Report\n";
-
-
-    report +=
-        `Date: ${formattedDate}\n\n`;
-
-
-    report +=
-        "Team Members Present: ";
-
-
-    report +=
-        teamMembers.length
-            ? teamMembers.join(", ")
-            : "";
-
-
-    report +=
-        "\n\n";
-
-
-    report +=
-        "Extra Task: ";
-
-
-    report +=
-        extraTask;
-
-
-    report +=
-        "\n\n";
-
-
-    report +=
-        "Call Activity Summary\n\n";
-
-
-    report +=
-        `${callType}\n`;
-
-
-    report +=
-        `Total Calls Made: ${rows.length}\n\n`;
-
-
-    report +=
-        "OUTCOMES\n";
-
-
-    report +=
-        `Follow-Up Scheduled: ${counts.followUp}\n`;
-
-
-    report +=
-        `Retained / Satisfied: ${counts.retained}\n`;
-
-
-    report +=
-        `Voicemail Left: ${counts.voicemail}\n`;
-
-
-    report +=
-        `No Answer / Hang Up: ${counts.noAnswer}\n`;
-
-
-    report +=
-        `Churned / Cancelled: ${counts.churned}\n\n`;
-
-
-    report +=
-        `Total Tickets: ${tickets.length}\n\n`;
-
-
-    tickets.forEach(
-        ticket => {
-
-            const status =
-                ticketStatuses[
-                    String(ticket.id)
-                ] || "Open";
-
-
-            report +=
-                `Ticket: #${ticket.id}\n`;
-
-
-            report +=
-                `Store: ${ticket.store || ""}\n`;
-
-
-            report +=
-                `Issue: ${ticket.issue || ""}\n`;
-
-
-            report +=
-                `Status: ${status}\n\n`;
-
-        }
-    );
-
-
-    document.getElementById(
-        "reportPreview"
-    ).textContent =
-        report;
+    return selected;
 
 }
 
 
-/* =====================================================
-   DISPLAY DATE
-===================================================== */
+/* =========================================================
+   FORMAT DATE FOR REPORT
+   ========================================================= */
 
-function formatDisplayDate(
-    dateString
-) {
+function formatReportDate(dateString) {
 
     if (!dateString) {
         return "";
     }
 
-
     const parts =
         dateString.split("-");
-
 
     if (parts.length !== 3) {
         return dateString;
     }
 
+    const year = Number(parts[0]);
+
+    const month = Number(parts[1]);
+
+    const day = Number(parts[2]);
 
     const date =
-        new Date(
-            Number(parts[0]),
-            Number(parts[1]) - 1,
-            Number(parts[2])
-        );
-
+        new Date(year, month - 1, day);
 
     return date.toLocaleDateString(
         "en-US",
@@ -2436,222 +1236,303 @@ function formatDisplayDate(
 }
 
 
-/* =====================================================
-   COPY REPORT
-===================================================== */
+/* =========================================================
+   GET TICKET STATUS
+   ========================================================= */
 
-async function copyReport() {
+function getTicketStatus(ticketID, index) {
+
+    const key =
+        ticketID + "_" + index;
+
+    return ticketStatuses[key] || "Open";
+
+}
+
+
+/* =========================================================
+   GENERATE REPORT
+   ========================================================= */
+
+function generateReport() {
+
+    const selectedDate =
+        getSelectedDate();
+
+    const callType =
+        document.getElementById("callType").value;
+
+    const rows =
+        getMatchingRows();
+
+    const tickets =
+        getTickets(rows);
+
+    const teamMembers =
+        getTeamMembers();
+
+    const extraTask =
+        document.getElementById("extraTask").value.trim();
+
+
+    /*
+       Calculate outcomes again for the text report.
+    */
+
+    let followUp = 0;
+
+    let retained = 0;
+
+    let voicemail = 0;
+
+    let noAnswer = 0;
+
+    let churned = 0;
+
+    rows.forEach(function(row) {
+
+        const outcome =
+            normalize(row["Outcome"]);
+
+        if (
+            outcome === "follow-up scheduled" ||
+            outcome === "follow up scheduled"
+        ) {
+            followUp++;
+        }
+
+        else if (
+            outcome === "retained / satisfied" ||
+            outcome === "retained/satisfied"
+        ) {
+            retained++;
+        }
+
+        else if (
+            outcome === "voicemail left"
+        ) {
+            voicemail++;
+        }
+
+        else if (
+            outcome === "no answer" ||
+            outcome === "hang up" ||
+            outcome === "no answer / hang up" ||
+            outcome === "no answer/hang up"
+        ) {
+            noAnswer++;
+        }
+
+        else if (
+            outcome === "churned / cancelled" ||
+            outcome === "churned/cancelled" ||
+            outcome === "churned / canceled" ||
+            outcome === "churned/canceled"
+        ) {
+            churned++;
+        }
+
+    });
+
+
+    let report = "";
+
+    report += "Customer Success Daily Report\n";
+
+    report +=
+        "Date: " +
+        formatReportDate(selectedDate) +
+        "\n\n";
+
+
+    report +=
+        "Team Members Present: " +
+        (
+            teamMembers.length
+                ? teamMembers.join(", ")
+                : ""
+        ) +
+        "\n\n";
+
+
+    report +=
+        "Extra Task: " +
+        (
+            extraTask
+                ? extraTask
+                : ""
+        ) +
+        "\n\n";
+
+
+    report +=
+        "Call Activity Summary\n\n";
+
+
+    report +=
+        callType +
+        "\n";
+
+
+    report +=
+        "Total Calls Made: " +
+        rows.length +
+        "\n\n";
+
+
+    report += "OUTCOMES\n";
+
+    report +=
+        "Follow-Up Scheduled: " +
+        followUp +
+        "\n";
+
+    report +=
+        "Retained / Satisfied: " +
+        retained +
+        "\n";
+
+    report +=
+        "Voicemail Left: " +
+        voicemail +
+        "\n";
+
+    report +=
+        "No Answer / Hang Up: " +
+        noAnswer +
+        "\n";
+
+    report +=
+        "Churned / Cancelled: " +
+        churned +
+        "\n\n";
+
+
+    report +=
+        "Total Tickets: " +
+        tickets.length +
+        "\n\n";
+
+
+    /*
+       Add each ticket.
+    */
+
+    tickets.forEach(function(ticket, index) {
+
+        const ticketID =
+            String(
+                ticket["Ticket ID (Optional)"] || ""
+            ).trim();
+
+        const store =
+            String(
+                ticket["Store Name"] || ""
+            ).trim();
+
+        const notes =
+            String(
+                ticket["Notes"] || ""
+            ).trim();
+
+        const status =
+            getTicketStatus(ticketID, index);
+
+
+        report +=
+            "Ticket: #" +
+            ticketID +
+            "\n";
+
+        report +=
+            "Store: " +
+            store +
+            "\n";
+
+        report +=
+            "Issue: " +
+            notes +
+            "\n";
+
+        report +=
+            "Status: " +
+            status +
+            "\n\n";
+
+    });
+
+
+    document.getElementById("reportOutput").textContent =
+        report.trim();
+
+}
+
+
+/* =========================================================
+   COPY REPORT
+   ========================================================= */
+
+function copyReport() {
 
     const report =
-        document.getElementById(
-            "reportPreview"
-        ).textContent;
+        document.getElementById("reportOutput").textContent;
 
-
-    try {
-
-        await navigator.clipboard.writeText(
-            report
-        );
-
-
-        showMessage(
-            "✓ Whole report copied."
-        );
-
-
-    } catch(error) {
-
-        /*
-           Fallback
-        */
-
-        const textarea =
-            document.createElement(
-                "textarea"
-            );
-
-
-        textarea.value =
-            report;
-
-
-        document.body.appendChild(
-            textarea
-        );
-
-
-        textarea.select();
-
-
-        document.execCommand(
-            "copy"
-        );
-
-
-        textarea.remove();
-
-
-        showMessage(
-            "✓ Whole report copied."
-        );
-
-    }
-
-}
-
-
-/* =====================================================
-   MESSAGE
-===================================================== */
-
-function showMessage(text) {
-
-    const message =
-        document.getElementById(
-            "message"
-        );
-
-
-    message.textContent =
-        text;
-
-
-    message.classList.add(
-        "show"
-    );
-
-
-    setTimeout(
-        () => {
-
-            message.classList.remove(
-                "show"
-            );
-
-        },
-        2500
-    );
-
-}
-
-
-/* =====================================================
-   CLEAR
-===================================================== */
-
-function clearReport() {
-
-    const confirmed =
-        confirm(
-            "Clear today's report information?"
-        );
-
-
-    if (!confirmed) {
+    if (!report.trim()) {
         return;
     }
 
 
-    document.querySelectorAll(
-        ".team-checkbox"
-    )
-    .forEach(
-        checkbox =>
-            checkbox.checked = false
-    );
+    navigator.clipboard.writeText(report)
+        .then(function() {
 
+            const success =
+                document.getElementById("copySuccess");
 
-    document.getElementById(
-        "extraTask"
-    ).value = "";
+            success.style.display = "inline";
 
+            setTimeout(function() {
 
-    excelRows = [];
+                success.style.display = "none";
 
+            }, 2500);
 
-    ticketStatuses = {};
+        })
+        .catch(function() {
 
+            /*
+               Backup copy method for browsers that block
+               navigator.clipboard.
+            */
 
-    document.getElementById(
-        "excelFile"
-    ).value = "";
+            const textarea =
+                document.createElement("textarea");
 
+            textarea.value = report;
 
-    document.getElementById(
-        "fileStatus"
-    ).textContent =
-        "No Excel file loaded.";
+            document.body.appendChild(textarea);
 
+            textarea.select();
 
-    updateReport();
+            document.execCommand("copy");
+
+            document.body.removeChild(textarea);
+
+            const success =
+                document.getElementById("copySuccess");
+
+            success.style.display = "inline";
+
+            setTimeout(function() {
+
+                success.style.display = "none";
+
+            }, 2500);
+
+        });
 
 }
 
-
-/* =====================================================
-   EVENT LISTENERS
-===================================================== */
-
-document
-    .getElementById("reportDate")
-    .addEventListener(
-        "change",
-        updateReport
-    );
-
-
-document
-    .getElementById("extraTask")
-    .addEventListener(
-        "input",
-        updateReport
-    );
-
-
-document
-    .querySelectorAll(
-        ".team-checkbox"
-    )
-    .forEach(
-        checkbox => {
-
-            checkbox.addEventListener(
-                "change",
-                updateReport
-            );
-
-        }
-    );
-
-
-document
-    .querySelectorAll(
-        'input[name="callType"]'
-    )
-    .forEach(
-        radio => {
-
-            radio.addEventListener(
-                "change",
-                updateReport
-            );
-
-        }
-    );
-
-
-/* =====================================================
-   START
-===================================================== */
-
-setDefaultDate();
-
-updateReport();
-
 </script>
 
-
 </body>
-
 </html>
