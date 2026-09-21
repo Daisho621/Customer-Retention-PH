@@ -389,6 +389,28 @@ input[readonly]{
   margin-bottom:10px;
 }
 
+/* ==========================================================
+   CONTACT MADE STATUS
+   ========================================================== */
+
+.contact-made{
+  font-size:17px;
+  font-weight:900;
+  margin-left:8px;
+}
+
+.contact-reached{
+  color:#16a34a;
+}
+
+.contact-no-answer{
+  color:#dc2626;
+}
+
+.contact-voicemail{
+  color:#d97706;
+}
+
 .result-line{
   margin:7px 0;
 }
@@ -2747,6 +2769,65 @@ function searchWorkload(){
           )
         );
 
+
+      /* ======================================================
+         CONTACT MADE STATUS
+         ====================================================== */
+
+      const contactMadeRaw =
+        getValue(
+          row,
+          [
+            "Contact Made",
+            "ContactMade",
+            "Contact Made Status"
+          ]
+        );
+
+      const contactMade =
+        escapeHTML(
+          contactMadeRaw
+        );
+
+      const contactStatus =
+        contactMadeRaw
+          .trim()
+          .toLowerCase()
+          .replace(/\s+/g," ");
+
+      let contactClass = "";
+
+      if(
+        contactStatus === "reached"
+      ){
+
+        contactClass =
+          "contact-reached";
+
+      }
+
+      else if(
+        contactStatus === "no answer" ||
+        contactStatus === "no answer / hang up" ||
+        contactStatus === "no answer/hang up"
+      ){
+
+        contactClass =
+          "contact-no-answer";
+
+      }
+
+      else if(
+        contactStatus === "voicemail" ||
+        contactStatus === "voicemail left"
+      ){
+
+        contactClass =
+          "contact-voicemail";
+
+      }
+
+
       const div =
         document.createElement(
           "div"
@@ -2759,6 +2840,13 @@ function searchWorkload(){
 
         <div class="result-title">
           ${store}
+          ${
+            contactMadeRaw
+              ? `<span class="contact-made ${contactClass}">
+                   ${contactMade}
+                 </span>`
+              : ""
+          }
         </div>
 
         <div class="result-line">
