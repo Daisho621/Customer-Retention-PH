@@ -5,7 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Customer Retention PH</title>
 
-<!-- Excel reader -->
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 
 <style>
@@ -36,14 +35,16 @@ body.dark{
   --shadow:0 8px 24px rgba(0,0,0,.25);
 }
 
-*{box-sizing:border-box}
+*{
+  box-sizing:border-box;
+}
 
 body{
   margin:0;
   font-family:Segoe UI,Arial,sans-serif;
   background:var(--bg);
   color:var(--text);
-  transition:.2s
+  transition:.2s;
 }
 
 header{
@@ -56,25 +57,25 @@ header{
   display:flex;
   justify-content:space-between;
   align-items:center;
-  gap:15px
+  gap:15px;
 }
 
 .logo{
   font-size:22px;
-  font-weight:800
+  font-weight:800;
 }
 
 .logo small{
   font-size:13px;
   font-weight:500;
   color:var(--muted);
-  margin-left:8px
+  margin-left:8px;
 }
 
 .header-actions{
   display:flex;
   gap:8px;
-  flex-wrap:wrap
+  flex-wrap:wrap;
 }
 
 button{
@@ -83,54 +84,54 @@ button{
   padding:10px 15px;
   font-weight:700;
   cursor:pointer;
-  transition:.15s
+  transition:.15s;
 }
 
 button:hover{
-  transform:translateY(-1px)
+  transform:translateY(-1px);
 }
 
 .mode-btn{
   background:var(--primary);
-  color:#fff
+  color:#fff;
 }
 
 .upload-btn{
   background:var(--success);
-  color:#fff
+  color:#fff;
 }
 
 .container{
   width:92%;
   max-width:1200px;
-  margin:24px auto
+  margin:24px auto;
 }
 
 .tabs{
   display:flex;
   gap:9px;
   margin-bottom:20px;
-  flex-wrap:wrap
+  flex-wrap:wrap;
 }
 
 .tab{
   background:var(--card);
   color:var(--text);
-  border:1px solid var(--border)
+  border:1px solid var(--border);
 }
 
 .tab.active{
   background:var(--primary);
   color:#fff;
-  border-color:var(--primary)
+  border-color:var(--primary);
 }
 
 .tab-content{
-  display:none
+  display:none;
 }
 
 .tab-content.active{
-  display:block
+  display:block;
 }
 
 .card{
@@ -139,55 +140,59 @@ button:hover{
   border-radius:14px;
   padding:22px;
   margin-bottom:18px;
-  box-shadow:var(--shadow)
+  box-shadow:var(--shadow);
 }
 
 h1{
   font-size:28px;
-  margin:0 0 18px
+  margin:0 0 18px;
 }
 
 h2{
   font-size:20px;
-  margin:0 0 16px
+  margin:0 0 16px;
 }
 
 label{
   display:block;
   font-weight:800;
   font-size:13px;
-  margin-bottom:7px
+  margin-bottom:7px;
 }
 
 .grid{
   display:grid;
   grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
-  gap:15px
+  gap:15px;
 }
 
-input,textarea,select{
+input,
+textarea,
+select{
   width:100%;
   padding:11px 12px;
   border:1px solid var(--border);
   border-radius:9px;
   background:var(--input);
   color:var(--text);
-  font:inherit
+  font:inherit;
 }
 
-input:focus,textarea:focus,select:focus{
+input:focus,
+textarea:focus,
+select:focus{
   outline:2px solid rgba(37,99,235,.25);
-  border-color:var(--primary)
+  border-color:var(--primary);
 }
 
 input[readonly]{
-  opacity:.9
+  opacity:.9;
 }
 
 .team-list{
   display:grid;
   grid-template-columns:repeat(3,minmax(150px,1fr));
-  gap:10px
+  gap:10px;
 }
 
 .team{
@@ -198,34 +203,34 @@ input[readonly]{
   background:var(--input);
   display:flex;
   align-items:center;
-  gap:8px
+  gap:8px;
 }
 
 .team input{
   width:18px;
   height:18px;
-  margin:0
+  margin:0;
 }
 
 .task-row{
   display:flex;
   gap:9px;
-  align-items:flex-start
+  align-items:flex-start;
 }
 
 .task-row textarea{
   flex:1;
-  min-height:82px
+  min-height:82px;
 }
 
 .submit-btn{
   background:var(--success);
-  color:#fff
+  color:#fff;
 }
 
 .clear-btn{
   background:#64748b;
-  color:#fff
+  color:#fff;
 }
 
 .task{
@@ -237,18 +242,18 @@ input[readonly]{
   margin-top:8px;
   border:1px solid var(--border);
   border-radius:9px;
-  background:var(--input)
+  background:var(--input);
 }
 
 .delete-btn{
   background:var(--danger);
   color:#fff;
   padding:7px 11px;
-  font-size:12px
+  font-size:12px;
 }
 
 .status{
-  padding:8px 10px
+  padding:8px 10px;
 }
 
 .status-message{
@@ -256,21 +261,21 @@ input[readonly]{
   border-radius:9px;
   background:var(--input);
   border:1px solid var(--border);
-  color:var(--muted)
+  color:var(--muted);
 }
 
 .status-message.ok{
-  color:var(--success)
+  color:var(--success);
 }
 
 .status-message.err{
-  color:var(--danger)
+  color:var(--danger);
 }
 
 .stats{
   display:grid;
   grid-template-columns:repeat(5,minmax(120px,1fr));
-  gap:10px
+  gap:10px;
 }
 
 .stat{
@@ -278,18 +283,18 @@ input[readonly]{
   text-align:center;
   border:1px solid var(--border);
   border-radius:10px;
-  background:var(--input)
+  background:var(--input);
 }
 
 .stat-number{
   font-size:27px;
-  font-weight:900
+  font-weight:900;
 }
 
 .stat-label{
   font-size:12px;
   color:var(--muted);
-  margin-top:4px
+  margin-top:4px;
 }
 
 .ticket{
@@ -297,7 +302,7 @@ input[readonly]{
   border-radius:12px;
   padding:16px;
   margin-top:12px;
-  background:var(--input)
+  background:var(--input);
 }
 
 .ticket-head{
@@ -305,22 +310,22 @@ input[readonly]{
   justify-content:space-between;
   align-items:center;
   gap:10px;
-  flex-wrap:wrap
+  flex-wrap:wrap;
 }
 
 .ticket-id{
   font-size:17px;
   font-weight:900;
-  color:var(--primary)
+  color:var(--primary);
 }
 
 .ticket-field{
   margin-top:9px;
-  line-height:1.5
+  line-height:1.5;
 }
 
 .ticket-status{
-  max-width:180px
+  max-width:180px;
 }
 
 .summary-box,
@@ -330,43 +335,43 @@ input[readonly]{
   border-radius:10px;
   padding:17px;
   background:var(--input);
-  line-height:1.6
+  line-height:1.6;
 }
 
 .actions{
   display:flex;
   gap:9px;
   flex-wrap:wrap;
-  margin-top:12px
+  margin-top:12px;
 }
 
 .copy-btn{
   background:var(--primary);
-  color:#fff
+  color:#fff;
 }
 
 .copy-btn.success{
-  background:var(--success)
+  background:var(--success);
 }
 
 .search-row{
   display:grid;
   grid-template-columns:1fr auto auto;
-  gap:9px
+  gap:9px;
 }
 
 .search-btn{
   background:var(--primary);
-  color:#fff
+  color:#fff;
 }
 
 .clear-search{
   background:#64748b;
-  color:#fff
+  color:#fff;
 }
 
 .workload-result{
-  margin-top:16px
+  margin-top:16px;
 }
 
 .result-card{
@@ -374,67 +379,218 @@ input[readonly]{
   border-radius:12px;
   background:var(--input);
   padding:17px;
-  margin-top:10px
+  margin-top:10px;
 }
 
 .result-title{
   font-size:17px;
   font-weight:900;
   color:var(--primary);
-  margin-bottom:10px
+  margin-bottom:10px;
 }
 
 .result-line{
-  margin:7px 0
+  margin:7px 0;
 }
 
 .result-line strong{
   display:inline-block;
-  min-width:100px
+  min-width:125px;
 }
 
 .muted{
-  color:var(--muted)
-}
-
-.hidden{
-  display:none
+  color:var(--muted);
 }
 
 .file-name{
   margin-top:8px;
   font-size:12px;
   color:var(--muted);
-  word-break:break-word
+  word-break:break-word;
+}
+
+/* ==========================================================
+   SCRIPTS
+   ========================================================== */
+
+.scripts-layout{
+  display:grid;
+  grid-template-columns:220px 1fr;
+  gap:15px;
+}
+
+.script-sidebar{
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:14px;
+  padding:14px;
+  box-shadow:var(--shadow);
+  height:fit-content;
+}
+
+.script-sidebar-title{
+  font-size:17px;
+  font-weight:800;
+  margin-bottom:10px;
+}
+
+.script-tab-list{
+  display:flex;
+  flex-direction:column;
+  gap:7px;
+}
+
+.script-tab{
+  width:100%;
+  text-align:left;
+  background:var(--input);
+  color:var(--text);
+  border:1px solid var(--border);
+  padding:10px 12px;
+}
+
+.script-tab.active{
+  background:var(--primary);
+  color:#fff;
+  border-color:var(--primary);
+}
+
+.script-sidebar-actions{
+  display:flex;
+  gap:7px;
+  margin-top:10px;
+}
+
+.script-sidebar-actions button{
+  flex:1;
+  padding:9px 8px;
+  font-size:12px;
+}
+
+.add-script-btn{
+  background:var(--success);
+  color:#fff;
+}
+
+.rename-script-btn{
+  background:var(--primary);
+  color:#fff;
+}
+
+.delete-script-btn{
+  background:var(--danger);
+  color:#fff;
+}
+
+.script-editor-card{
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:14px;
+  padding:18px;
+  box-shadow:var(--shadow);
+}
+
+.script-title-row{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:10px;
+  margin-bottom:12px;
+}
+
+.script-current-title{
+  font-size:20px;
+  font-weight:800;
+}
+
+.script-toolbar{
+  display:flex;
+  align-items:center;
+  gap:7px;
+  flex-wrap:wrap;
+  padding:10px;
+  border:1px solid var(--border);
+  border-radius:10px 10px 0 0;
+  background:var(--input);
+}
+
+.script-toolbar button{
+  min-width:42px;
+  padding:8px 11px;
+  background:var(--card);
+  color:var(--text);
+  border:1px solid var(--border);
+}
+
+.script-toolbar button.active{
+  background:var(--primary);
+  color:#fff;
+}
+
+.script-toolbar select{
+  width:auto;
+  min-width:120px;
+  padding:8px 10px;
+}
+
+.script-editor{
+  min-height:480px;
+  padding:18px;
+  border:1px solid var(--border);
+  border-top:0;
+  border-radius:0 0 10px 10px;
+  background:var(--input);
+  color:var(--text);
+  outline:none;
+  line-height:1.6;
+  overflow:auto;
+}
+
+.script-editor:focus{
+  box-shadow:inset 0 0 0 2px rgba(37,99,235,.18);
+}
+
+.script-empty{
+  color:var(--muted);
+  text-align:center;
+  padding:30px 10px;
 }
 
 @media(max-width:800px){
   .stats{
-    grid-template-columns:repeat(2,1fr)
+    grid-template-columns:repeat(2,1fr);
   }
 
   .team-list{
-    grid-template-columns:1fr
+    grid-template-columns:1fr;
   }
 
   .search-row{
-    grid-template-columns:1fr
+    grid-template-columns:1fr;
   }
 
   .task-row{
-    flex-direction:column
+    flex-direction:column;
   }
 
   .task-row button{
-    width:100%
+    width:100%;
   }
 
   .header-actions{
-    width:100%
+    width:100%;
   }
 
   .header-actions button{
-    flex:1
+    flex:1;
+  }
+
+  .scripts-layout{
+    grid-template-columns:1fr;
+  }
+
+  .script-editor{
+    min-height:350px;
   }
 }
 </style>
@@ -443,6 +599,7 @@ input[readonly]{
 <body>
 
 <header>
+
   <div class="logo">
     Customer Retention PH
     <small>Daily Report Tool</small>
@@ -450,7 +607,6 @@ input[readonly]{
 
   <div class="header-actions">
 
-    <!-- Hidden Excel file picker -->
     <input
       type="file"
       id="excelFileInput"
@@ -475,22 +631,41 @@ input[readonly]{
     </button>
 
   </div>
+
 </header>
 
 <div class="container">
 
   <div class="tabs">
-    <button class="tab active" onclick="showTab('workload',this)">
+
+    <button
+      class="tab active"
+      onclick="showTab('workload',this)"
+    >
       📊 Workload
     </button>
 
-    <button class="tab" onclick="showTab('daily',this)">
+    <button
+      class="tab"
+      onclick="showTab('daily',this)"
+    >
       📋 Daily Report
     </button>
 
-    <button class="tab" onclick="showTab('escalate',this)">
+    <button
+      class="tab"
+      onclick="showTab('escalate',this)"
+    >
       ⚠️ Escalate
     </button>
+
+    <button
+      class="tab"
+      onclick="showTab('scripts',this)"
+    >
+      📝 Scripts
+    </button>
+
   </div>
 
 
@@ -498,7 +673,10 @@ input[readonly]{
        WORKLOAD
        ====================================================== -->
 
-  <section id="workload" class="tab-content active">
+  <section
+    id="workload"
+    class="tab-content active"
+  >
 
     <div class="card">
 
@@ -531,12 +709,13 @@ input[readonly]{
 
       </div>
 
-      <div id="workloadResults" class="workload-result">
-
+      <div
+        id="workloadResults"
+        class="workload-result"
+      >
         <div class="status-message">
           Upload your Excel workbook first.
         </div>
-
       </div>
 
     </div>
@@ -548,7 +727,10 @@ input[readonly]{
        DAILY REPORT
        ====================================================== -->
 
-  <section id="daily" class="tab-content">
+  <section
+    id="daily"
+    class="tab-content"
+  >
 
     <div class="card">
 
@@ -742,9 +924,11 @@ input[readonly]{
       </p>
 
       <div id="ticketContainer">
+
         <div class="muted">
           No tickets found.
         </div>
+
       </div>
 
     </div>
@@ -768,7 +952,7 @@ input[readonly]{
         <button
           class="copy-btn"
           type="button"
-          onclick="copyReport()"
+          onclick="copyReport(this)"
         >
           📋 Copy Whole Report
         </button>
@@ -784,7 +968,10 @@ input[readonly]{
        ESCALATE
        ====================================================== -->
 
-  <section id="escalate" class="tab-content">
+  <section
+    id="escalate"
+    class="tab-content"
+  >
 
     <div class="card">
 
@@ -805,7 +992,7 @@ input[readonly]{
 
         <div>
 
-          <label>Name:</label>
+          <label>Contact Person:</label>
 
           <input
             id="escName"
@@ -816,7 +1003,7 @@ input[readonly]{
 
         <div>
 
-          <label>Contact:</label>
+          <label>Callback Number:</label>
 
           <input
             id="escContact"
@@ -861,10 +1048,141 @@ input[readonly]{
         <button
           class="copy-btn"
           type="button"
-          onclick="copyEscalation()"
+          onclick="copyEscalation(this)"
         >
           📋 Copy
         </button>
+
+        <button
+          class="clear-btn"
+          type="button"
+          onclick="clearEscalation()"
+        >
+          Clear
+        </button>
+
+      </div>
+
+    </div>
+
+  </section>
+
+
+  <!-- ======================================================
+       SCRIPTS
+       ====================================================== -->
+
+  <section
+    id="scripts"
+    class="tab-content"
+  >
+
+    <div class="scripts-layout">
+
+      <!-- SCRIPT SIDEBAR -->
+
+      <div class="script-sidebar">
+
+        <div class="script-sidebar-title">
+          My Notes
+        </div>
+
+        <div
+          id="scriptTabList"
+          class="script-tab-list"
+        ></div>
+
+        <div class="script-sidebar-actions">
+
+          <button
+            class="add-script-btn"
+            type="button"
+            onclick="addScriptTab()"
+          >
+            + Add
+          </button>
+
+          <button
+            class="rename-script-btn"
+            type="button"
+            onclick="renameScriptTab()"
+          >
+            Rename
+          </button>
+
+        </div>
+
+        <div class="script-sidebar-actions">
+
+          <button
+            class="delete-script-btn"
+            type="button"
+            onclick="deleteScriptTab()"
+          >
+            Delete
+          </button>
+
+        </div>
+
+      </div>
+
+
+      <!-- SCRIPT EDITOR -->
+
+      <div class="script-editor-card">
+
+        <div class="script-title-row">
+
+          <div
+            id="currentScriptTitle"
+            class="script-current-title"
+          >
+            Script 1
+          </div>
+
+        </div>
+
+        <div class="script-toolbar">
+
+          <select
+            id="scriptFontSize"
+            title="Text Size"
+            onchange="changeScriptFontSize(this.value)"
+          >
+            <option value="2">Small</option>
+            <option value="3" selected>Normal</option>
+            <option value="4">Large</option>
+            <option value="5">Extra Large</option>
+            <option value="6">Huge</option>
+            <option value="7">Very Huge</option>
+          </select>
+
+          <button
+            type="button"
+            id="boldButton"
+            title="Bold"
+            onclick="formatScript('bold')"
+          >
+            <strong>B</strong>
+          </button>
+
+          <button
+            type="button"
+            id="italicButton"
+            title="Italic"
+            onclick="formatScript('italic')"
+          >
+            <em>I</em>
+          </button>
+
+        </div>
+
+        <div
+          id="scriptEditor"
+          class="script-editor"
+          contenteditable="true"
+          spellcheck="true"
+        ></div>
 
       </div>
 
@@ -902,6 +1220,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
   setupExcelUpload();
 
+  loadScriptTabs();
+
   document
     .getElementById("workloadSearch")
     .addEventListener("keydown", e => {
@@ -928,6 +1248,13 @@ document.addEventListener("DOMContentLoaded", () => {
       );
 
   });
+
+  document
+    .getElementById("scriptEditor")
+    .addEventListener(
+      "input",
+      saveCurrentScript
+    );
 
   updateEscalationPreview();
 
@@ -1005,14 +1332,6 @@ function handleExcelUpload(event){
           cellDates:true
         });
 
-
-      /* -----------------------------------------------
-         Find a useful worksheet.
-
-         We first look for common names.
-         If none are found, we use the first sheet.
-         ----------------------------------------------- */
-
       const preferredNames = [
         "Workload",
         "Data",
@@ -1049,7 +1368,6 @@ function handleExcelUpload(event){
 
       }
 
-
       if(!sheetName){
 
         throw new Error(
@@ -1058,10 +1376,8 @@ function handleExcelUpload(event){
 
       }
 
-
       const worksheet =
         workbook.Sheets[sheetName];
-
 
       csvData =
         XLSX.utils.sheet_to_json(
@@ -1071,7 +1387,6 @@ function handleExcelUpload(event){
             raw:false
           }
         );
-
 
       csvData =
         csvData.filter(row =>
@@ -1083,7 +1398,6 @@ function handleExcelUpload(event){
           )
         );
 
-
       if(!csvData.length){
 
         throw new Error(
@@ -1091,7 +1405,6 @@ function handleExcelUpload(event){
         );
 
       }
-
 
       console.log(
         "Excel workbook:",
@@ -1113,7 +1426,6 @@ function handleExcelUpload(event){
         csvData.length
       );
 
-
       status.className =
         "status-message ok";
 
@@ -1122,37 +1434,24 @@ function handleExcelUpload(event){
         csvData.length +
         " rows";
 
-
       fileName.textContent =
         "File: " +
         file.name +
         " | Sheet: " +
         sheetName;
 
-
-      /*
-       * Refresh the report immediately.
-       */
-
       loadReport();
 
-
-      /*
-       * Clear previous workload search results
-       * because the data source has changed.
-       */
-
       document
-        .getElementById(
-          "workloadResults"
-        )
+        .getElementById("workloadResults")
         .innerHTML =
           "<div class='status-message ok'>" +
           "Excel data loaded. Enter a Store Name or MID to search." +
           "</div>";
 
+    }
 
-    }catch(error){
+    catch(error){
 
       console.error(
         "Excel loading error:",
@@ -1176,7 +1475,6 @@ function handleExcelUpload(event){
 
   };
 
-
   reader.onerror = function(){
 
     console.error(
@@ -1194,7 +1492,6 @@ function handleExcelUpload(event){
     );
 
   };
-
 
   reader.readAsArrayBuffer(file);
 
@@ -1333,11 +1630,6 @@ function getValue(row,names){
   const keys =
     Object.keys(row || {});
 
-
-  /*
-   * Exact match first.
-   */
-
   for(const wanted of names){
 
     const exact =
@@ -1357,11 +1649,6 @@ function getValue(row,names){
 
   }
 
-
-  /*
-   * Fuzzy match second.
-   */
-
   const fuzzy =
     keys.find(
       k =>
@@ -1374,7 +1661,6 @@ function getValue(row,names){
               )
         )
     );
-
 
   return fuzzy
     ? String(
@@ -1401,11 +1687,6 @@ function normalizeDate(value){
 
   }
 
-
-  /*
-   * JavaScript Date
-   */
-
   if(
     value instanceof Date &&
     !isNaN(value.getTime())
@@ -1423,71 +1704,39 @@ function normalizeDate(value){
 
   }
 
-
   let s =
     String(value).trim();
-
 
   if(!s){
     return "";
   }
-
-
-  /*
-   * MM/DD/YYYY
-   */
 
   let m =
     s.match(
       /^(\d{1,2})\/(\d{1,2})\/(\d{4})$/
     );
 
-
   if(m){
 
-    return (
-      m[3] +
-      "-" +
-      m[1].padStart(2,"0") +
-      "-" +
-      m[2].padStart(2,"0")
-    );
+    return `${m[3]}-${m[1].padStart(2,"0")}-${m[2].padStart(2,"0")}`;
 
   }
-
-
-  /*
-   * YYYY-MM-DD
-   */
 
   m =
     s.match(
       /^(\d{4})-(\d{1,2})-(\d{1,2})/
     );
 
-
   if(m){
 
-    return (
-      m[1] +
-      "-" +
-      m[2].padStart(2,"0") +
-      "-" +
-      m[3].padStart(2,"0")
-    );
+    return `${m[1]}-${m[2].padStart(2,"0")}-${m[3].padStart(2,"0")}`;
 
   }
-
-
-  /*
-   * Other date formats.
-   */
 
   const parsed =
     new Date(s);
 
-
-  if(!isNaN(parsed.getTime())){
+  if(!isNaN(parsed)){
 
     const local =
       new Date(
@@ -1501,68 +1750,39 @@ function normalizeDate(value){
 
   }
 
-
   return s;
 
 }
 
 
+/* ==========================================================
+   LOAD REPORT
+   ========================================================== */
+
 function dateMatches(row,target){
 
-  return (
-    normalizeDate(
-      getValue(
-        row,
-        ["Date"]
-      )
-    ) === target
-  );
+  return normalizeDate(
+    getValue(row,["Date"])
+  ) === target;
 
 }
 
 
-/* ==========================================================
-   DAILY REPORT
-   ========================================================== */
-
 function loadReport(){
-
-  if(!csvData.length){
-
-    renderEmptyReport(
-      "Please upload your Excel workbook."
-    );
-
-    return;
-
-  }
-
 
   const date =
     document
-      .getElementById(
-        "reportDate"
-      )
+      .getElementById("reportDate")
       .value;
-
 
   currentRows =
     csvData.filter(
-      row =>
-        dateMatches(
-          row,
-          date
-        )
+      row => dateMatches(row,date)
     );
 
+  calculateCalls(currentRows);
 
-  calculateCalls(
-    currentRows
-  );
-
-  calculateTickets(
-    currentRows
-  );
+  calculateTickets(currentRows);
 
   loadTasks();
 
@@ -1577,15 +1797,10 @@ function loadReport(){
 
 function normalizeOutcome(v){
 
-  return String(
-    v || ""
-  )
+  return String(v || "")
     .trim()
     .toLowerCase()
-    .replace(
-      /\s+/g,
-      " "
-    );
+    .replace(/\s+/g," ");
 
 }
 
@@ -1598,22 +1813,14 @@ function calculateCalls(rows){
   let noAnswer = 0;
   let churned = 0;
 
-
   rows.forEach(row => {
 
     const o =
       normalizeOutcome(
-        getValue(
-          row,
-          ["Outcome"]
-        )
+        getValue(row,["Outcome"])
       );
 
-
-    if(
-      o ===
-      "follow-up scheduled"
-    ){
+    if(o === "follow-up scheduled"){
 
       followUp++;
 
@@ -1647,17 +1854,11 @@ function calculateCalls(rows){
 
     else{
 
-      /*
-       * Blank or unknown outcome:
-       * count as No Answer / Hang Up.
-       */
-
       noAnswer++;
 
     }
 
   });
-
 
   document.getElementById(
     "followUpCount"
@@ -1727,21 +1928,17 @@ function calculateTickets(rows){
 
     });
 
-
   document.getElementById(
     "totalTickets"
   ).textContent =
     currentTickets.length;
-
 
   const container =
     document.getElementById(
       "ticketContainer"
     );
 
-
   container.innerHTML = "";
-
 
   if(!currentTickets.length){
 
@@ -1753,7 +1950,6 @@ function calculateTickets(rows){
     return;
 
   }
-
 
   currentTickets.forEach(
     (row,i) => {
@@ -1779,16 +1975,13 @@ function calculateTickets(rows){
           )
         );
 
-
       const div =
         document.createElement(
           "div"
         );
 
-
       div.className =
         "ticket";
-
 
       div.innerHTML = `
 
@@ -1834,7 +2027,6 @@ function calculateTickets(rows){
         </div>
 
       `;
-
 
       container.appendChild(
         div
@@ -1907,33 +2099,26 @@ function submitExtraTask(){
       "extraTaskInput"
     );
 
-
   const text =
     input.value.trim();
-
 
   if(!text){
     return;
   }
 
-
   const tasks =
     getTasks();
-
 
   tasks.push(
     text
   );
-
 
   localStorage.setItem(
     taskKey(),
     JSON.stringify(tasks)
   );
 
-
   input.value = "";
-
 
   loadTasks();
 
@@ -1958,14 +2143,11 @@ function loadTasks(){
       "taskList"
     );
 
-
   if(!box){
     return;
   }
 
-
   box.innerHTML = "";
-
 
   getTasks().forEach(
     (task,i) => {
@@ -1975,10 +2157,8 @@ function loadTasks(){
           "div"
         );
 
-
       div.className =
         "task";
-
 
       div.innerHTML = `
 
@@ -1995,7 +2175,6 @@ function loadTasks(){
 
       `;
 
-
       box.appendChild(
         div
       );
@@ -2011,18 +2190,15 @@ function deleteTask(i){
   const tasks =
     getTasks();
 
-
   tasks.splice(
     i,
     1
   );
 
-
   localStorage.setItem(
     taskKey(),
     JSON.stringify(tasks)
   );
-
 
   loadTasks();
 
@@ -2041,14 +2217,12 @@ function formatDateForReport(iso){
     return "";
   }
 
-
   const [
     y,
     m,
     d
   ] =
     iso.split("-");
-
 
   return (
     m +
@@ -2083,58 +2257,48 @@ function updateReportPreview(){
       )
       .value;
 
-
   const tasks =
     getTasks();
-
 
   const f =
     document.getElementById(
       "followUpCount"
     ).textContent;
 
-
   const r =
     document.getElementById(
       "retainedCount"
     ).textContent;
-
 
   const v =
     document.getElementById(
       "voicemailCount"
     ).textContent;
 
-
   const n =
     document.getElementById(
       "noAnswerCount"
     ).textContent;
-
 
   const c =
     document.getElementById(
       "churnedCount"
     ).textContent;
 
-
   const total =
     document.getElementById(
       "totalCalls"
     ).textContent;
-
 
   const tt =
     document.getElementById(
       "totalTickets"
     ).textContent;
 
-
   const members =
     getPresentMembers().join(
       ", "
     );
-
 
   const extra =
     tasks.length
@@ -2145,9 +2309,7 @@ function updateReportPreview(){
           .join("\n")
       : "";
 
-
   let text =
-
 `Customer Success Daily Report
 Date: ${formatDateForReport(date)}
 Team Members Present: ${members}
@@ -2168,7 +2330,6 @@ Churned / Cancelled: ${c}
 
 Total Tickets:${tt}`;
 
-
   currentTickets.forEach(
     (row,i) => {
 
@@ -2187,7 +2348,6 @@ Total Tickets:${tt}`;
           ["Notes","Note","Issue"]
         );
 
-
       text +=
         `\n\nTicket: #${id}` +
         `\nStore: ${store}` +
@@ -2195,7 +2355,6 @@ Total Tickets:${tt}`;
 
     }
   );
-
 
   document.getElementById(
     "reportPreview"
@@ -2237,21 +2396,17 @@ async function copyText(
       text
     );
 
-
     if(button){
 
       const old =
         button.textContent;
 
-
       button.textContent =
         "✓ Copied";
-
 
       button.classList.add(
         "success"
       );
-
 
       setTimeout(
         () => {
@@ -2278,23 +2433,18 @@ async function copyText(
         "textarea"
       );
 
-
     ta.value =
       text;
-
 
     document.body.appendChild(
       ta
     );
 
-
     ta.select();
-
 
     document.execCommand(
       "copy"
     );
-
 
     ta.remove();
 
@@ -2303,7 +2453,7 @@ async function copyText(
 }
 
 
-function copyReport(){
+function copyReport(button){
 
   copyText(
     document
@@ -2311,7 +2461,7 @@ function copyReport(){
         "reportPreview"
       )
       .textContent,
-    event.currentTarget
+    button
   );
 
 }
@@ -2329,41 +2479,33 @@ function renderEmptyReport(
     "followUpCount"
   ).textContent = "0";
 
-
   document.getElementById(
     "retainedCount"
   ).textContent = "0";
-
 
   document.getElementById(
     "voicemailCount"
   ).textContent = "0";
 
-
   document.getElementById(
     "noAnswerCount"
   ).textContent = "0";
-
 
   document.getElementById(
     "churnedCount"
   ).textContent = "0";
 
-
   document.getElementById(
     "totalCalls"
   ).textContent = "0";
-
 
   document.getElementById(
     "totalTickets"
   ).textContent = "0";
 
-
   currentRows = [];
 
   currentTickets = [];
-
 
   document.getElementById(
     "ticketContainer"
@@ -2371,7 +2513,6 @@ function renderEmptyReport(
     `<div class="muted">${
       escapeHTML(message)
     }</div>`;
-
 
   document.getElementById(
     "reportPreview"
@@ -2396,12 +2537,10 @@ function searchWorkload(){
       .trim()
       .toLowerCase();
 
-
   const box =
     document.getElementById(
       "workloadResults"
     );
-
 
   if(!q){
 
@@ -2414,7 +2553,6 @@ function searchWorkload(){
 
   }
 
-
   if(!csvData.length){
 
     box.innerHTML =
@@ -2425,7 +2563,6 @@ function searchWorkload(){
     return;
 
   }
-
 
   const matches =
     csvData
@@ -2440,7 +2577,6 @@ function searchWorkload(){
             ]
           ).toLowerCase();
 
-
         const mid =
           getValue(
             row,
@@ -2451,10 +2587,21 @@ function searchWorkload(){
             ]
           ).toLowerCase();
 
+        const detailedMID =
+          getValue(
+            row,
+            [
+              "Detailed MID",
+              "Detailed MID Number",
+              "Detailed Merchant ID",
+              "Detailed MerchantID"
+            ]
+          ).toLowerCase();
 
         return (
           store.includes(q) ||
-          mid.includes(q)
+          mid.includes(q) ||
+          detailedMID.includes(q)
         );
 
       })
@@ -2475,7 +2622,6 @@ function searchWorkload(){
           )
       );
 
-
   if(!matches.length){
 
     box.innerHTML =
@@ -2487,9 +2633,7 @@ function searchWorkload(){
 
   }
 
-
   box.innerHTML = "";
-
 
   matches.forEach(
     row => {
@@ -2505,7 +2649,6 @@ function searchWorkload(){
           )
         );
 
-
       const mid =
         escapeHTML(
           getValue(
@@ -2518,6 +2661,46 @@ function searchWorkload(){
           )
         );
 
+      const detailedMID =
+        escapeHTML(
+          getValue(
+            row,
+            [
+              "Detailed MID",
+              "Detailed MID Number",
+              "Detailed Merchant ID",
+              "Detailed MerchantID"
+            ]
+          )
+        );
+
+      const phone =
+        escapeHTML(
+          getValue(
+            row,
+            [
+              "Phone Number",
+              "Phone",
+              "Contact Number",
+              "Contact",
+              "Callback Number",
+              "Telephone"
+            ]
+          )
+        );
+
+      const email =
+        escapeHTML(
+          getValue(
+            row,
+            [
+              "Email Address",
+              "Email",
+              "E-mail",
+              "E-mail Address"
+            ]
+          )
+        );
 
       const date =
         escapeHTML(
@@ -2531,7 +2714,6 @@ function searchWorkload(){
           )
         );
 
-
       const agent =
         escapeHTML(
           getValue(
@@ -2542,7 +2724,6 @@ function searchWorkload(){
             ]
           )
         );
-
 
       const call =
         escapeHTML(
@@ -2555,7 +2736,6 @@ function searchWorkload(){
           )
         );
 
-
       const notes =
         escapeHTML(
           getValue(
@@ -2567,21 +2747,38 @@ function searchWorkload(){
           )
         );
 
-
       const div =
         document.createElement(
           "div"
         );
 
-
       div.className =
         "result-card";
-
 
       div.innerHTML = `
 
         <div class="result-title">
-          ${store} | ${mid}
+          ${store}
+        </div>
+
+        <div class="result-line">
+          <strong>MID:</strong>
+          ${mid || "—"}
+        </div>
+
+        <div class="result-line">
+          <strong>Detailed MID:</strong>
+          ${detailedMID || "—"}
+        </div>
+
+        <div class="result-line">
+          <strong>Phone Number:</strong>
+          ${phone || "—"}
+        </div>
+
+        <div class="result-line">
+          <strong>Email Address:</strong>
+          ${email || "—"}
         </div>
 
         <div class="result-line">
@@ -2606,7 +2803,6 @@ function searchWorkload(){
 
       `;
 
-
       box.appendChild(
         div
       );
@@ -2622,7 +2818,6 @@ function clearWorkload(){
   document.getElementById(
     "workloadSearch"
   ).value = "";
-
 
   document.getElementById(
     "workloadResults"
@@ -2645,51 +2840,41 @@ function updateEscalationPreview(){
       "escStore"
     ).value.trim();
 
-
   const name =
     document.getElementById(
       "escName"
     ).value.trim();
-
 
   const contact =
     document.getElementById(
       "escContact"
     ).value.trim();
 
-
   const issue =
     document.getElementById(
       "escIssue"
     ).value.trim();
-
 
   const availability =
     document.getElementById(
       "escAvailability"
     ).value.trim();
 
-
   document.getElementById(
     "escalationPreview"
   ).textContent =
 
 `Store: ${store}
-For Reference:
-Initiated by Customer Retention; to be handled by Credit Card Support.
 Contact Person: ${name}
 Callback Number: ${contact}
 
-Issue:
-${issue}
-
-Availability:
-${availability}`;
+Issue: ${issue}
+Availability: ${availability}`;
 
 }
 
 
-function copyEscalation(){
+function copyEscalation(button){
 
   copyText(
     document
@@ -2697,8 +2882,470 @@ function copyEscalation(){
         "escalationPreview"
       )
       .textContent,
-    event.currentTarget
+    button
   );
+
+}
+
+
+function clearEscalation(){
+
+  document.getElementById(
+    "escStore"
+  ).value = "";
+
+  document.getElementById(
+    "escName"
+  ).value = "";
+
+  document.getElementById(
+    "escContact"
+  ).value = "";
+
+  document.getElementById(
+    "escIssue"
+  ).value = "";
+
+  document.getElementById(
+    "escAvailability"
+  ).value = "";
+
+  updateEscalationPreview();
+
+}
+
+
+/* ==========================================================
+   SCRIPTS / NOTES
+   ========================================================== */
+
+const DEFAULT_SCRIPTS = [
+  {
+    id:"script_1",
+    title:"Script 1",
+    content:""
+  }
+];
+
+let scriptTabs = [];
+let currentScriptId = "";
+
+
+/* ----------------------------------------------------------
+   Load script tabs
+   ---------------------------------------------------------- */
+
+function loadScriptTabs(){
+
+  try{
+
+    const saved =
+      localStorage.getItem(
+        "crphScripts"
+      );
+
+    scriptTabs =
+      saved
+        ? JSON.parse(saved)
+        : DEFAULT_SCRIPTS;
+
+  }
+
+  catch{
+
+    scriptTabs =
+      DEFAULT_SCRIPTS;
+
+  }
+
+  if(
+    !Array.isArray(scriptTabs) ||
+    !scriptTabs.length
+  ){
+
+    scriptTabs =
+      DEFAULT_SCRIPTS;
+
+  }
+
+  currentScriptId =
+    localStorage.getItem(
+      "crphCurrentScript"
+    ) ||
+    scriptTabs[0].id;
+
+  if(
+    !scriptTabs.some(
+      x => x.id === currentScriptId
+    )
+  ){
+
+    currentScriptId =
+      scriptTabs[0].id;
+
+  }
+
+  saveScriptTabs();
+
+  renderScriptTabs();
+
+  loadCurrentScript();
+
+}
+
+
+/* ----------------------------------------------------------
+   Save script tabs
+   ---------------------------------------------------------- */
+
+function saveScriptTabs(){
+
+  localStorage.setItem(
+    "crphScripts",
+    JSON.stringify(scriptTabs)
+  );
+
+  localStorage.setItem(
+    "crphCurrentScript",
+    currentScriptId
+  );
+
+}
+
+
+/* ----------------------------------------------------------
+   Render sidebar
+   ---------------------------------------------------------- */
+
+function renderScriptTabs(){
+
+  const list =
+    document.getElementById(
+      "scriptTabList"
+    );
+
+  list.innerHTML = "";
+
+  scriptTabs.forEach(
+    script => {
+
+      const button =
+        document.createElement(
+          "button"
+        );
+
+      button.type =
+        "button";
+
+      button.className =
+        "script-tab" +
+        (
+          script.id === currentScriptId
+            ? " active"
+            : ""
+        );
+
+      button.textContent =
+        script.title;
+
+      button.onclick =
+        () => selectScriptTab(
+          script.id
+        );
+
+      list.appendChild(
+        button
+      );
+
+    }
+  );
+
+}
+
+
+/* ----------------------------------------------------------
+   Select script
+   ---------------------------------------------------------- */
+
+function selectScriptTab(id){
+
+  saveCurrentScript();
+
+  currentScriptId =
+    id;
+
+  saveScriptTabs();
+
+  renderScriptTabs();
+
+  loadCurrentScript();
+
+}
+
+
+/* ----------------------------------------------------------
+   Load current script
+   ---------------------------------------------------------- */
+
+function loadCurrentScript(){
+
+  const script =
+    scriptTabs.find(
+      x => x.id === currentScriptId
+    );
+
+  if(!script){
+    return;
+  }
+
+  document.getElementById(
+    "currentScriptTitle"
+  ).textContent =
+    script.title;
+
+  document.getElementById(
+    "scriptEditor"
+  ).innerHTML =
+    script.content || "";
+
+}
+
+
+/* ----------------------------------------------------------
+   Save current script
+   ---------------------------------------------------------- */
+
+function saveCurrentScript(){
+
+  const script =
+    scriptTabs.find(
+      x => x.id === currentScriptId
+    );
+
+  if(!script){
+    return;
+  }
+
+  script.content =
+    document.getElementById(
+      "scriptEditor"
+    ).innerHTML;
+
+  saveScriptTabs();
+
+}
+
+
+/* ----------------------------------------------------------
+   Add script tab
+   ---------------------------------------------------------- */
+
+function addScriptTab(){
+
+  saveCurrentScript();
+
+  let number =
+    scriptTabs.length + 1;
+
+  let title =
+    "Script " + number;
+
+  while(
+    scriptTabs.some(
+      x =>
+        x.title.toLowerCase() ===
+        title.toLowerCase()
+    )
+  ){
+
+    number++;
+
+    title =
+      "Script " + number;
+
+  }
+
+  const newScript = {
+
+    id:
+      "script_" +
+      Date.now(),
+
+    title:
+      title,
+
+    content:
+      ""
+
+  };
+
+  scriptTabs.push(
+    newScript
+  );
+
+  currentScriptId =
+    newScript.id;
+
+  saveScriptTabs();
+
+  renderScriptTabs();
+
+  loadCurrentScript();
+
+}
+
+
+/* ----------------------------------------------------------
+   Rename current script
+   ---------------------------------------------------------- */
+
+function renameScriptTab(){
+
+  const script =
+    scriptTabs.find(
+      x => x.id === currentScriptId
+    );
+
+  if(!script){
+    return;
+  }
+
+  const newTitle =
+    prompt(
+      "Enter a new title for this note:",
+      script.title
+    );
+
+  if(
+    newTitle === null
+  ){
+
+    return;
+
+  }
+
+  const trimmed =
+    newTitle.trim();
+
+  if(!trimmed){
+
+    return;
+
+  }
+
+  script.title =
+    trimmed;
+
+  saveScriptTabs();
+
+  renderScriptTabs();
+
+  loadCurrentScript();
+
+}
+
+
+/* ----------------------------------------------------------
+   Delete current script
+   ---------------------------------------------------------- */
+
+function deleteScriptTab(){
+
+  if(scriptTabs.length <= 1){
+
+    alert(
+      "You need to keep at least one note."
+    );
+
+    return;
+
+  }
+
+  const script =
+    scriptTabs.find(
+      x => x.id === currentScriptId
+    );
+
+  if(!script){
+    return;
+  }
+
+  const confirmed =
+    confirm(
+      'Delete "' +
+      script.title +
+      '"?'
+    );
+
+  if(!confirmed){
+    return;
+  }
+
+  const index =
+    scriptTabs.findIndex(
+      x => x.id === currentScriptId
+    );
+
+  scriptTabs.splice(
+    index,
+    1
+  );
+
+  currentScriptId =
+    scriptTabs[
+      Math.max(
+        0,
+        index - 1
+      )
+    ].id;
+
+  saveScriptTabs();
+
+  renderScriptTabs();
+
+  loadCurrentScript();
+
+}
+
+
+/* ----------------------------------------------------------
+   Text formatting
+   ---------------------------------------------------------- */
+
+function formatScript(command){
+
+  document
+    .getElementById(
+      "scriptEditor"
+    )
+    .focus();
+
+  document.execCommand(
+    command,
+    false,
+    null
+  );
+
+  saveCurrentScript();
+
+}
+
+
+function changeScriptFontSize(size){
+
+  document
+    .getElementById(
+      "scriptEditor"
+    )
+    .focus();
+
+  document.execCommand(
+    "fontSize",
+    false,
+    size
+  );
+
+  saveCurrentScript();
 
 }
 
