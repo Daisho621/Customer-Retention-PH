@@ -4,456 +4,2152 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Customer Retention PH</title>
-<script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.3/papaparse.min.js"></script>
+
+<!-- Excel reader -->
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+
 <style>
 :root{
-  --bg:#f4f7fb;--card:#fff;--input:#fff;--text:#172033;--muted:#64748b;
-  --border:#d8e0ea;--primary:#2563eb;--primary2:#1d4ed8;--success:#16a34a;
-  --danger:#dc2626;--warning:#d97706;--shadow:0 6px 20px rgba(15,23,42,.07);
+  --bg:#f4f7fb;
+  --card:#fff;
+  --input:#fff;
+  --text:#172033;
+  --muted:#64748b;
+  --border:#d8e0ea;
+  --primary:#2563eb;
+  --primary2:#1d4ed8;
+  --success:#16a34a;
+  --danger:#dc2626;
+  --warning:#d97706;
+  --shadow:0 6px 20px rgba(15,23,42,.07);
 }
+
 body.dark{
-  --bg:#0b1220;--card:#151f31;--input:#0f172a;--text:#f8fafc;--muted:#94a3b8;
-  --border:#2d3b52;--primary:#3b82f6;--primary2:#2563eb;--shadow:0 8px 24px rgba(0,0,0,.25);
+  --bg:#0b1220;
+  --card:#151f31;
+  --input:#0f172a;
+  --text:#f8fafc;
+  --muted:#94a3b8;
+  --border:#2d3b52;
+  --primary:#3b82f6;
+  --primary2:#2563eb;
+  --shadow:0 8px 24px rgba(0,0,0,.25);
 }
+
 *{box-sizing:border-box}
-body{margin:0;font-family:Segoe UI,Arial,sans-serif;background:var(--bg);color:var(--text);transition:.2s}
-header{position:sticky;top:0;z-index:20;background:var(--card);border-bottom:1px solid var(--border);
-padding:16px 4%;display:flex;justify-content:space-between;align-items:center;gap:15px}
-.logo{font-size:22px;font-weight:800}.logo small{font-size:13px;font-weight:500;color:var(--muted);margin-left:8px}
-.header-actions{display:flex;gap:8px}
-button{border:0;border-radius:9px;padding:10px 15px;font-weight:700;cursor:pointer;transition:.15s}
-button:hover{transform:translateY(-1px)}
-.mode-btn{background:var(--primary);color:#fff}
-.container{width:92%;max-width:1200px;margin:24px auto}
-.tabs{display:flex;gap:9px;margin-bottom:20px;flex-wrap:wrap}
-.tab{background:var(--card);color:var(--text);border:1px solid var(--border)}
-.tab.active{background:var(--primary);color:#fff;border-color:var(--primary)}
-.tab-content{display:none}.tab-content.active{display:block}
-.card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:22px;margin-bottom:18px;box-shadow:var(--shadow)}
-h1{font-size:28px;margin:0 0 18px}h2{font-size:20px;margin:0 0 16px}
-label{display:block;font-weight:800;font-size:13px;margin-bottom:7px}
-.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:15px}
-input,textarea,select{width:100%;padding:11px 12px;border:1px solid var(--border);border-radius:9px;background:var(--input);color:var(--text);font:inherit}
-input:focus,textarea:focus,select:focus{outline:2px solid rgba(37,99,235,.25);border-color:var(--primary)}
-input[readonly]{opacity:.9}
-.team-list{display:grid;grid-template-columns:repeat(3,minmax(150px,1fr));gap:10px}
-.team{margin:0;padding:12px;border:1px solid var(--border);border-radius:9px;background:var(--input);display:flex;align-items:center;gap:8px}
-.team input{width:18px;height:18px;margin:0}
-.task-row{display:flex;gap:9px;align-items:flex-start}.task-row textarea{flex:1;min-height:82px}
-.submit-btn{background:var(--success);color:#fff}.clear-btn{background:#64748b;color:#fff}
-.task{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:11px 13px;margin-top:8px;border:1px solid var(--border);border-radius:9px;background:var(--input)}
-.delete-btn{background:var(--danger);color:#fff;padding:7px 11px;font-size:12px}
-.status{padding:8px 10px}
-.status-message{padding:11px 13px;border-radius:9px;background:var(--input);border:1px solid var(--border);color:var(--muted)}
-.status-message.ok{color:var(--success)}.status-message.err{color:var(--danger)}
-.stats{display:grid;grid-template-columns:repeat(5,minmax(120px,1fr));gap:10px}
-.stat{padding:16px;text-align:center;border:1px solid var(--border);border-radius:10px;background:var(--input)}
-.stat-number{font-size:27px;font-weight:900}.stat-label{font-size:12px;color:var(--muted);margin-top:4px}
-.ticket{border:1px solid var(--border);border-radius:12px;padding:16px;margin-top:12px;background:var(--input)}
-.ticket-head{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
-.ticket-id{font-size:17px;font-weight:900;color:var(--primary)}
-.ticket-field{margin-top:9px;line-height:1.5}
-.ticket-status{max-width:180px}
-.summary-box,.reference-box{white-space:pre-wrap;border:1px solid var(--border);border-radius:10px;padding:17px;background:var(--input);line-height:1.6}
-.actions{display:flex;gap:9px;flex-wrap:wrap;margin-top:12px}
-.copy-btn{background:var(--primary);color:#fff}.copy-btn.success{background:var(--success)}
-.search-row{display:grid;grid-template-columns:1fr auto auto;gap:9px}
-.search-btn{background:var(--primary);color:#fff}.clear-search{background:#64748b;color:#fff}
-.workload-result{margin-top:16px}
-.result-card{border:1px solid var(--border);border-radius:12px;background:var(--input);padding:17px;margin-top:10px}
-.result-title{font-size:17px;font-weight:900;color:var(--primary);margin-bottom:10px}
-.result-line{margin:7px 0}.result-line strong{display:inline-block;min-width:100px}
-.muted{color:var(--muted)}
-.hidden{display:none}
-@media(max-width:800px){.stats{grid-template-columns:repeat(2,1fr)}.team-list{grid-template-columns:1fr}.search-row{grid-template-columns:1fr}.task-row{flex-direction:column}.task-row button{width:100%}}
+
+body{
+  margin:0;
+  font-family:Segoe UI,Arial,sans-serif;
+  background:var(--bg);
+  color:var(--text);
+  transition:.2s
+}
+
+header{
+  position:sticky;
+  top:0;
+  z-index:20;
+  background:var(--card);
+  border-bottom:1px solid var(--border);
+  padding:16px 4%;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:15px
+}
+
+.logo{
+  font-size:22px;
+  font-weight:800
+}
+
+.logo small{
+  font-size:13px;
+  font-weight:500;
+  color:var(--muted);
+  margin-left:8px
+}
+
+.header-actions{
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap
+}
+
+button{
+  border:0;
+  border-radius:9px;
+  padding:10px 15px;
+  font-weight:700;
+  cursor:pointer;
+  transition:.15s
+}
+
+button:hover{
+  transform:translateY(-1px)
+}
+
+.mode-btn{
+  background:var(--primary);
+  color:#fff
+}
+
+.upload-btn{
+  background:var(--success);
+  color:#fff
+}
+
+.container{
+  width:92%;
+  max-width:1200px;
+  margin:24px auto
+}
+
+.tabs{
+  display:flex;
+  gap:9px;
+  margin-bottom:20px;
+  flex-wrap:wrap
+}
+
+.tab{
+  background:var(--card);
+  color:var(--text);
+  border:1px solid var(--border)
+}
+
+.tab.active{
+  background:var(--primary);
+  color:#fff;
+  border-color:var(--primary)
+}
+
+.tab-content{
+  display:none
+}
+
+.tab-content.active{
+  display:block
+}
+
+.card{
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:14px;
+  padding:22px;
+  margin-bottom:18px;
+  box-shadow:var(--shadow)
+}
+
+h1{
+  font-size:28px;
+  margin:0 0 18px
+}
+
+h2{
+  font-size:20px;
+  margin:0 0 16px
+}
+
+label{
+  display:block;
+  font-weight:800;
+  font-size:13px;
+  margin-bottom:7px
+}
+
+.grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+  gap:15px
+}
+
+input,textarea,select{
+  width:100%;
+  padding:11px 12px;
+  border:1px solid var(--border);
+  border-radius:9px;
+  background:var(--input);
+  color:var(--text);
+  font:inherit
+}
+
+input:focus,textarea:focus,select:focus{
+  outline:2px solid rgba(37,99,235,.25);
+  border-color:var(--primary)
+}
+
+input[readonly]{
+  opacity:.9
+}
+
+.team-list{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(150px,1fr));
+  gap:10px
+}
+
+.team{
+  margin:0;
+  padding:12px;
+  border:1px solid var(--border);
+  border-radius:9px;
+  background:var(--input);
+  display:flex;
+  align-items:center;
+  gap:8px
+}
+
+.team input{
+  width:18px;
+  height:18px;
+  margin:0
+}
+
+.task-row{
+  display:flex;
+  gap:9px;
+  align-items:flex-start
+}
+
+.task-row textarea{
+  flex:1;
+  min-height:82px
+}
+
+.submit-btn{
+  background:var(--success);
+  color:#fff
+}
+
+.clear-btn{
+  background:#64748b;
+  color:#fff
+}
+
+.task{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:10px;
+  padding:11px 13px;
+  margin-top:8px;
+  border:1px solid var(--border);
+  border-radius:9px;
+  background:var(--input)
+}
+
+.delete-btn{
+  background:var(--danger);
+  color:#fff;
+  padding:7px 11px;
+  font-size:12px
+}
+
+.status{
+  padding:8px 10px
+}
+
+.status-message{
+  padding:11px 13px;
+  border-radius:9px;
+  background:var(--input);
+  border:1px solid var(--border);
+  color:var(--muted)
+}
+
+.status-message.ok{
+  color:var(--success)
+}
+
+.status-message.err{
+  color:var(--danger)
+}
+
+.stats{
+  display:grid;
+  grid-template-columns:repeat(5,minmax(120px,1fr));
+  gap:10px
+}
+
+.stat{
+  padding:16px;
+  text-align:center;
+  border:1px solid var(--border);
+  border-radius:10px;
+  background:var(--input)
+}
+
+.stat-number{
+  font-size:27px;
+  font-weight:900
+}
+
+.stat-label{
+  font-size:12px;
+  color:var(--muted);
+  margin-top:4px
+}
+
+.ticket{
+  border:1px solid var(--border);
+  border-radius:12px;
+  padding:16px;
+  margin-top:12px;
+  background:var(--input)
+}
+
+.ticket-head{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:10px;
+  flex-wrap:wrap
+}
+
+.ticket-id{
+  font-size:17px;
+  font-weight:900;
+  color:var(--primary)
+}
+
+.ticket-field{
+  margin-top:9px;
+  line-height:1.5
+}
+
+.ticket-status{
+  max-width:180px
+}
+
+.summary-box,
+.reference-box{
+  white-space:pre-wrap;
+  border:1px solid var(--border);
+  border-radius:10px;
+  padding:17px;
+  background:var(--input);
+  line-height:1.6
+}
+
+.actions{
+  display:flex;
+  gap:9px;
+  flex-wrap:wrap;
+  margin-top:12px
+}
+
+.copy-btn{
+  background:var(--primary);
+  color:#fff
+}
+
+.copy-btn.success{
+  background:var(--success)
+}
+
+.search-row{
+  display:grid;
+  grid-template-columns:1fr auto auto;
+  gap:9px
+}
+
+.search-btn{
+  background:var(--primary);
+  color:#fff
+}
+
+.clear-search{
+  background:#64748b;
+  color:#fff
+}
+
+.workload-result{
+  margin-top:16px
+}
+
+.result-card{
+  border:1px solid var(--border);
+  border-radius:12px;
+  background:var(--input);
+  padding:17px;
+  margin-top:10px
+}
+
+.result-title{
+  font-size:17px;
+  font-weight:900;
+  color:var(--primary);
+  margin-bottom:10px
+}
+
+.result-line{
+  margin:7px 0
+}
+
+.result-line strong{
+  display:inline-block;
+  min-width:100px
+}
+
+.muted{
+  color:var(--muted)
+}
+
+.hidden{
+  display:none
+}
+
+.file-name{
+  margin-top:8px;
+  font-size:12px;
+  color:var(--muted);
+  word-break:break-word
+}
+
+@media(max-width:800px){
+  .stats{
+    grid-template-columns:repeat(2,1fr)
+  }
+
+  .team-list{
+    grid-template-columns:1fr
+  }
+
+  .search-row{
+    grid-template-columns:1fr
+  }
+
+  .task-row{
+    flex-direction:column
+  }
+
+  .task-row button{
+    width:100%
+  }
+
+  .header-actions{
+    width:100%
+  }
+
+  .header-actions button{
+    flex:1
+  }
+}
 </style>
 </head>
+
 <body>
+
 <header>
-  <div class="logo">Customer Retention PH <small>Daily Report Tool</small></div>
+  <div class="logo">
+    Customer Retention PH
+    <small>Daily Report Tool</small>
+  </div>
+
   <div class="header-actions">
-    <button class="mode-btn" id="modeButton" type="button">🌙 Dark Mode</button>
+
+    <!-- Hidden Excel file picker -->
+    <input
+      type="file"
+      id="excelFileInput"
+      accept=".xlsx,.xls"
+      style="display:none"
+    >
+
+    <button
+      class="upload-btn"
+      id="uploadExcelButton"
+      type="button"
+    >
+      📁 Upload Excel
+    </button>
+
+    <button
+      class="mode-btn"
+      id="modeButton"
+      type="button"
+    >
+      🌙 Dark Mode
+    </button>
+
   </div>
 </header>
 
 <div class="container">
+
   <div class="tabs">
-    <button class="tab active" onclick="showTab('workload',this)">📊 Workload</button>
-    <button class="tab" onclick="showTab('daily',this)">📋 Daily Report</button>
-    <button class="tab" onclick="showTab('escalate',this)">⚠️ Escalate</button>
+    <button class="tab active" onclick="showTab('workload',this)">
+      📊 Workload
+    </button>
+
+    <button class="tab" onclick="showTab('daily',this)">
+      📋 Daily Report
+    </button>
+
+    <button class="tab" onclick="showTab('escalate',this)">
+      ⚠️ Escalate
+    </button>
   </div>
 
-  <!-- WORKLOAD -->
+
+  <!-- ======================================================
+       WORKLOAD
+       ====================================================== -->
+
   <section id="workload" class="tab-content active">
+
     <div class="card">
+
       <h1>Workload</h1>
+
       <div class="search-row">
-        <input id="workloadSearch" type="text" placeholder="Please put Store Name or MID" autocomplete="off">
-        <button class="search-btn" type="button" onclick="searchWorkload()">Search</button>
-        <button class="clear-search" type="button" onclick="clearWorkload()">Clear</button>
+
+        <input
+          id="workloadSearch"
+          type="text"
+          placeholder="Please put Store Name or MID"
+          autocomplete="off"
+        >
+
+        <button
+          class="search-btn"
+          type="button"
+          onclick="searchWorkload()"
+        >
+          Search
+        </button>
+
+        <button
+          class="clear-search"
+          type="button"
+          onclick="clearWorkload()"
+        >
+          Clear
+        </button>
+
       </div>
+
       <div id="workloadResults" class="workload-result">
-        <div class="status-message">Enter a Store Name or MID, then click Search.</div>
+
+        <div class="status-message">
+          Upload your Excel workbook first.
+        </div>
+
       </div>
+
     </div>
+
   </section>
 
-  <!-- DAILY REPORT -->
+
+  <!-- ======================================================
+       DAILY REPORT
+       ====================================================== -->
+
   <section id="daily" class="tab-content">
+
     <div class="card">
+
       <h1>Customer Success Daily Report</h1>
+
       <div class="grid">
+
         <div>
+
           <label>REPORT DATE</label>
-          <input id="reportDate" type="date" readonly>
+
+          <input
+            id="reportDate"
+            type="date"
+            readonly
+          >
+
         </div>
+
         <div>
+
           <label>DATA STATUS</label>
-          <div id="dataStatus" class="status-message">Loading CSV data...</div>
+
+          <div
+            id="dataStatus"
+            class="status-message"
+          >
+            Please upload your Excel workbook.
+          </div>
+
+          <div
+            id="uploadedFileName"
+            class="file-name"
+          ></div>
+
         </div>
+
       </div>
+
       <br>
+
       <label>TEAM MEMBERS PRESENT</label>
+
       <div class="team-list">
-        <label class="team"><input type="checkbox" value="Vince"> <span>Vince</span></label>
-        <label class="team"><input type="checkbox" value="Avie"> <span>Avie</span></label>
-        <label class="team"><input type="checkbox" value="Kirby"> <span>Kirby</span></label>
+
+        <label class="team">
+          <input type="checkbox" value="Vince">
+          <span>Vince</span>
+        </label>
+
+        <label class="team">
+          <input type="checkbox" value="Avie">
+          <span>Avie</span>
+        </label>
+
+        <label class="team">
+          <input type="checkbox" value="Kirby">
+          <span>Kirby</span>
+        </label>
+
       </div>
+
     </div>
 
+
+    <!-- EXTRA TASK -->
+
     <div class="card">
+
       <h2>Extra Task</h2>
+
       <div class="task-row">
-        <textarea id="extraTaskInput" placeholder="Enter any additional tasks completed today..."></textarea>
-        <div class="actions" style="margin-top:0">
-          <button class="submit-btn" type="button" onclick="submitExtraTask()">Submit</button>
-          <button class="clear-btn" type="button" onclick="clearExtraTask()">Clear</button>
+
+        <textarea
+          id="extraTaskInput"
+          placeholder="Enter any additional tasks completed today..."
+        ></textarea>
+
+        <div
+          class="actions"
+          style="margin-top:0"
+        >
+
+          <button
+            class="submit-btn"
+            type="button"
+            onclick="submitExtraTask()"
+          >
+            Submit
+          </button>
+
+          <button
+            class="clear-btn"
+            type="button"
+            onclick="clearExtraTask()"
+          >
+            Clear
+          </button>
+
         </div>
+
       </div>
+
       <div id="taskList"></div>
+
     </div>
 
+
+    <!-- CALL ACTIVITY -->
+
     <div class="card">
+
       <h2>Call Activity Summary</h2>
+
       <div class="stats">
-        <div class="stat"><div class="stat-number" id="followUpCount">0</div><div class="stat-label">Follow-Up Scheduled</div></div>
-        <div class="stat"><div class="stat-number" id="retainedCount">0</div><div class="stat-label">Retained / Satisfied</div></div>
-        <div class="stat"><div class="stat-number" id="voicemailCount">0</div><div class="stat-label">Voicemail Left</div></div>
-        <div class="stat"><div class="stat-number" id="noAnswerCount">0</div><div class="stat-label">No Answer / Hang Up</div></div>
-        <div class="stat"><div class="stat-number" id="churnedCount">0</div><div class="stat-label">Churned / Cancelled</div></div>
+
+        <div class="stat">
+          <div
+            class="stat-number"
+            id="followUpCount"
+          >0</div>
+
+          <div class="stat-label">
+            Follow-Up Scheduled
+          </div>
+        </div>
+
+        <div class="stat">
+          <div
+            class="stat-number"
+            id="retainedCount"
+          >0</div>
+
+          <div class="stat-label">
+            Retained / Satisfied
+          </div>
+        </div>
+
+        <div class="stat">
+          <div
+            class="stat-number"
+            id="voicemailCount"
+          >0</div>
+
+          <div class="stat-label">
+            Voicemail Left
+          </div>
+        </div>
+
+        <div class="stat">
+          <div
+            class="stat-number"
+            id="noAnswerCount"
+          >0</div>
+
+          <div class="stat-label">
+            No Answer / Hang Up
+          </div>
+        </div>
+
+        <div class="stat">
+          <div
+            class="stat-number"
+            id="churnedCount"
+          >0</div>
+
+          <div class="stat-label">
+            Churned / Cancelled
+          </div>
+        </div>
+
       </div>
-      <p><strong>Total Calls Made:</strong> <span id="totalCalls">0</span></p>
+
+      <p>
+        <strong>Total Calls Made:</strong>
+        <span id="totalCalls">0</span>
+      </p>
+
     </div>
 
+
+    <!-- TICKETS -->
+
     <div class="card">
+
       <h2>Merchant Issues / Tickets Handled</h2>
-      <p><strong>Total Tickets:</strong> <span id="totalTickets">0</span></p>
-      <div id="ticketContainer"><div class="muted">No tickets found.</div></div>
+
+      <p>
+        <strong>Total Tickets:</strong>
+        <span id="totalTickets">0</span>
+      </p>
+
+      <div id="ticketContainer">
+        <div class="muted">
+          No tickets found.
+        </div>
+      </div>
+
     </div>
 
+
+    <!-- REPORT -->
+
     <div class="card">
+
       <h2>Report Text</h2>
-      <div id="reportPreview" class="summary-box">Loading report...</div>
-      <div class="actions">
-        <button class="copy-btn" type="button" onclick="copyReport()">📋 Copy Whole Report</button>
+
+      <div
+        id="reportPreview"
+        class="summary-box"
+      >
+        Please upload your Excel workbook.
       </div>
+
+      <div class="actions">
+
+        <button
+          class="copy-btn"
+          type="button"
+          onclick="copyReport()"
+        >
+          📋 Copy Whole Report
+        </button>
+
+      </div>
+
     </div>
+
   </section>
 
-  <!-- ESCALATE -->
+
+  <!-- ======================================================
+       ESCALATE
+       ====================================================== -->
+
   <section id="escalate" class="tab-content">
-    <div class="card">
-      <h1>Escalate</h1>
-      <div class="grid">
-        <div>
-          <label>Store:</label>
-          <input id="escStore" placeholder="Enter store">
-        </div>
-        <div>
-          <label>Name:</label>
-          <input id="escName" placeholder="Enter contact person">
-        </div>
-        <div>
-          <label>Contact:</label>
-          <input id="escContact" placeholder="Enter contact number">
-        </div>
-      </div>
-      <br>
-      <label>Issue:</label>
-      <textarea id="escIssue" rows="4" placeholder="Describe the issue"></textarea>
-      <br>
-      <label>Availability:</label>
-      <textarea id="escAvailability" rows="3" placeholder="Enter customer's availability"></textarea>
 
-      <h2 style="margin-top:22px">Reference</h2>
-      <div id="escalationPreview" class="reference-box"></div>
-      <div class="actions">
-        <button class="copy-btn" type="button" onclick="copyEscalation()">📋 Copy</button>
+    <div class="card">
+
+      <h1>Escalate</h1>
+
+      <div class="grid">
+
+        <div>
+
+          <label>Store:</label>
+
+          <input
+            id="escStore"
+            placeholder="Enter store"
+          >
+
+        </div>
+
+        <div>
+
+          <label>Name:</label>
+
+          <input
+            id="escName"
+            placeholder="Enter contact person"
+          >
+
+        </div>
+
+        <div>
+
+          <label>Contact:</label>
+
+          <input
+            id="escContact"
+            placeholder="Enter contact number"
+          >
+
+        </div>
+
       </div>
+
+      <br>
+
+      <label>Issue:</label>
+
+      <textarea
+        id="escIssue"
+        rows="4"
+        placeholder="Describe the issue"
+      ></textarea>
+
+      <br>
+
+      <label>Availability:</label>
+
+      <textarea
+        id="escAvailability"
+        rows="3"
+        placeholder="Enter customer's availability"
+      ></textarea>
+
+      <h2 style="margin-top:22px">
+        Reference
+      </h2>
+
+      <div
+        id="escalationPreview"
+        class="reference-box"
+      ></div>
+
+      <div class="actions">
+
+        <button
+          class="copy-btn"
+          type="button"
+          onclick="copyEscalation()"
+        >
+          📋 Copy
+        </button>
+
+      </div>
+
     </div>
+
   </section>
+
 </div>
 
+
 <script>
+
 /* ==========================================================
-   DATA SOURCE
-   ----------------------------------------------------------
-   index.html and the CSV must be in the SAME GitHub Pages
-   folder. This version reads the CSV automatically.
-   Refreshing the page reloads the CSV.
+   CUSTOMER RETENTION PH
+   EXCEL UPLOAD DATA SYSTEM
    ========================================================== */
-const CSV_PATH = "./Customer%20Success_2026%28Retain%20In%29.csv";
+
 let csvData = [];
 let currentRows = [];
 let currentTickets = [];
+let uploadedFileName = "";
+
+
+/* ==========================================================
+   STARTUP
+   ========================================================== */
 
 document.addEventListener("DOMContentLoaded", () => {
+
   initTheme();
+
   setToday();
+
   loadTasks();
-  loadCSV();
-  document.getElementById("workloadSearch").addEventListener("keydown", e => {
-    if (e.key === "Enter") searchWorkload();
+
+  setupExcelUpload();
+
+  document
+    .getElementById("workloadSearch")
+    .addEventListener("keydown", e => {
+
+      if(e.key === "Enter"){
+        searchWorkload();
+      }
+
+    });
+
+  [
+    "escStore",
+    "escName",
+    "escContact",
+    "escIssue",
+    "escAvailability"
+  ].forEach(id => {
+
+    document
+      .getElementById(id)
+      .addEventListener(
+        "input",
+        updateEscalationPreview
+      );
+
   });
-  ["escStore","escName","escContact","escIssue","escAvailability"].forEach(id => {
-    document.getElementById(id).addEventListener("input", updateEscalationPreview);
-  });
+
   updateEscalationPreview();
+
 });
 
-document.getElementById("modeButton").addEventListener("click", toggleDarkMode);
 
-function initTheme(){
-  const saved = localStorage.getItem("crphTheme");
-  if(saved === "dark") document.body.classList.add("dark");
-  updateModeButton();
-}
-function toggleDarkMode(){
-  document.body.classList.toggle("dark");
-  localStorage.setItem("crphTheme", document.body.classList.contains("dark") ? "dark" : "light");
-  updateModeButton();
-}
-function updateModeButton(){
-  document.getElementById("modeButton").textContent =
-    document.body.classList.contains("dark") ? "☀️ Light Mode" : "🌙 Dark Mode";
-}
+/* ==========================================================
+   EXCEL UPLOAD
+   ========================================================== */
 
-function showTab(id, btn){
-  document.querySelectorAll(".tab-content").forEach(x => x.classList.remove("active"));
-  document.querySelectorAll(".tab").forEach(x => x.classList.remove("active"));
-  document.getElementById(id).classList.add("active");
-  if(btn) btn.classList.add("active");
-}
+function setupExcelUpload(){
 
-function setToday(){
-  const d = new Date();
-  const local = new Date(d.getTime() - d.getTimezoneOffset()*60000);
-  document.getElementById("reportDate").value = local.toISOString().slice(0,10);
-}
+  const button =
+    document.getElementById("uploadExcelButton");
 
-/* ---------- CSV ---------- */
-function loadCSV(){
-  const status = document.getElementById("dataStatus");
-  status.className = "status-message";
-  status.textContent = "Loading current CSV data...";
-  const url = CSV_PATH + "?refresh=" + Date.now();
+  const input =
+    document.getElementById("excelFileInput");
 
-  Papa.parse(url, {
-    download:true,
-    header:true,
-    skipEmptyLines:true,
-    complete(results){
-      if(results.errors && results.errors.length && !results.data.length){
-        showDataError("Could not read the CSV file.");
-        return;
-      }
-      csvData = (results.data || []).filter(row => Object.values(row).some(v => String(v ?? "").trim() !== ""));
-      if(!csvData.length){
-        showDataError("CSV loaded, but it contains no data rows.");
-        return;
-      }
-      status.className = "status-message ok";
-      status.textContent = "✓ CSV loaded automatically (" + csvData.length + " rows). Refresh this page after updating the CSV.";
-      loadReport();
-    },
-    error(err){
-      console.error(err);
-      showDataError("Could not load the CSV. Make sure the CSV is in the same GitHub Pages folder as index.html and the filename matches exactly.");
-    }
+  button.addEventListener("click", () => {
+
+    input.value = "";
+
+    input.click();
+
   });
+
+  input.addEventListener(
+    "change",
+    handleExcelUpload
+  );
+
 }
 
-function showDataError(msg){
-  const el = document.getElementById("dataStatus");
-  el.className = "status-message err";
-  el.textContent = "⚠️ " + msg;
-  renderEmptyReport("No CSV data available.");
-}
 
-function getValue(row, names){
-  const keys = Object.keys(row || {});
-  for(const wanted of names){
-    const exact = keys.find(k => k.trim().toLowerCase() === wanted.trim().toLowerCase());
-    if(exact) return String(row[exact] ?? "").trim();
-  }
-  const fuzzy = keys.find(k => names.some(n => k.toLowerCase().includes(n.toLowerCase())));
-  return fuzzy ? String(row[fuzzy] ?? "").trim() : "";
-}
+function handleExcelUpload(event){
 
-function normalizeDate(value){
-  let s = String(value || "").trim();
-  if(!s) return "";
-  let m = s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
-  if(m) return `${m[3]}-${m[1].padStart(2,"0")}-${m[2].padStart(2,"0")}`;
-  m = s.match(/^(\d{4})-(\d{1,2})-(\d{1,2})/);
-  if(m) return `${m[1]}-${m[2].padStart(2,"0")}-${m[3].padStart(2,"0")}`;
-  const parsed = new Date(s);
-  if(!isNaN(parsed)){
-    const local = new Date(parsed.getTime() - parsed.getTimezoneOffset()*60000);
-    return local.toISOString().slice(0,10);
-  }
-  return s;
-}
+  const file =
+    event.target.files[0];
 
-function dateMatches(row, target){
-  return normalizeDate(getValue(row,["Date"])) === target;
-}
-
-function loadReport(){
-  const date = document.getElementById("reportDate").value;
-  currentRows = csvData.filter(row => dateMatches(row,date));
-  calculateCalls(currentRows);
-  calculateTickets(currentRows);
-  loadTasks();
-  updateReportPreview();
-}
-
-function normalizeOutcome(v){
-  return String(v || "").trim().toLowerCase().replace(/\\s+/g," ");
-}
-
-function calculateCalls(rows){
-  let followUp=0, retained=0, voicemail=0, noAnswer=0, churned=0;
-  rows.forEach(row=>{
-    const o = normalizeOutcome(getValue(row,["Outcome"]));
-    if(o === "follow-up scheduled") followUp++;
-    else if(o === "retained / satisfied" || o === "retained/satisfied") retained++;
-    else if(o === "voicemail left") voicemail++;
-    else if(o === "churned / cancelled" || o === "churned/cancelled") churned++;
-    else noAnswer++; // blank and any unrecognized outcome = No Answer / Hang Up
-  });
-  document.getElementById("followUpCount").textContent=followUp;
-  document.getElementById("retainedCount").textContent=retained;
-  document.getElementById("voicemailCount").textContent=voicemail;
-  document.getElementById("noAnswerCount").textContent=noAnswer;
-  document.getElementById("churnedCount").textContent=churned;
-  document.getElementById("totalCalls").textContent=rows.length;
-}
-
-function getTicketId(row){
-  return getValue(row,["Ticket ID (Optional)","Ticket ID","TicketID","Ticket Id"]);
-}
-function calculateTickets(rows){
-  currentTickets = rows.filter(row=>{
-    const id=getTicketId(row);
-    return id && id.toLowerCase() !== "ticket id (optional)";
-  });
-  document.getElementById("totalTickets").textContent=currentTickets.length;
-  const container=document.getElementById("ticketContainer");
-  container.innerHTML="";
-  if(!currentTickets.length){
-    container.innerHTML="<div class='muted'>No tickets found for this date.</div>";
+  if(!file){
     return;
   }
-  currentTickets.forEach((row,i)=>{
-    const id=escapeHTML(getTicketId(row));
-    const store=escapeHTML(getValue(row,["Store Name","Store"]));
-    const notes=escapeHTML(getValue(row,["Notes","Note","Issue"]));
-    const div=document.createElement("div");
-    div.className="ticket";
-    div.innerHTML=`
-      <div class="ticket-head">
-        <div class="ticket-id">Ticket: #${id}</div>
-        <div>
-          <label style="margin:0 0 4px">Status</label>
-          <select class="ticket-status status" id="ticketStatus${i}" onchange="updateReportPreview()">
-            <option>Open</option><option>Solved</option><option>Pending</option>
-          </select>
-        </div>
-      </div>
-      <div class="ticket-field"><strong>Store:</strong> ${store}</div>
-      <div class="ticket-field"><strong>Issue:</strong> ${notes || "<span class='muted'>No notes entered.</span>"}</div>`;
-    container.appendChild(div);
-  });
+
+  const status =
+    document.getElementById("dataStatus");
+
+  const fileName =
+    document.getElementById("uploadedFileName");
+
+  status.className =
+    "status-message";
+
+  status.textContent =
+    "Reading Excel workbook...";
+
+  fileName.textContent =
+    "Selected file: " + file.name;
+
+  uploadedFileName =
+    file.name;
+
+  const reader =
+    new FileReader();
+
+  reader.onload = function(e){
+
+    try{
+
+      const data =
+        new Uint8Array(e.target.result);
+
+      const workbook =
+        XLSX.read(data,{
+          type:"array",
+          cellDates:true
+        });
+
+
+      /* -----------------------------------------------
+         Find a useful worksheet.
+
+         We first look for common names.
+         If none are found, we use the first sheet.
+         ----------------------------------------------- */
+
+      const preferredNames = [
+        "Workload",
+        "Data",
+        "Daily Report",
+        "DailyReport",
+        "Report"
+      ];
+
+      let sheetName = null;
+
+      for(const name of preferredNames){
+
+        const found =
+          workbook.SheetNames.find(
+            sheet =>
+              sheet.trim().toLowerCase() ===
+              name.trim().toLowerCase()
+          );
+
+        if(found){
+
+          sheetName = found;
+
+          break;
+
+        }
+
+      }
+
+      if(!sheetName){
+
+        sheetName =
+          workbook.SheetNames[0];
+
+      }
+
+
+      if(!sheetName){
+
+        throw new Error(
+          "The Excel workbook does not contain a worksheet."
+        );
+
+      }
+
+
+      const worksheet =
+        workbook.Sheets[sheetName];
+
+
+      csvData =
+        XLSX.utils.sheet_to_json(
+          worksheet,
+          {
+            defval:"",
+            raw:false
+          }
+        );
+
+
+      csvData =
+        csvData.filter(row =>
+          Object.values(row).some(
+            value =>
+              String(
+                value ?? ""
+              ).trim() !== ""
+          )
+        );
+
+
+      if(!csvData.length){
+
+        throw new Error(
+          "The selected worksheet contains no usable data rows."
+        );
+
+      }
+
+
+      console.log(
+        "Excel workbook:",
+        file.name
+      );
+
+      console.log(
+        "Available sheets:",
+        workbook.SheetNames
+      );
+
+      console.log(
+        "Using sheet:",
+        sheetName
+      );
+
+      console.log(
+        "Rows loaded:",
+        csvData.length
+      );
+
+
+      status.className =
+        "status-message ok";
+
+      status.textContent =
+        "✓ Excel loaded successfully — " +
+        csvData.length +
+        " rows";
+
+
+      fileName.textContent =
+        "File: " +
+        file.name +
+        " | Sheet: " +
+        sheetName;
+
+
+      /*
+       * Refresh the report immediately.
+       */
+
+      loadReport();
+
+
+      /*
+       * Clear previous workload search results
+       * because the data source has changed.
+       */
+
+      document
+        .getElementById(
+          "workloadResults"
+        )
+        .innerHTML =
+          "<div class='status-message ok'>" +
+          "Excel data loaded. Enter a Store Name or MID to search." +
+          "</div>";
+
+
+    }catch(error){
+
+      console.error(
+        "Excel loading error:",
+        error
+      );
+
+      csvData = [];
+
+      status.className =
+        "status-message err";
+
+      status.textContent =
+        "⚠️ Could not read the Excel file: " +
+        error.message;
+
+      renderEmptyReport(
+        "No Excel data available."
+      );
+
+    }
+
+  };
+
+
+  reader.onerror = function(){
+
+    console.error(
+      reader.error
+    );
+
+    status.className =
+      "status-message err";
+
+    status.textContent =
+      "⚠️ Could not open the selected Excel file.";
+
+    renderEmptyReport(
+      "Could not read Excel file."
+    );
+
+  };
+
+
+  reader.readAsArrayBuffer(file);
+
 }
+
+
+/* ==========================================================
+   DARK MODE
+   ========================================================== */
+
+document
+  .getElementById("modeButton")
+  .addEventListener(
+    "click",
+    toggleDarkMode
+  );
+
+
+function initTheme(){
+
+  const saved =
+    localStorage.getItem(
+      "crphTheme"
+    );
+
+  if(saved === "dark"){
+
+    document.body.classList.add(
+      "dark"
+    );
+
+  }
+
+  updateModeButton();
+
+}
+
+
+function toggleDarkMode(){
+
+  document.body.classList.toggle(
+    "dark"
+  );
+
+  localStorage.setItem(
+    "crphTheme",
+    document.body.classList.contains(
+      "dark"
+    )
+      ? "dark"
+      : "light"
+  );
+
+  updateModeButton();
+
+}
+
+
+function updateModeButton(){
+
+  document.getElementById(
+    "modeButton"
+  ).textContent =
+
+    document.body.classList.contains(
+      "dark"
+    )
+
+      ? "☀️ Light Mode"
+
+      : "🌙 Dark Mode";
+
+}
+
+
+/* ==========================================================
+   TABS
+   ========================================================== */
+
+function showTab(id,btn){
+
+  document
+    .querySelectorAll(".tab-content")
+    .forEach(x =>
+      x.classList.remove("active")
+    );
+
+  document
+    .querySelectorAll(".tab")
+    .forEach(x =>
+      x.classList.remove("active")
+    );
+
+  document
+    .getElementById(id)
+    .classList.add("active");
+
+  if(btn){
+
+    btn.classList.add("active");
+
+  }
+
+}
+
+
+/* ==========================================================
+   DATE
+   ========================================================== */
+
+function setToday(){
+
+  const d =
+    new Date();
+
+  const local =
+    new Date(
+      d.getTime() -
+      d.getTimezoneOffset() * 60000
+    );
+
+  document
+    .getElementById("reportDate")
+    .value =
+    local.toISOString().slice(0,10);
+
+}
+
+
+/* ==========================================================
+   GET VALUE
+   ========================================================== */
+
+function getValue(row,names){
+
+  const keys =
+    Object.keys(row || {});
+
+
+  /*
+   * Exact match first.
+   */
+
+  for(const wanted of names){
+
+    const exact =
+      keys.find(
+        k =>
+          k.trim().toLowerCase() ===
+          wanted.trim().toLowerCase()
+      );
+
+    if(exact){
+
+      return String(
+        row[exact] ?? ""
+      ).trim();
+
+    }
+
+  }
+
+
+  /*
+   * Fuzzy match second.
+   */
+
+  const fuzzy =
+    keys.find(
+      k =>
+        names.some(
+          n =>
+            k
+              .toLowerCase()
+              .includes(
+                n.toLowerCase()
+              )
+        )
+    );
+
+
+  return fuzzy
+    ? String(
+        row[fuzzy] ?? ""
+      ).trim()
+    : "";
+
+}
+
+
+/* ==========================================================
+   DATE NORMALIZATION
+   ========================================================== */
+
+function normalizeDate(value){
+
+  if(
+    value === null ||
+    value === undefined ||
+    value === ""
+  ){
+
+    return "";
+
+  }
+
+
+  /*
+   * JavaScript Date
+   */
+
+  if(
+    value instanceof Date &&
+    !isNaN(value.getTime())
+  ){
+
+    const local =
+      new Date(
+        value.getTime() -
+        value.getTimezoneOffset() * 60000
+      );
+
+    return local
+      .toISOString()
+      .slice(0,10);
+
+  }
+
+
+  let s =
+    String(value).trim();
+
+
+  if(!s){
+    return "";
+  }
+
+
+  /*
+   * MM/DD/YYYY
+   */
+
+  let m =
+    s.match(
+      /^(\d{1,2})\/(\d{1,2})\/(\d{4})$/
+    );
+
+
+  if(m){
+
+    return (
+      m[3] +
+      "-" +
+      m[1].padStart(2,"0") +
+      "-" +
+      m[2].padStart(2,"0")
+    );
+
+  }
+
+
+  /*
+   * YYYY-MM-DD
+   */
+
+  m =
+    s.match(
+      /^(\d{4})-(\d{1,2})-(\d{1,2})/
+    );
+
+
+  if(m){
+
+    return (
+      m[1] +
+      "-" +
+      m[2].padStart(2,"0") +
+      "-" +
+      m[3].padStart(2,"0")
+    );
+
+  }
+
+
+  /*
+   * Other date formats.
+   */
+
+  const parsed =
+    new Date(s);
+
+
+  if(!isNaN(parsed.getTime())){
+
+    const local =
+      new Date(
+        parsed.getTime() -
+        parsed.getTimezoneOffset() * 60000
+      );
+
+    return local
+      .toISOString()
+      .slice(0,10);
+
+  }
+
+
+  return s;
+
+}
+
+
+function dateMatches(row,target){
+
+  return (
+    normalizeDate(
+      getValue(
+        row,
+        ["Date"]
+      )
+    ) === target
+  );
+
+}
+
+
+/* ==========================================================
+   DAILY REPORT
+   ========================================================== */
+
+function loadReport(){
+
+  if(!csvData.length){
+
+    renderEmptyReport(
+      "Please upload your Excel workbook."
+    );
+
+    return;
+
+  }
+
+
+  const date =
+    document
+      .getElementById(
+        "reportDate"
+      )
+      .value;
+
+
+  currentRows =
+    csvData.filter(
+      row =>
+        dateMatches(
+          row,
+          date
+        )
+    );
+
+
+  calculateCalls(
+    currentRows
+  );
+
+  calculateTickets(
+    currentRows
+  );
+
+  loadTasks();
+
+  updateReportPreview();
+
+}
+
+
+/* ==========================================================
+   OUTCOMES
+   ========================================================== */
+
+function normalizeOutcome(v){
+
+  return String(
+    v || ""
+  )
+    .trim()
+    .toLowerCase()
+    .replace(
+      /\s+/g,
+      " "
+    );
+
+}
+
+
+function calculateCalls(rows){
+
+  let followUp = 0;
+  let retained = 0;
+  let voicemail = 0;
+  let noAnswer = 0;
+  let churned = 0;
+
+
+  rows.forEach(row => {
+
+    const o =
+      normalizeOutcome(
+        getValue(
+          row,
+          ["Outcome"]
+        )
+      );
+
+
+    if(
+      o ===
+      "follow-up scheduled"
+    ){
+
+      followUp++;
+
+    }
+
+    else if(
+      o === "retained / satisfied" ||
+      o === "retained/satisfied"
+    ){
+
+      retained++;
+
+    }
+
+    else if(
+      o === "voicemail left"
+    ){
+
+      voicemail++;
+
+    }
+
+    else if(
+      o === "churned / cancelled" ||
+      o === "churned/cancelled"
+    ){
+
+      churned++;
+
+    }
+
+    else{
+
+      /*
+       * Blank or unknown outcome:
+       * count as No Answer / Hang Up.
+       */
+
+      noAnswer++;
+
+    }
+
+  });
+
+
+  document.getElementById(
+    "followUpCount"
+  ).textContent =
+    followUp;
+
+  document.getElementById(
+    "retainedCount"
+  ).textContent =
+    retained;
+
+  document.getElementById(
+    "voicemailCount"
+  ).textContent =
+    voicemail;
+
+  document.getElementById(
+    "noAnswerCount"
+  ).textContent =
+    noAnswer;
+
+  document.getElementById(
+    "churnedCount"
+  ).textContent =
+    churned;
+
+  document.getElementById(
+    "totalCalls"
+  ).textContent =
+    rows.length;
+
+}
+
+
+/* ==========================================================
+   TICKETS
+   ========================================================== */
+
+function getTicketId(row){
+
+  return getValue(
+    row,
+    [
+      "Ticket ID (Optional)",
+      "Ticket ID",
+      "TicketID",
+      "Ticket Id"
+    ]
+  );
+
+}
+
+
+function calculateTickets(rows){
+
+  currentTickets =
+    rows.filter(row => {
+
+      const id =
+        getTicketId(row);
+
+      return (
+        id &&
+        id.toLowerCase() !==
+        "ticket id (optional)"
+      );
+
+    });
+
+
+  document.getElementById(
+    "totalTickets"
+  ).textContent =
+    currentTickets.length;
+
+
+  const container =
+    document.getElementById(
+      "ticketContainer"
+    );
+
+
+  container.innerHTML = "";
+
+
+  if(!currentTickets.length){
+
+    container.innerHTML =
+      "<div class='muted'>" +
+      "No tickets found for this date." +
+      "</div>";
+
+    return;
+
+  }
+
+
+  currentTickets.forEach(
+    (row,i) => {
+
+      const id =
+        escapeHTML(
+          getTicketId(row)
+        );
+
+      const store =
+        escapeHTML(
+          getValue(
+            row,
+            ["Store Name","Store"]
+          )
+        );
+
+      const notes =
+        escapeHTML(
+          getValue(
+            row,
+            ["Notes","Note","Issue"]
+          )
+        );
+
+
+      const div =
+        document.createElement(
+          "div"
+        );
+
+
+      div.className =
+        "ticket";
+
+
+      div.innerHTML = `
+
+        <div class="ticket-head">
+
+          <div class="ticket-id">
+            Ticket: #${id}
+          </div>
+
+          <div>
+
+            <label style="margin:0 0 4px">
+              Status
+            </label>
+
+            <select
+              class="ticket-status status"
+              id="ticketStatus${i}"
+              onchange="updateReportPreview()"
+            >
+
+              <option>Open</option>
+              <option>Solved</option>
+              <option>Pending</option>
+
+            </select>
+
+          </div>
+
+        </div>
+
+        <div class="ticket-field">
+          <strong>Store:</strong>
+          ${store}
+        </div>
+
+        <div class="ticket-field">
+          <strong>Issue:</strong>
+          ${
+            notes ||
+            "<span class='muted'>No notes entered.</span>"
+          }
+        </div>
+
+      `;
+
+
+      container.appendChild(
+        div
+      );
+
+    }
+  );
+
+}
+
 
 function getSelectedTicketStatuses(){
-  return currentTickets.map((_,i)=>document.getElementById("ticketStatus"+i)?.value || "Open");
+
+  return currentTickets.map(
+    (_,i) =>
+      document
+        .getElementById(
+          "ticketStatus" + i
+        )
+        ?.value ||
+      "Open"
+  );
+
 }
 
-/* ---------- EXTRA TASKS ---------- */
+
+/* ==========================================================
+   EXTRA TASKS
+   ========================================================== */
+
 function taskKey(){
-  return "crphTasks_" + document.getElementById("reportDate").value;
-}
-function getTasks(){
-  try{return JSON.parse(localStorage.getItem(taskKey()) || "[]")}catch{return []}
-}
-function submitExtraTask(){
-  const input=document.getElementById("extraTaskInput");
-  const text=input.value.trim();
-  if(!text) return;
-  const tasks=getTasks();
-  tasks.push(text);
-  localStorage.setItem(taskKey(),JSON.stringify(tasks));
-  input.value="";
-  loadTasks();
-  updateReportPreview();
-}
-function clearExtraTask(){document.getElementById("extraTaskInput").value="";}
-function loadTasks(){
-  const box=document.getElementById("taskList");
-  if(!box) return;
-  box.innerHTML="";
-  getTasks().forEach((task,i)=>{
-    const div=document.createElement("div");
-    div.className="task";
-    div.innerHTML=`<span>${escapeHTML(task)}</span><button class="delete-btn" onclick="deleteTask(${i})">Delete</button>`;
-    box.appendChild(div);
-  });
-}
-function deleteTask(i){
-  const tasks=getTasks();
-  tasks.splice(i,1);
-  localStorage.setItem(taskKey(),JSON.stringify(tasks));
-  loadTasks();
-  updateReportPreview();
+
+  return (
+    "crphTasks_" +
+    document
+      .getElementById(
+        "reportDate"
+      )
+      .value
+  );
+
 }
 
-/* ---------- REPORT TEXT ---------- */
+
+function getTasks(){
+
+  try{
+
+    return JSON.parse(
+      localStorage.getItem(
+        taskKey()
+      ) || "[]"
+    );
+
+  }
+
+  catch{
+
+    return [];
+
+  }
+
+}
+
+
+function submitExtraTask(){
+
+  const input =
+    document.getElementById(
+      "extraTaskInput"
+    );
+
+
+  const text =
+    input.value.trim();
+
+
+  if(!text){
+    return;
+  }
+
+
+  const tasks =
+    getTasks();
+
+
+  tasks.push(
+    text
+  );
+
+
+  localStorage.setItem(
+    taskKey(),
+    JSON.stringify(tasks)
+  );
+
+
+  input.value = "";
+
+
+  loadTasks();
+
+  updateReportPreview();
+
+}
+
+
+function clearExtraTask(){
+
+  document.getElementById(
+    "extraTaskInput"
+  ).value = "";
+
+}
+
+
+function loadTasks(){
+
+  const box =
+    document.getElementById(
+      "taskList"
+    );
+
+
+  if(!box){
+    return;
+  }
+
+
+  box.innerHTML = "";
+
+
+  getTasks().forEach(
+    (task,i) => {
+
+      const div =
+        document.createElement(
+          "div"
+        );
+
+
+      div.className =
+        "task";
+
+
+      div.innerHTML = `
+
+        <span>
+          ${escapeHTML(task)}
+        </span>
+
+        <button
+          class="delete-btn"
+          onclick="deleteTask(${i})"
+        >
+          Delete
+        </button>
+
+      `;
+
+
+      box.appendChild(
+        div
+      );
+
+    }
+  );
+
+}
+
+
+function deleteTask(i){
+
+  const tasks =
+    getTasks();
+
+
+  tasks.splice(
+    i,
+    1
+  );
+
+
+  localStorage.setItem(
+    taskKey(),
+    JSON.stringify(tasks)
+  );
+
+
+  loadTasks();
+
+  updateReportPreview();
+
+}
+
+
+/* ==========================================================
+   REPORT TEXT
+   ========================================================== */
+
 function formatDateForReport(iso){
-  if(!iso) return "";
-  const [y,m,d]=iso.split("-");
-  return `${m}/${d}/${y}`;
+
+  if(!iso){
+    return "";
+  }
+
+
+  const [
+    y,
+    m,
+    d
+  ] =
+    iso.split("-");
+
+
+  return (
+    m +
+    "/" +
+    d +
+    "/" +
+    y
+  );
+
 }
+
+
 function getPresentMembers(){
-  return [...document.querySelectorAll(".team-list input:checked")].map(x=>x.value);
+
+  return [
+    ...document.querySelectorAll(
+      ".team-list input:checked"
+    )
+  ].map(
+    x => x.value
+  );
+
 }
+
+
 function updateReportPreview(){
-  const date=document.getElementById("reportDate").value;
-  const tasks=getTasks();
-  const f=document.getElementById("followUpCount").textContent;
-  const r=document.getElementById("retainedCount").textContent;
-  const v=document.getElementById("voicemailCount").textContent;
-  const n=document.getElementById("noAnswerCount").textContent;
-  const c=document.getElementById("churnedCount").textContent;
-  const total=document.getElementById("totalCalls").textContent;
-  const tt=document.getElementById("totalTickets").textContent;
-  const members=getPresentMembers().join(", ");
-  const extra=tasks.length ? tasks.map(t=>"• "+t).join("\n") : "";
+
+  const date =
+    document
+      .getElementById(
+        "reportDate"
+      )
+      .value;
+
+
+  const tasks =
+    getTasks();
+
+
+  const f =
+    document.getElementById(
+      "followUpCount"
+    ).textContent;
+
+
+  const r =
+    document.getElementById(
+      "retainedCount"
+    ).textContent;
+
+
+  const v =
+    document.getElementById(
+      "voicemailCount"
+    ).textContent;
+
+
+  const n =
+    document.getElementById(
+      "noAnswerCount"
+    ).textContent;
+
+
+  const c =
+    document.getElementById(
+      "churnedCount"
+    ).textContent;
+
+
+  const total =
+    document.getElementById(
+      "totalCalls"
+    ).textContent;
+
+
+  const tt =
+    document.getElementById(
+      "totalTickets"
+    ).textContent;
+
+
+  const members =
+    getPresentMembers().join(
+      ", "
+    );
+
+
+  const extra =
+    tasks.length
+      ? tasks
+          .map(
+            t => "• " + t
+          )
+          .join("\n")
+      : "";
+
+
   let text =
+
 `Customer Success Daily Report
 Date: ${formatDateForReport(date)}
-
 Team Members Present: ${members}
 
 Extra Task: ${extra}
@@ -472,89 +2168,513 @@ Churned / Cancelled: ${c}
 
 Total Tickets:${tt}`;
 
-  currentTickets.forEach((row,i)=>{
-    const id=getTicketId(row);
-    const store=getValue(row,["Store Name","Store"]);
-    const issue=getValue(row,["Notes","Note","Issue"]);
-    text += `\n\nTicket: #${id}\nStore: ${store}\nIssue: ${issue}`;
-  });
-  document.getElementById("reportPreview").textContent=text;
+
+  currentTickets.forEach(
+    (row,i) => {
+
+      const id =
+        getTicketId(row);
+
+      const store =
+        getValue(
+          row,
+          ["Store Name","Store"]
+        );
+
+      const issue =
+        getValue(
+          row,
+          ["Notes","Note","Issue"]
+        );
+
+
+      text +=
+        `\n\nTicket: #${id}` +
+        `\nStore: ${store}` +
+        `\nIssue: ${issue}`;
+
+    }
+  );
+
+
+  document.getElementById(
+    "reportPreview"
+  ).textContent =
+    text;
+
 }
 
-document.querySelectorAll(".team-list input").forEach(x=>x.addEventListener("change",updateReportPreview));
 
-async function copyText(text,button){
+/* ==========================================================
+   TEAM CHECKBOXES
+   ========================================================== */
+
+document
+  .querySelectorAll(
+    ".team-list input"
+  )
+  .forEach(
+    x =>
+      x.addEventListener(
+        "change",
+        updateReportPreview
+      )
+  );
+
+
+/* ==========================================================
+   COPY
+   ========================================================== */
+
+async function copyText(
+  text,
+  button
+){
+
   try{
-    await navigator.clipboard.writeText(text);
-    if(button){const old=button.textContent;button.textContent="✓ Copied";button.classList.add("success");setTimeout(()=>{button.textContent=old;button.classList.remove("success")},1200)}
-  }catch{
-    const ta=document.createElement("textarea");ta.value=text;document.body.appendChild(ta);ta.select();document.execCommand("copy");ta.remove();
+
+    await navigator.clipboard.writeText(
+      text
+    );
+
+
+    if(button){
+
+      const old =
+        button.textContent;
+
+
+      button.textContent =
+        "✓ Copied";
+
+
+      button.classList.add(
+        "success"
+      );
+
+
+      setTimeout(
+        () => {
+
+          button.textContent =
+            old;
+
+          button.classList.remove(
+            "success"
+          );
+
+        },
+        1200
+      );
+
+    }
+
   }
-}
-function copyReport(){copyText(document.getElementById("reportPreview").textContent,event.currentTarget)}
-function renderEmptyReport(message){
-  document.getElementById("followUpCount").textContent="0";
-  document.getElementById("retainedCount").textContent="0";
-  document.getElementById("voicemailCount").textContent="0";
-  document.getElementById("noAnswerCount").textContent="0";
-  document.getElementById("churnedCount").textContent="0";
-  document.getElementById("totalCalls").textContent="0";
-  document.getElementById("totalTickets").textContent="0";
-  document.getElementById("ticketContainer").innerHTML=`<div class="muted">${escapeHTML(message)}</div>`;
-  document.getElementById("reportPreview").textContent=message;
+
+  catch{
+
+    const ta =
+      document.createElement(
+        "textarea"
+      );
+
+
+    ta.value =
+      text;
+
+
+    document.body.appendChild(
+      ta
+    );
+
+
+    ta.select();
+
+
+    document.execCommand(
+      "copy"
+    );
+
+
+    ta.remove();
+
+  }
+
 }
 
-/* ---------- WORKLOAD ---------- */
+
+function copyReport(){
+
+  copyText(
+    document
+      .getElementById(
+        "reportPreview"
+      )
+      .textContent,
+    event.currentTarget
+  );
+
+}
+
+
+/* ==========================================================
+   EMPTY REPORT
+   ========================================================== */
+
+function renderEmptyReport(
+  message
+){
+
+  document.getElementById(
+    "followUpCount"
+  ).textContent = "0";
+
+
+  document.getElementById(
+    "retainedCount"
+  ).textContent = "0";
+
+
+  document.getElementById(
+    "voicemailCount"
+  ).textContent = "0";
+
+
+  document.getElementById(
+    "noAnswerCount"
+  ).textContent = "0";
+
+
+  document.getElementById(
+    "churnedCount"
+  ).textContent = "0";
+
+
+  document.getElementById(
+    "totalCalls"
+  ).textContent = "0";
+
+
+  document.getElementById(
+    "totalTickets"
+  ).textContent = "0";
+
+
+  currentRows = [];
+
+  currentTickets = [];
+
+
+  document.getElementById(
+    "ticketContainer"
+  ).innerHTML =
+    `<div class="muted">${
+      escapeHTML(message)
+    }</div>`;
+
+
+  document.getElementById(
+    "reportPreview"
+  ).textContent =
+    message;
+
+}
+
+
+/* ==========================================================
+   WORKLOAD SEARCH
+   ========================================================== */
+
 function searchWorkload(){
-  const q=document.getElementById("workloadSearch").value.trim().toLowerCase();
-  const box=document.getElementById("workloadResults");
-  if(!q){box.innerHTML="<div class='status-message'>Please enter a Store Name or MID.</div>";return;}
-  if(!csvData.length){box.innerHTML="<div class='status-message err'>CSV data is not loaded yet.</div>";return;}
 
-  const matches=csvData.filter(row=>{
-    const store=getValue(row,["Store Name","Store"]).toLowerCase();
-    const mid=getValue(row,["MID","Merchant ID","MerchantID"]).toLowerCase();
-    return store.includes(q) || mid.includes(q);
-  }).sort((a,b)=>normalizeDate(getValue(b,["Date"])).localeCompare(normalizeDate(getValue(a,["Date"]))));
+  const q =
+    document
+      .getElementById(
+        "workloadSearch"
+      )
+      .value
+      .trim()
+      .toLowerCase();
+
+
+  const box =
+    document.getElementById(
+      "workloadResults"
+    );
+
+
+  if(!q){
+
+    box.innerHTML =
+      "<div class='status-message'>" +
+      "Please enter a Store Name or MID." +
+      "</div>";
+
+    return;
+
+  }
+
+
+  if(!csvData.length){
+
+    box.innerHTML =
+      "<div class='status-message err'>" +
+      "Excel data is not loaded yet. Please upload your workbook." +
+      "</div>";
+
+    return;
+
+  }
+
+
+  const matches =
+    csvData
+      .filter(row => {
+
+        const store =
+          getValue(
+            row,
+            [
+              "Store Name",
+              "Store"
+            ]
+          ).toLowerCase();
+
+
+        const mid =
+          getValue(
+            row,
+            [
+              "MID",
+              "Merchant ID",
+              "MerchantID"
+            ]
+          ).toLowerCase();
+
+
+        return (
+          store.includes(q) ||
+          mid.includes(q)
+        );
+
+      })
+      .sort(
+        (a,b) =>
+          normalizeDate(
+            getValue(
+              b,
+              ["Date"]
+            )
+          ).localeCompare(
+            normalizeDate(
+              getValue(
+                a,
+                ["Date"]
+              )
+            )
+          )
+      );
+
 
   if(!matches.length){
-    box.innerHTML="<div class='status-message'>No matching Store Name or MID was found.</div>";
+
+    box.innerHTML =
+      "<div class='status-message'>" +
+      "No matching Store Name or MID was found." +
+      "</div>";
+
     return;
+
   }
-  box.innerHTML="";
-  matches.forEach(row=>{
-    const store=escapeHTML(getValue(row,["Store Name","Store"]));
-    const mid=escapeHTML(getValue(row,["MID","Merchant ID","MerchantID"]));
-    const date=escapeHTML(formatDateForReport(normalizeDate(getValue(row,["Date"]))));
-    const agent=escapeHTML(getValue(row,["Employee","Agent"]));
-    const call=escapeHTML(getValue(row,["Call Type","Call"]));
-    const notes=escapeHTML(getValue(row,["Notes","Note"]));
-    const div=document.createElement("div");
-    div.className="result-card";
-    div.innerHTML=`
-      <div class="result-title">${store} | ${mid}</div>
-      <div class="result-line"><strong>Last Called:</strong> ${date || "—"}</div>
-      <div class="result-line"><strong>Agent:</strong> ${agent || "—"}</div>
-      <div class="result-line"><strong>Call:</strong> ${call || "—"}</div>
-      <div class="result-line"><strong>Notes:</strong> ${notes || "—"}</div>`;
-    box.appendChild(div);
-  });
+
+
+  box.innerHTML = "";
+
+
+  matches.forEach(
+    row => {
+
+      const store =
+        escapeHTML(
+          getValue(
+            row,
+            [
+              "Store Name",
+              "Store"
+            ]
+          )
+        );
+
+
+      const mid =
+        escapeHTML(
+          getValue(
+            row,
+            [
+              "MID",
+              "Merchant ID",
+              "MerchantID"
+            ]
+          )
+        );
+
+
+      const date =
+        escapeHTML(
+          formatDateForReport(
+            normalizeDate(
+              getValue(
+                row,
+                ["Date"]
+              )
+            )
+          )
+        );
+
+
+      const agent =
+        escapeHTML(
+          getValue(
+            row,
+            [
+              "Employee",
+              "Agent"
+            ]
+          )
+        );
+
+
+      const call =
+        escapeHTML(
+          getValue(
+            row,
+            [
+              "Call Type",
+              "Call"
+            ]
+          )
+        );
+
+
+      const notes =
+        escapeHTML(
+          getValue(
+            row,
+            [
+              "Notes",
+              "Note"
+            ]
+          )
+        );
+
+
+      const div =
+        document.createElement(
+          "div"
+        );
+
+
+      div.className =
+        "result-card";
+
+
+      div.innerHTML = `
+
+        <div class="result-title">
+          ${store} | ${mid}
+        </div>
+
+        <div class="result-line">
+          <strong>Last Called:</strong>
+          ${date || "—"}
+        </div>
+
+        <div class="result-line">
+          <strong>Agent:</strong>
+          ${agent || "—"}
+        </div>
+
+        <div class="result-line">
+          <strong>Call:</strong>
+          ${call || "—"}
+        </div>
+
+        <div class="result-line">
+          <strong>Notes:</strong>
+          ${notes || "—"}
+        </div>
+
+      `;
+
+
+      box.appendChild(
+        div
+      );
+
+    }
+  );
+
 }
+
+
 function clearWorkload(){
-  document.getElementById("workloadSearch").value="";
-  document.getElementById("workloadResults").innerHTML="<div class='status-message'>Search cleared.</div>";
+
+  document.getElementById(
+    "workloadSearch"
+  ).value = "";
+
+
+  document.getElementById(
+    "workloadResults"
+  ).innerHTML =
+    "<div class='status-message'>" +
+    "Search cleared." +
+    "</div>";
+
 }
 
-/* ---------- ESCALATE ---------- */
-function updateEscalationPreview(){
-  const store=document.getElementById("escStore").value.trim();
-  const name=document.getElementById("escName").value.trim();
-  const contact=document.getElementById("escContact").value.trim();
-  const issue=document.getElementById("escIssue").value.trim();
-  const availability=document.getElementById("escAvailability").value.trim();
-  document.getElementById("escalationPreview").textContent =
-`Store: ${store}
 
+/* ==========================================================
+   ESCALATE
+   ========================================================== */
+
+function updateEscalationPreview(){
+
+  const store =
+    document.getElementById(
+      "escStore"
+    ).value.trim();
+
+
+  const name =
+    document.getElementById(
+      "escName"
+    ).value.trim();
+
+
+  const contact =
+    document.getElementById(
+      "escContact"
+    ).value.trim();
+
+
+  const issue =
+    document.getElementById(
+      "escIssue"
+    ).value.trim();
+
+
+  const availability =
+    document.getElementById(
+      "escAvailability"
+    ).value.trim();
+
+
+  document.getElementById(
+    "escalationPreview"
+  ).textContent =
+
+`Store: ${store}
 For Reference:
 Initiated by Customer Retention; to be handled by Credit Card Support.
 Contact Person: ${name}
@@ -565,12 +2685,47 @@ ${issue}
 
 Availability:
 ${availability}`;
+
 }
-function copyEscalation(){copyText(document.getElementById("escalationPreview").textContent,event.currentTarget)}
+
+
+function copyEscalation(){
+
+  copyText(
+    document
+      .getElementById(
+        "escalationPreview"
+      )
+      .textContent,
+    event.currentTarget
+  );
+
+}
+
+
+/* ==========================================================
+   HTML ESCAPE
+   ========================================================== */
 
 function escapeHTML(value){
-  return String(value ?? "").replace(/[&<>"']/g,ch=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[ch]));
+
+  return String(
+    value ?? ""
+  ).replace(
+    /[&<>"']/g,
+    ch =>
+      ({
+        "&":"&amp;",
+        "<":"&lt;",
+        ">":"&gt;",
+        '"':"&quot;",
+        "'":"&#39;"
+      }[ch])
+  );
+
 }
+
 </script>
+
 </body>
 </html>
